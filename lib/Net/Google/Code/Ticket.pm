@@ -30,7 +30,7 @@ has comments => (
     is => 'rw',
 );
 
-our @PROPS = qw(status owner closed cc summary description);
+our @PROPS = qw(status owner closed cc summary reporter description);
 
 for my $prop (@PROPS) {
     no strict 'refs'; ## no critic
@@ -55,6 +55,11 @@ sub load {
     # extract summary
     my ($summary) = $tree->look_down(class => 'h3' );
     $self->state->{summary} = $summary->content_array_ref->[0];
+
+    # extract reporter
+    $self->state->{reporter} = 
+      $summary->look_down( class => "author" )->content_array_ref->[1]
+      ->content_array_ref->[0];
 
     my ($meta) = $tree->look_down( id => 'issuemeta' );
     my @meta = $meta->find_by_tag_name('tr');
