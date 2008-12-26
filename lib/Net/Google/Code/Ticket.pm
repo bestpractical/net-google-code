@@ -51,6 +51,11 @@ sub load {
     my $tree    = HTML::TreeBuilder->new;
     $tree->parse_content($content);
     $tree->elementify;
+
+    # extract summary
+    my ($summary) = $tree->look_down(class => 'h3' );
+    $self->state->{summary} = $summary->content_array_ref->[0];
+
     my ($meta) = $tree->look_down( id => 'issuemeta' );
     my @meta = $meta->find_by_tag_name('tr');
     for my $meta (@meta) {
