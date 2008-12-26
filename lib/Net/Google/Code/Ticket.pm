@@ -56,10 +56,17 @@ sub load {
     my ($summary) = $tree->look_down(class => 'h3' );
     $self->state->{summary} = $summary->content_array_ref->[0];
 
-    # extract reporter
-    $self->state->{reporter} = 
-      $summary->look_down( class => "author" )->content_array_ref->[1]
+    # extract reporter and description
+    my $description = $tree->look_down(class => 'vt issuedescription' );
+    $self->state->{reporter} =
+      $description->look_down( class => "author" )->content_array_ref->[1]
       ->content_array_ref->[0];
+    my $text = $description->find_by_tag_name('pre')->as_text;
+    $text =~ s/^\s+//;
+    $text =~ s/\s+$//;
+    $self->state->{description} = $text;
+    # TODO extract attachments if there are some
+
 
     my ($meta) = $tree->look_down( id => 'issuemeta' );
     my @meta = $meta->find_by_tag_name('tr');
