@@ -5,7 +5,6 @@ use Params::Validate qw(:all);
 has id => (
     isa => 'Int',
     is  => 'rw',
-    required => 1,
 );
 
 has connection => (
