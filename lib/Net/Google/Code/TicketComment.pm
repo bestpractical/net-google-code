@@ -2,16 +2,11 @@ package Net::Google::Code::TicketComment;
 use Moose;
 use Net::Google::Code::TicketPropChange;
 
-has connection => (
-    isa => 'Net::Google::Code::Connection',
-    is  => 'ro'
-);
-
-has prop_changes => ( isa => 'HashRef', is => 'rw' );
-
-has author   => ( isa => 'Str',      is => 'rw' );
-has date     => ( isa => 'DateTime', is => 'rw' );
-has content  => ( isa => 'Str',      is => 'rw' );
+has prop_changes => ( isa => 'HashRef',  is => 'rw' );
+has author       => ( isa => 'Str',      is => 'rw' );
+has date         => ( isa => 'Str', is => 'rw' );
+has content      => ( isa => 'Str',      is => 'rw' );
+has sequence     => ( isa => 'Int',      is => 'rw' );
 
 =head2 parse_entry
 
@@ -34,20 +29,22 @@ closed. Import from IE 6 was smooth too.
 
 =cut
 
-sub parse_entry {
-    my $self  = shift;
-    my $entry = shift;
-#XXX TODO
+sub parse {
+    my $self = shift;
+    my $element = shift;
+    my $author = $element->look_down( class => 'author' );
+    my @a = $author->find_by_tag_name('a');
+    $self->sequence( $a[0]->content_array_ref->[0] );
+    $self->author( $a[1]->content_array_ref->[0] );
+    $self->date( $element->look_down( class => 'date' )->attr_get_i('title') );
+    my $content = $element->find_by_tag_name('pre')->as_text;
+    $content =~ s/^\s+//;
+    $content =~ s/\s+$//;
+    $self->content( $content );
+# TODO parse prop_change
+# TODO parse attachments
 
     return 1;
-}
-
-sub _parse_props {
-    my $self       = shift;
-    my $raw        = shift;
-    my $props      = {};
-#XXX TODO
-    return $props;
 }
 
 no Moose;
