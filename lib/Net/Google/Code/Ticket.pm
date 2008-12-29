@@ -1,6 +1,7 @@
 package Net::Google::Code::Ticket;
 use Moose;
 use Params::Validate qw(:all);
+use Net::Google::Code::TicketComment;
 
 has id => (
     isa => 'Int',
@@ -28,6 +29,7 @@ has labels => (
 has comments => (
     isa => 'ArrayRef',
     is => 'rw',
+    default => sub { [] },
 );
 
 our @PROPS = qw(status owner closed cc summary reporter description);
@@ -66,7 +68,6 @@ sub load {
     $text =~ s/\s+$//;
     $self->state->{description} = $text;
     # TODO extract attachments if there are some
-
 
     my ($meta) = $tree->look_down( id => 'issuemeta' );
     my @meta = $meta->find_by_tag_name('tr');
@@ -109,6 +110,15 @@ sub load {
             }
             $self->labels->{$key} = $value;
         }
+    }
+
+    # extract comments
+    my @comments = $tree->look_down( class => 'vt issuecomment' );
+    pop @comments;    # last one is for adding comment
+    for my $comment (@comments) {
+        my $object = Net::Google::Code::TicketComment->new;
+        $object->parse($comment);
+        push @{$self->comments}, $object;
     }
 
     return $id;
