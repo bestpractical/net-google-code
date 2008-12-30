@@ -42,9 +42,7 @@ sub load {
     my $self = shift;
     my ($id) = validate_pos( @_, { type => SCALAR } );
     $self->state->{id} = $id;
-    $self->connection->_fetch( "/issues/detail?id=" . $id );
-
-    my $content = $self->connection->mech->content;
+    my $content = $self->connection->_fetch( "/issues/detail?id=" . $id );
     require HTML::TreeBuilder;
     my $tree    = HTML::TreeBuilder->new;
     $tree->parse_content($content);
