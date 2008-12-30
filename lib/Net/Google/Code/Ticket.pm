@@ -3,11 +3,6 @@ use Moose;
 use Params::Validate qw(:all);
 use Net::Google::Code::TicketComment;
 
-has id => (
-    isa => 'Int',
-    is  => 'rw',
-);
-
 has connection => (
     isa => 'Net::Google::Code::Connection',
     is  => 'ro',
@@ -32,7 +27,7 @@ has comments => (
     default => sub { [] },
 );
 
-our @PROPS = qw(status owner closed cc summary reporter description);
+our @PROPS = qw(id status owner closed cc summary reporter description);
 
 for my $prop (@PROPS) {
     no strict 'refs'; ## no critic
@@ -46,6 +41,7 @@ for my $prop (@PROPS) {
 sub load {
     my $self = shift;
     my ($id) = validate_pos( @_, { type => SCALAR } );
+    $self->state->{id} = $id;
     $self->connection->_fetch( "/issues/detail?id=" . $id );
 
     my $content = $self->connection->mech->content;
