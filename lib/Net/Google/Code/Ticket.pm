@@ -119,13 +119,6 @@ sub load {
     return $id;
 }
 
-sub _fetch_new_ticket_metadata {
-    my $self = shift;
-
-    #XXX TODO
-    return 1;
-}
-
 no Moose;
 
 1;
