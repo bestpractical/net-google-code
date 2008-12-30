@@ -39,7 +39,8 @@ sub parse {
     $self->date( $element->look_down( class => 'date' )->attr_get_i('title') );
     my $content = $element->find_by_tag_name('pre')->as_text;
     $content =~ s/^\s+//;
-    $content =~ s/\s+$//;
+    $content =~ s/\s+$/\n/;
+    $content =~ s/\r\n/\n/g;
     $self->content( $content );
 # TODO parse prop_change
 # TODO parse attachments

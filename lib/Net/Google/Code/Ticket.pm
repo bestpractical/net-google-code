@@ -59,7 +59,8 @@ sub load {
       ->content_array_ref->[0];
     my $text = $description->find_by_tag_name('pre')->as_text;
     $text =~ s/^\s+//;
-    $text =~ s/\s+$//;
+    $text =~ s/\s+$/\n/;
+    $text =~ s/\r\n/\n/g;
     $self->state->{description} = $text;
     # TODO extract attachments if there are some
 
