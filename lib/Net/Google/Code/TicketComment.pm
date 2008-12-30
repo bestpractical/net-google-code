@@ -60,6 +60,8 @@ Net::Google::Code::TicketComment -
 
 =head1 INTERFACE
 
+=head2 parse
+
 =head1 AUTHOR
 
 sunnavy  C<< <sunnavy@bestpractical.com> >>

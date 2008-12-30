@@ -142,15 +142,21 @@ Net::Google::Code::Ticket -
 
 =head1 INTERFACE
 
+=head2 id
+
 =head2 status
 
 =head2 owner 
+
+=head2 reporter
 
 =head2 closed
 
 =head2 cc
 
 =head2 summary
+
+=head2 description
 
 =head1 AUTHOR
 
