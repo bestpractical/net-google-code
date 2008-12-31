@@ -1,7 +1,14 @@
 use strict;
 use warnings;
 
-use Test::More tests => 7;
+use Test::More tests => 11;
+
+use_ok( 'Net::Google::Code::TicketComment' );
+use_ok( 'Net::Google::Code::Connection' );
+my $connection = Net::Google::Code::Connection->new( project => 'haha' );
+my $comment =
+  Net::Google::Code::TicketComment->new( connection => $connection );
+isa_ok( $comment, 'Net::Google::Code::TicketComment', '$comment' );
 
 my $content;
 {
@@ -14,9 +21,6 @@ my $tree = HTML::TreeBuilder->new;
 $tree->parse_content($content);
 $tree->elementify;
 
-use_ok( 'Net::Google::Code::TicketComment' );
-my $comment = Net::Google::Code::TicketComment->new;
-isa_ok( $comment, 'Net::Google::Code::TicketComment', '$comment' );
 $comment->parse( $tree );
 
 my %info = (
@@ -43,6 +47,10 @@ my $updates = {
 
 is_deeply( $updates, $comment->updates, 'updates are extracted' );
 
+is( scalar @{$comment->attachments}, 2, 'attachments are extracted' );
+is( $comment->attachments->[0]->filename, 'proxy_settings.png', '1st attachment' );
+is( $comment->attachments->[1]->filename, 'haha.png', '2nd attachment' );
+
 __DATA__
  <td class="vt issuecomment">
  
@@ -64,6 +72,11 @@ __DATA__
  <tr><td rowspan="2" width="24"><a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png" target="new"><img width="16" height="16" src="/hosting/images/generic.gif" border="0" ></a></td>
  <td><b>proxy_settings.png</b></td></tr>
  <tr><td>14.3 KB
+  
+ <a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png">Download</a></td></tr>
+ <tr><td rowspan="2" width="24"><a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png" target="new"><img width="16" height="16" src="/hosting/images/generic.gif" border="0" ></a></td>
+ <td><b>haha.png</b></td></tr>
+ <tr><td>20
   
  <a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png">Download</a></td></tr>
  </table>
