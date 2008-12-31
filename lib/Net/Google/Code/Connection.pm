@@ -30,7 +30,14 @@ has mech => (
 sub _fetch {
     my $self    = shift;
     my $query   = shift;
-    my $abs_url = $self->base_url . $self->project .  $query;
+    my $abs_url;
+    if ( $query =~ /^http(s)?:/ ) {
+        $abs_url = $query;
+    }
+    else {
+        $abs_url = $self->base_url . $self->project .  $query;
+    }
+
     $self->mech->get($abs_url);
     $self->_die_on_error($abs_url);
     return $self->mech->content;

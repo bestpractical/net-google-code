@@ -55,6 +55,10 @@ sub content {
 
 no Moose;
 
+1;
+
+__END__
+
 =head1 NAME
 
 Net::Google::Code::TicketAttachment
@@ -63,11 +67,9 @@ Net::Google::Code::TicketAttachment
 
 This class represents a single attachment for a trac ticket.
 
-=head1 METHODS
+=head1 INTERFACE
 
 =head2 filename
-
-=head2 description
 
 =head2 content
 
@@ -75,11 +77,15 @@ This class represents a single attachment for a trac ticket.
 
 =head2 url
 
-=head2 author
+=head1 AUTHOR
 
-=head2 date
+sunnavy  C<< <sunnavy@bestpractical.com> >>
 
-=cut
 
-1;
+=head1 LICENCE AND COPYRIGHT
+
+Copyright 2008 Best Practical Solutions.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
 
