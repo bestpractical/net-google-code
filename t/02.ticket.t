@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 16;
+use Test::More tests => 18;
 use Test::MockModule;
 
 # $content is a real page: http://code.google.com/p/chromium/issues/detail?id=14
@@ -79,6 +79,11 @@ is( scalar @{$ticket->comments}, 50, 'comments are extracted' );
 is( $ticket->comments->[0]->sequence, 1, 'sequence of 1st comments is 1' );
 # seems comments 2 and 3 are deleted
 is( $ticket->comments->[1]->sequence, 4, 'sequence of 2nd comments is 4' ); 
+
+# attachments part are faked from 
+# http://code.google.com/p/chromium/issues/detail?id=683
+is( scalar @{ $ticket->attachments }, 3, 'attachments are extracted' );
+is( $ticket->attachments->[0]->size, '11.7 KB', 'size of the 1st attachment' );
 
 __DATA__
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -543,6 +548,30 @@ data via a proxy.
 Installer simply fails, notifying the user to adjust their firewall settings.
 </pre>
 
+ <div class="attachments">
+ 
+ <table cellspacing="0" cellpadding="2" border="0">
+ <tr><td rowspan="2" width="24"><a href="http://chromium.googlecode.com/issues/attachment?aid=-8682239133892813205&amp;name=chrome-border-bug.png"><img width="16" height="16" src="/hosting/images/generic.gif" border="0" ></a></td>
+ <td><b>chrome-border-bug.png</b></td></tr>
+ <tr><td>11.7 KB
+  
+ <a href="http://chromium.googlecode.com/issues/attachment?aid=-8682239133892813205&amp;name=chrome-border-bug.png">Download</a></td></tr>
+
+ <tr><td rowspan="2" width="24"><a href="http://chromium.googlecode.com/issues/attachment?aid=-8682239133892813205&amp;name=chrome-border-bug.png"><img width="16" height="16" src="/hosting/images/generic.gif" border="0" ></a></td>
+ <td><b>chrome-border-bug.png</b></td></tr>
+ <tr><td>11.7 KB
+  
+ <a href="http://chromium.googlecode.com/issues/attachment?aid=-8682239133892813205&amp;name=chrome-border-bug.png">Download</a></td></tr>
+
+ <tr><td rowspan="2" width="24"><a href="http://chromium.googlecode.com/issues/attachment?aid=-8682239133892813205&amp;name=chrome-border-bug.png"><img width="16" height="16" src="/hosting/images/generic.gif" border="0" ></a></td>
+ <td><b>chrome-border-bug.png</b></td></tr>
+ <tr><td>11.7 KB
+  
+ <a href="http://chromium.googlecode.com/issues/attachment?aid=-8682239133892813205&amp;name=chrome-border-bug.png">Download</a></td></tr>
+ </table>
+
+ 
+ </div>
 
  </td>
  </tr>
