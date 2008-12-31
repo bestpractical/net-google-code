@@ -1,8 +1,7 @@
 package Net::Google::Code::TicketComment;
 use Moose;
-use Net::Google::Code::TicketPropChange;
 
-has prop_changes => ( isa => 'HashRef',  is => 'rw' );
+has metadata     => ( isa => 'HashRef',  is => 'rw' );
 has author       => ( isa => 'Str',      is => 'rw' );
 has date         => ( isa => 'Str', is => 'rw' );
 has content      => ( isa => 'Str',      is => 'rw' );
@@ -10,22 +9,43 @@ has sequence     => ( isa => 'Int',      is => 'rw' );
 
 =head2 parse_entry
 
-parse format like(http://code.google.com/p/chromium/issues/detail?id=7#c1):
+parse format like the following:
 
- <tr>
  <td class="vt issuecomment">
- <span class="author">Comment <a name="c1"
- href="#c1">1</a>
+ 
+ 
+ 
+ <span class="author">Comment <a name="c18"
+ href="#c18">18</a>
  by
- <a href="/u/tathagatadg/">tathagatadg</a></span>,
- <span class="date" title="Tue Sep  2 12:44:12 2008">Sep 02, 2008</span>
+ <a href="/u/jsykari/">jsykari</a></span>,
+ <span class="date" title="Wed Sep  3 04:44:39 2008">Sep 03, 2008</span>
 <pre>
-My imports from Firefox 2.0.0.15 worked fine. Only required the open firefox to be 
-closed. Import from IE 6 was smooth too.
-</pre>
- </td>
- </tr>
+<b>haha</b>
 
+</pre>
+ 
+ <div class="attachments">
+ 
+ <table cellspacing="0" cellpadding="2" border="0">
+ <tr><td rowspan="2" width="24"><a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png" target="new"><img width="16" height="16" src="/hosting/images/generic.gif" border="0" ></a></td>
+ <td><b>proxy_settings.png</b></td></tr>
+ <tr><td>14.3 KB
+  
+ <a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png">Download</a></td></tr>
+ </table>
+ 
+ </div>
+
+ <div class="updates">
+ <div class="round4"></div>
+ <div class="round2"></div>
+ <div class="round1"></div>
+ <div class="box-inner">
+ <b>Cc:</b> thatan...@google.com<br>
+ </div>
+ 
+ </td>
 
 =cut
 
