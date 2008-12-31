@@ -44,6 +44,10 @@ parse format like the following:
  <div class="box-inner">
  <b>Cc:</b> thatan...@google.com<br>
  </div>
+ <div class="round1"></div>
+ <div class="round2"></div>
+ <div class="round4"></div>
+ </div>
  
  </td>
 
