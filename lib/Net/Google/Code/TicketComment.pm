@@ -1,11 +1,11 @@
 package Net::Google::Code::TicketComment;
 use Moose;
 
-has metadata     => ( isa => 'HashRef',  is => 'rw' );
-has author       => ( isa => 'Str',      is => 'rw' );
-has date         => ( isa => 'Str', is => 'rw' );
-has content      => ( isa => 'Str',      is => 'rw' );
-has sequence     => ( isa => 'Int',      is => 'rw' );
+has updates   => ( isa => 'HashRef', is => 'rw', default => sub { {} } );
+has author    => ( isa => 'Str',     is => 'rw' );
+has date      => ( isa => 'Str',     is => 'rw' );
+has content   => ( isa => 'Str',     is => 'rw' );
+has sequence  => ( isa => 'Int',     is => 'rw' );
 
 =head2 parse_entry
 
@@ -42,7 +42,7 @@ parse format like the following:
  <div class="round2"></div>
  <div class="round1"></div>
  <div class="box-inner">
- <b>Cc:</b> thatan...@google.com<br>
+ <b>Cc:</b> thatan...@google.com<br><b>Status:</b> Available<br><b>Labels:</b> Mstone-X<br>
  </div>
  <div class="round1"></div>
  <div class="round2"></div>
@@ -66,7 +66,38 @@ sub parse {
     $content =~ s/\s+$/\n/;
     $content =~ s/\r\n/\n/g;
     $self->content( $content );
-# TODO parse prop_change
+
+    my $update = $element->look_down( class => 'updates' );
+    if ( $update ) {
+        my $box_inner = $element->look_down( class => 'box-inner' );
+        my $content = $box_inner->content_array_ref;
+        while ( @$content ) {
+            my $tag = shift @$content;
+            my $value = shift @$content;
+            shift @$content; # this is for the <br>
+
+            my $key = $tag->content_array_ref->[0];
+            $key =~ s/:$//;
+            $value =~ s/^\s+//;
+            $value =~ s/\s+$//;
+
+            if ( $key eq 'Labels' ) {
+                if ( $value =~ /([^-]+?)-(.+)/ ) {
+                    $self->updates->{labels}{$1} = $2;
+                }
+                elsif ( $value =~ /([^-]+)$/ ) {
+                    $self->updates->{labels}{$1} = undef;
+                }
+                else {
+                    warn "can't parse label from $value";
+                }
+            }
+            else {
+                $self->updates->{lc $key} = $value;
+            }
+        }
+
+    }
 # TODO parse attachments
 
     return 1;
