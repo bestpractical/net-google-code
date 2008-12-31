@@ -95,15 +95,14 @@ sub load {
 # from issue tracking faq:
 # The prefix before the first dash is the key, and the part after it is the value.
             if ( $href =~ /list\?q=label:([^-]+?)-(.+)/ ) {
-                ( $key, $value ) = ( $1, $2 );
+                $self->labels->{$1} = $2;
             }
             elsif ( $href =~ /list\?q=label:([^-]+)$/ ) {
-                $key = $1;
+                $self->labels->{$1} = undef;
             }
             else {
                 warn "can't parse label from $href";
             }
-            $self->labels->{$key} = $value;
         }
     }
 
