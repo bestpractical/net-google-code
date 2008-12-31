@@ -35,6 +35,14 @@ for my $item ( keys %info ) {
     }
 }
 
+my $updates = {
+    cc     => 'thatan...@google.com',
+    status => 'Available',
+    labels => { Mstone => 'X' },
+};
+
+is_deeply( $updates, $comment->updates, 'updates are extracted' );
+
 __DATA__
  <td class="vt issuecomment">
  
@@ -67,7 +75,11 @@ __DATA__
  <div class="round2"></div>
  <div class="round1"></div>
  <div class="box-inner">
- <b>Cc:</b> thatan...@google.com<br>
+ <b>Cc:</b> thatan...@google.com<br><b>Status:</b> Available<br><b>Labels:</b> Mstone-X<br>
+ </div>
+ <div class="round1"></div>
+ <div class="round2"></div>
+ <div class="round4"></div>
  </div>
  
  </td>
