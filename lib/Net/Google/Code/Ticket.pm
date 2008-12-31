@@ -110,7 +110,9 @@ sub load {
     my @comments = $tree->look_down( class => 'vt issuecomment' );
     pop @comments;    # last one is for adding comment
     for my $comment (@comments) {
-        my $object = Net::Google::Code::TicketComment->new;
+        my $object =
+          Net::Google::Code::TicketComment->new(
+            connection => $self->connection );
         $object->parse($comment);
         push @{$self->comments}, $object;
     }
