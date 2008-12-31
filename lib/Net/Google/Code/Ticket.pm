@@ -27,6 +27,12 @@ has comments => (
     default => sub { [] },
 );
 
+has attachments => (
+    isa     => 'ArrayRef',
+    is      => 'rw',
+    default => sub { [] },
+);
+
 our @PROPS = qw(id status owner closed cc summary reporter description);
 
 for my $prop (@PROPS) {
@@ -62,7 +68,23 @@ sub load {
     $text =~ s/\s+$/\n/;
     $text =~ s/\r\n/\n/g;
     $self->state->{description} = $text;
-    # TODO extract attachments if there are some
+
+    my $attachments = $description->look_down(class => 'attachments');
+    if ( $attachments ) {
+        my @items = $attachments->find_by_tag_name( 'tr' );
+        require Net::Google::Code::TicketAttachment;
+        while ( scalar @items ) {
+            my $tr1 = shift @items;
+            my $tr2 = shift @items;
+            my $a =
+              Net::Google::Code::TicketAttachment->new(
+                connection => $self->connection );
+
+            if ( $a->parse( $tr1, $tr2 ) ) {
+                push @{$self->attachments}, $a;
+            }
+        }
+    }
 
     my ($meta) = $tree->look_down( id => 'issuemeta' );
     my @meta = $meta->find_by_tag_name('tr');
