@@ -1,11 +1,18 @@
 package Net::Google::Code::TicketComment;
 use Moose;
 
+has connection => (
+    isa => 'Net::Google::Code::Connection',
+    is  => 'ro',
+    required => 1,
+);
+
 has updates   => ( isa => 'HashRef', is => 'rw', default => sub { {} } );
 has author    => ( isa => 'Str',     is => 'rw' );
 has date      => ( isa => 'Str',     is => 'rw' );
 has content   => ( isa => 'Str',     is => 'rw' );
 has sequence  => ( isa => 'Int',     is => 'rw' );
+has attachments => ( isa => 'ArrayRef', is => 'rw', default => sub { [] } );
 
 =head2 parse_entry
 
@@ -67,8 +74,8 @@ sub parse {
     $content =~ s/\r\n/\n/g;
     $self->content( $content );
 
-    my $update = $element->look_down( class => 'updates' );
-    if ( $update ) {
+    my $updates = $element->look_down( class => 'updates' );
+    if ( $updates ) {
         my $box_inner = $element->look_down( class => 'box-inner' );
         my $content = $box_inner->content_array_ref;
         while ( @$content ) {
@@ -98,7 +105,22 @@ sub parse {
         }
 
     }
-# TODO parse attachments
+    my $attachments = $element->look_down( class => 'attachments' );
+    if ( $attachments ) {
+        my @items = $attachments->find_by_tag_name( 'tr' );
+        require Net::Google::Code::TicketAttachment;
+        while ( scalar @items ) {
+            my $tr1 = shift @items;
+            my $tr2 = shift @items;
+            my $a =
+              Net::Google::Code::TicketAttachment->new(
+                connection => $self->connection );
+
+            if ( $a->parse( $tr1, $tr2 ) ) {
+                push @{$self->attachments}, $a;
+            }
+        }
+    }
 
     return 1;
 }
