@@ -1,0 +1,85 @@
+package Net::Google::Code::TicketAttachment;
+use Moose;
+
+has connection => (
+    isa => 'Net::Google::Code::Connection',
+    is  => 'ro',
+    required => 1,
+);
+
+has filename => ( isa => 'Str', is => 'rw' );
+has url      => ( isa => 'Str', is => 'rw' );
+has size     => ( isa => 'Str', is => 'rw' );
+
+=head2 parse
+there're 2 trs that represent an attachment like the following:
+
+ <tr><td rowspan="2" width="24"><a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png" target="new"><img width="16" height="16" src="/hosting/images/generic.gif" border="0" ></a></td>
+ <td><b>proxy_settings.png</b></td></tr>
+ <tr><td>14.3 KB
+  
+ <a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png">Download</a></td></tr>
+
+=cut
+
+sub parse {
+    my $self = shift;
+    my $tr1 = shift;
+    my $tr2 = shift;
+    my $b = $tr1->find_by_tag_name('b'); # filename lives here
+    if ( $b ) {
+        my $name = $b->content_array_ref->[0];
+        $name =~ s/^\s+//;
+        $name =~ s/\s+$//;
+        $self->filename( $name );
+    }
+
+    my $td = $tr2->find_by_tag_name('td');
+    if ( $td ) {
+        my $size = $td->content_array_ref->[0];
+        $size =~ s/^\s+//;
+        $size =~ s/\s+$//;
+        $self->size( $size );
+
+        $self->url($td->find_by_tag_name('a')->attr_get_i('href'));
+    }
+
+    return 1;
+}
+
+sub content {
+    my $self = shift;
+    return $self->connection->_fetch( $self->url );
+}
+
+
+no Moose;
+
+=head1 NAME
+
+Net::Google::Code::TicketAttachment
+
+=head1 DESCRIPTION
+
+This class represents a single attachment for a trac ticket.
+
+=head1 METHODS
+
+=head2 filename
+
+=head2 description
+
+=head2 content
+
+=head2 size
+
+=head2 url
+
+=head2 author
+
+=head2 date
+
+=cut
+
+1;
+
