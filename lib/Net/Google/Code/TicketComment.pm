@@ -89,14 +89,33 @@ sub parse {
             $value =~ s/\s+$//;
 
             if ( $key eq 'Labels' ) {
-                if ( $value =~ /([^-]+?)-(.+)/ ) {
-                    $self->updates->{labels}{$1} = $2;
-                }
-                elsif ( $value =~ /([^-]+)$/ ) {
-                    $self->updates->{labels}{$1} = undef;
-                }
-                else {
-                    warn "can't parse label from $value";
+# $value here is like "-Pri-2 -Area-Unknown Pri-3 Area-BrowserUI"
+                my @items = split /\s+/, $value;
+
+                for my $value (@items) {
+                    if ( $value =~ /^-(.+)/ ) {
+                        $value = $1;
+                        if ( $value =~ /([^-]+?)-(.+)/ ) {
+                            $self->updates->{labels}{$1}{old_value} = $2;
+                        }
+                        elsif ( $value =~ /([^-]+)$/ ) {
+                            $self->updates->{labels}{$1}{old_value} = undef;
+                        }
+                        else {
+                            warn "can't parse label from $value";
+                        }
+                    }
+                    else {
+                        if ( $value =~ /([^-]+?)-(.+)/ ) {
+                            $self->updates->{labels}{$1}{new_value} = $2;
+                        }
+                        elsif ( $value =~ /([^-]+)$/ ) {
+                            $self->updates->{labels}{$1}{new_value} = undef;
+                        }
+                        else {
+                            warn "can't parse label from $value";
+                        }
+                    }
                 }
             }
             else {
