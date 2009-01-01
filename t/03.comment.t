@@ -42,7 +42,10 @@ for my $item ( keys %info ) {
 my $updates = {
     cc     => 'thatan...@google.com',
     status => 'Available',
-    labels => { Mstone => 'X' },
+    labels => {
+        Mstone => { new_value => 'X' },
+        Pri    => { old_value => 2,     new_value => 3 },
+    },
 };
 
 is_deeply( $updates, $comment->updates, 'updates are extracted' );
@@ -88,7 +91,7 @@ __DATA__
  <div class="round2"></div>
  <div class="round1"></div>
  <div class="box-inner">
- <b>Cc:</b> thatan...@google.com<br><b>Status:</b> Available<br><b>Labels:</b> Mstone-X<br>
+ <b>Cc:</b> thatan...@google.com<br><b>Status:</b> Available<br><b>Labels:</b>-Pri-2 Mstone-X Pri-3<br>
  </div>
  <div class="round1"></div>
  <div class="round2"></div>
