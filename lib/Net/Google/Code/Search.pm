@@ -2,6 +2,7 @@ package Net::Google::Code::Search;
 use Moose;
 use Params::Validate qw(:all);
 use Net::Google::Code::Ticket;
+use Moose::Util::TypeConstraints;
 
 has connection => (
     isa => 'Net::Google::Code::Connection',
@@ -9,16 +10,20 @@ has connection => (
     required => 1,
 );
 
-#our %CAN = (
-#    'all'    => 1,
-#    'open'   => 2,
-#    'new'    => 6,
-#    'verify' => 7,
-#);
+our %CAN = (
+    'all'    => 1,
+    'open'   => 2,
+    'new'    => 6,
+    'verify' => 7,
+);
+
+subtype 'Can' => as 'Int' => where { my $v = $_; grep { $_ eq $v } values %CAN };
+subtype 'CanStr' => as 'Str' => where { $CAN{$_} };
+coerce 'Can' => from 'CanStr' => via { $CAN{$_} };
 
 has '_can' => (
     is  => 'rw',
-    isa => 'Int',
+    isa => 'Can',
     default => 2,
 );
 
