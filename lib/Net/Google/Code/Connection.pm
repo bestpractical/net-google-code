@@ -1,6 +1,5 @@
 package Net::Google::Code::Connection;
 use Moose;
-use IO::Scalar;
 use Params::Validate;
 use Net::Google::Code::Mechanize;
 
