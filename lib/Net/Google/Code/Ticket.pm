@@ -40,15 +40,20 @@ for my $prop (@PROPS) {
     *{ "Net::Google::Code::Ticket::" . $prop } = sub { shift->state->{$prop} };
 }
 
-=head2 load
-
-=cut
-
 sub load {
     my $self = shift;
     my ($id) = validate_pos( @_, { type => SCALAR } );
     $self->state->{id} = $id;
     my $content = $self->connection->_fetch( "/issues/detail?id=" . $id );
+    $self->parse( $content );
+    return $id;
+}
+
+
+sub parse {
+    my $self = shift;
+    my $content = shift;
+
     require HTML::TreeBuilder;
     my $tree    = HTML::TreeBuilder->new;
     $tree->parse_content($content);
@@ -139,7 +144,6 @@ sub load {
         push @{$self->comments}, $object;
     }
 
-    return $id;
 }
 
 no Moose;
@@ -156,6 +160,10 @@ Net::Google::Code::Ticket -
 =head1 DESCRIPTION
 
 =head1 INTERFACE
+
+=head2 load
+
+=head2 parse
 
 =head2 id
 
