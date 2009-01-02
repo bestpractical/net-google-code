@@ -50,23 +50,63 @@ sub search {
       . 'when search'
       unless $mech->response->is_success;
 
-    my $content = $mech->content;
+    my $content = $mech->response->content;
 
+            open my $fh, '>', '/tmp/t';
+            print $fh $content;
+            close $fh;
     if ( $mech->title =~ /Issue\s+(\d+)/ ) {
 # only get one ticket
         @{$self->ids} = $1;
     }
     elsif ( $mech->title =~ /Issues/ ) {
 # get a ticket list
-# XXX TODO parse the list
+        $self->ids([]); # clean previous ids
+
+        require HTML::TreeBuilder;
+        my $tree = HTML::TreeBuilder->new;
+        $tree->parse_content($content);
+        my $pagination = $tree->look_down( class => 'pagination' );
+        if ( my ( $start, $end, $total ) =
+            $pagination->content_array_ref->[0] =~
+            /(\d+)\s+-\s+(\d+)\s+of\s+(\d+)/ )
+        {
+
+            my @ids = $tree->look_down( class => 'vt id col_0' );
+            @ids =
+              map { $_->content_array_ref->[0]->content_array_ref->[0] } @ids;
+            push @{ $self->ids }, @ids;
+
+            while ( scalar @{$self->ids} < $total ) {
+                if ($mech->follow_link( text_regex => qr/Next\s+/ ) ) {
+                    if ( $mech->response->is_success ) {
+                        my $content = $mech->content;
+                        my $tree    = HTML::TreeBuilder->new;
+                        $tree->parse_content($content);
+                        my @ids = $tree->look_down( class => 'vt id col_0' );
+                        @ids =
+                          map {
+                            $_->content_array_ref->[0]->content_array_ref->[0]
+                          } @ids;
+                        push @{ $self->ids }, @ids;
+                    }
+                    else {
+                        die "failed to follow link: Next";
+                    }
+                }
+                else {
+                # XXX sometimes google's result number is wrong. google--
+                    warn "didn't find enough tickets, sometimes it's google's fault instead of ours ;)";
+                    last;
+                }
+            }
+        }
 
     }
     else {
         warn "no idea what the content like";
     }
-        
 }
-
 
 no Moose;
 
