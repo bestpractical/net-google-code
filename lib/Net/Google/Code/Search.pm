@@ -28,6 +28,12 @@ has '_q' => (
     default => '',
 );
 
+has 'ids' => (
+    isa     => 'ArrayRef[Int]',
+    is      => 'rw',
+    default => sub { [] },
+);
+
 sub search {
     my $self = shift;
     my $mech = $self->connection->mech;
@@ -46,12 +52,9 @@ sub search {
 
     my $content = $mech->content;
 
-    if ( $mech->title =~ /Issue\s+\d+/ ) {
+    if ( $mech->title =~ /Issue\s+(\d+)/ ) {
 # only get one ticket
-        my $ticket =
-          Net::Google::Search::Ticket->new( connection => $self->connection );
-        $ticket->parse($content);
-        push @{$self->tickets}, $ticket;
+        @{$self->ids} = $1;
     }
     elsif ( $mech->title =~ /Issues/ ) {
 # get a ticket list
@@ -61,6 +64,7 @@ sub search {
     else {
         warn "no idea what the content like";
     }
+        
 }
 
 
