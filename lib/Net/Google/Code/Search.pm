@@ -57,9 +57,6 @@ sub search {
 
     my $content = $mech->response->content;
 
-            open my $fh, '>', '/tmp/t';
-            print $fh $content;
-            close $fh;
     if ( $mech->title =~ /Issue\s+(\d+)/ ) {
 # only get one ticket
         @{$self->ids} = $1;
