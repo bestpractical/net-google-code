@@ -30,7 +30,18 @@ This document describes Net::Google::Code version 0.0.1
 
 =head1 SYNOPSIS
 
-    use Net::Google::Code;
+    use Net::Google::Code::Connection;
+    my $connection = Net::Google::Code::Connection( project => 'foo' );
+
+    use Net::Google::Code::Ticket;
+    my $ticket = Net::Google::Code::Ticket->new( connection => $connection );
+    $ticket->load( 42 );
+
+    use Net::Google::Code::Search;
+    my $search = Net::Google::Code::Search->new( connection => $connection );
+    $search->search( _can => 'all', _q => 'foo bar' );
+    my @ids = $search->ids();
+
 
 =head1 DESCRIPTION
 
@@ -42,8 +53,7 @@ This document describes Net::Google::Code version 0.0.1
 =head1 DEPENDENCIES
 
 
-None.
-
+L<Moose>, L<HTML::TreeBuilder>, L<WWW::Mechanize>, L<Params::Validate>
 
 =head1 INCOMPATIBILITIES
 
@@ -53,6 +63,9 @@ None reported.
 =head1 BUGS AND LIMITATIONS
 
 No bugs have been reported.
+
+This project is very very young, api maybe changed, so don't use this in
+production, at least for now.
 
 =head1 AUTHOR
 

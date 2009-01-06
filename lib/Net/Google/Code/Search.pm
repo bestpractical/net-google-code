@@ -17,7 +17,10 @@ our %CAN = (
     'verify' => 7,
 );
 
-subtype 'Can' => as 'Int' => where { my $v = $_; grep { $_ eq $v } values %CAN };
+subtype 'Can' => as 'Int' => where {
+    my $v = $_;
+    grep { $_ eq $v } values %CAN;
+};
 subtype 'CanStr' => as 'Str' => where { $CAN{$_} };
 coerce 'Can' => from 'CanStr' => via { $CAN{$_} };
 
@@ -126,6 +129,10 @@ Net::Google::Code::Search -
 =head1 INTERFACE
 
 =head2 search
+
+=head2 ids
+
+after search, this returns the ticket ids
 
 =head1 AUTHOR
 

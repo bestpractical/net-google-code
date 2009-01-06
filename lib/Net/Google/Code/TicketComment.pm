@@ -18,7 +18,7 @@ has attachments => (
     default => sub { [] },
 );
 
-=head2 parse_entry
+=head2 parse
 
 parse format like the following:
 
