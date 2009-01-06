@@ -14,10 +14,10 @@ lib/Net/Google/Code.pm
 lib/Net/Google/Code/Connection.pm
 lib/Net/Google/Code/Mechanize.pm
 lib/Net/Google/Code/Search.pm
-lib/Net/Google/Code/Ticket.pm
-lib/Net/Google/Code/TicketAttachment.pm
-lib/Net/Google/Code/TicketComment.pm
-lib/Net/Google/Code/TicketPropChange.pm
+lib/Net/Google/Code/Issue.pm
+lib/Net/Google/Code/IssueAttachment.pm
+lib/Net/Google/Code/IssueComment.pm
+lib/Net/Google/Code/IssuePropChange.pm
 Makefile.PL
 MANIFEST
 META.yml

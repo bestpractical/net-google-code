@@ -33,8 +33,8 @@ This document describes Net::Google::Code version 0.0.1
     use Net::Google::Code::Connection;
     my $connection = Net::Google::Code::Connection( project => 'foo' );
 
-    use Net::Google::Code::Ticket;
-    my $ticket = Net::Google::Code::Ticket->new( connection => $connection );
+    use Net::Google::Code::Issue;
+    my $ticket = Net::Google::Code::Issue->new( connection => $connection );
     $ticket->load( 42 );
 
     use Net::Google::Code::Search;

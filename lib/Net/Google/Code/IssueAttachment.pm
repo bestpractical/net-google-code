@@ -1,4 +1,4 @@
-package Net::Google::Code::TicketAttachment;
+package Net::Google::Code::IssueAttachment;
 use Moose;
 
 has connection => (
@@ -61,7 +61,7 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::TicketAttachment
+Net::Google::Code::IssueAttachment
 
 =head1 DESCRIPTION
 

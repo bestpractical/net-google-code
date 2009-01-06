@@ -21,10 +21,10 @@ $mock_connection->mock(
 );
 
 use_ok('Net::Google::Code::Connection');
-use_ok('Net::Google::Code::Ticket');
+use_ok('Net::Google::Code::Issue');
 my $connection = Net::Google::Code::Connection->new( project => 'test' );
-my $ticket = Net::Google::Code::Ticket->new( connection => $connection );
-isa_ok( $ticket, 'Net::Google::Code::Ticket', '$ticket' );
+my $ticket = Net::Google::Code::Issue->new( connection => $connection );
+isa_ok( $ticket, 'Net::Google::Code::Issue', '$ticket' );
 isa_ok( $ticket->connection, 'Net::Google::Code::Connection', '$ticket->connection' );
 $ticket->load(14);
 

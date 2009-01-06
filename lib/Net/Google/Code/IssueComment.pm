@@ -1,4 +1,4 @@
-package Net::Google::Code::TicketComment;
+package Net::Google::Code::IssueComment;
 use Moose;
 
 has connection => (
@@ -13,7 +13,7 @@ has date      => ( isa => 'Str',     is => 'rw' );
 has content   => ( isa => 'Str',     is => 'rw' );
 has sequence  => ( isa => 'Int',     is => 'rw' );
 has attachments => (
-    isa     => 'ArrayRef[Net::Google::Code::TicketAttachment]',
+    isa     => 'ArrayRef[Net::Google::Code::IssueAttachment]',
     is      => 'rw',
     default => sub { [] },
 );
@@ -131,12 +131,12 @@ sub parse {
     my $attachments = $element->look_down( class => 'attachments' );
     if ( $attachments ) {
         my @items = $attachments->find_by_tag_name( 'tr' );
-        require Net::Google::Code::TicketAttachment;
+        require Net::Google::Code::IssueAttachment;
         while ( scalar @items ) {
             my $tr1 = shift @items;
             my $tr2 = shift @items;
             my $a =
-              Net::Google::Code::TicketAttachment->new(
+              Net::Google::Code::IssueAttachment->new(
                 connection => $self->connection );
 
             if ( $a->parse( $tr1, $tr2 ) ) {
@@ -155,7 +155,7 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::TicketComment - 
+Net::Google::Code::IssueComment - 
 
 =head1 DESCRIPTION
 

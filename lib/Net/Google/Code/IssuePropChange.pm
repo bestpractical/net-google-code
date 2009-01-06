@@ -1,4 +1,4 @@
-package Net::Google::Code::TicketPropChange;
+package Net::Google::Code::IssuePropChange;
 use Moose;
 
 has property  => ( isa => 'Str', is => 'rw' );
@@ -12,7 +12,7 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::TicketPropChange - 
+Net::Google::Code::IssuePropChange - 
 
 =head1 DESCRIPTION
 

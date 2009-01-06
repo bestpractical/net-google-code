@@ -5,13 +5,13 @@ use Test::More tests => 7;
 
 
 
-use_ok( 'Net::Google::Code::TicketAttachment' );
+use_ok( 'Net::Google::Code::IssueAttachment' );
 use_ok( 'Net::Google::Code::Connection' );
 my $connection = Net::Google::Code::Connection->new( project => 'haha' );
 my $attachment =
-  Net::Google::Code::TicketAttachment->new( connection => $connection );
+  Net::Google::Code::IssueAttachment->new( connection => $connection );
 
-isa_ok( $attachment, 'Net::Google::Code::TicketAttachment', '$attachment' );
+isa_ok( $attachment, 'Net::Google::Code::IssueAttachment', '$attachment' );
 
 
 my $content;

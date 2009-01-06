@@ -3,12 +3,12 @@ use warnings;
 
 use Test::More tests => 11;
 
-use_ok( 'Net::Google::Code::TicketComment' );
+use_ok( 'Net::Google::Code::IssueComment' );
 use_ok( 'Net::Google::Code::Connection' );
 my $connection = Net::Google::Code::Connection->new( project => 'haha' );
 my $comment =
-  Net::Google::Code::TicketComment->new( connection => $connection );
-isa_ok( $comment, 'Net::Google::Code::TicketComment', '$comment' );
+  Net::Google::Code::IssueComment->new( connection => $connection );
+isa_ok( $comment, 'Net::Google::Code::IssueComment', '$comment' );
 
 my $content;
 {

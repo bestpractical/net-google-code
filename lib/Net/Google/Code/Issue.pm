@@ -1,7 +1,7 @@
-package Net::Google::Code::Ticket;
+package Net::Google::Code::Issue;
 use Moose;
 use Params::Validate qw(:all);
-use Net::Google::Code::TicketComment;
+use Net::Google::Code::IssueComment;
 
 has connection => (
     isa => 'Net::Google::Code::Connection',
@@ -37,7 +37,7 @@ our @PROPS = qw(id status owner closed cc summary reporter description);
 
 for my $prop (@PROPS) {
     no strict 'refs'; ## no critic
-    *{ "Net::Google::Code::Ticket::" . $prop } = sub { shift->state->{$prop} };
+    *{ "Net::Google::Code::Issue::" . $prop } = sub { shift->state->{$prop} };
 }
 
 sub load {
@@ -77,12 +77,12 @@ sub parse {
     my $attachments = $description->look_down(class => 'attachments');
     if ( $attachments ) {
         my @items = $attachments->find_by_tag_name( 'tr' );
-        require Net::Google::Code::TicketAttachment;
+        require Net::Google::Code::IssueAttachment;
         while ( scalar @items ) {
             my $tr1 = shift @items;
             my $tr2 = shift @items;
             my $a =
-              Net::Google::Code::TicketAttachment->new(
+              Net::Google::Code::IssueAttachment->new(
                 connection => $self->connection );
 
             if ( $a->parse( $tr1, $tr2 ) ) {
@@ -138,7 +138,7 @@ sub parse {
     pop @comments;    # last one is for adding comment
     for my $comment (@comments) {
         my $object =
-          Net::Google::Code::TicketComment->new(
+          Net::Google::Code::IssueComment->new(
             connection => $self->connection );
         $object->parse($comment);
         push @{$self->comments}, $object;
@@ -154,7 +154,7 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::Ticket - 
+Net::Google::Code::Issue - 
 
 
 =head1 DESCRIPTION
