@@ -20,12 +20,12 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code - 
+Net::Google::Code - a simple client library for google code
 
 
 =head1 VERSION
 
-This document describes Net::Google::Code version 0.0.1
+This document describes Net::Google::Code version 0.01
 
 
 =head1 SYNOPSIS
@@ -37,21 +37,20 @@ This document describes Net::Google::Code version 0.0.1
     my $ticket = Net::Google::Code::Issue->new( connection => $connection );
     $ticket->load( 42 );
 
-    use Net::Google::Code::Search;
-    my $search = Net::Google::Code::Search->new( connection => $connection );
+    use Net::Google::Code::IssueSearch;
+    my $search = Net::Google::Code::IssueSearch->new( connection => $connection );
     $search->search( _can => 'all', _q => 'foo bar' );
     my @ids = $search->ids();
 
 
 =head1 DESCRIPTION
 
+Net::Google::Code is a simple client library for projects hosted in Google Code.
 
-=head1 INTERFACE
-
-
+Currently, it focuses on the issue tracker, and the basic read functionality
+for that is provided.
 
 =head1 DEPENDENCIES
-
 
 L<Moose>, L<HTML::TreeBuilder>, L<WWW::Mechanize>, L<Params::Validate>
 
@@ -64,7 +63,7 @@ None reported.
 
 No bugs have been reported.
 
-This project is very very young, api maybe changed, so don't use this in
+This project is very very young, and api is not stable yet, so don't use this in
 production, at least for now.
 
 =head1 AUTHOR
