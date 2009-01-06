@@ -22,13 +22,13 @@ has labels => (
 );
 
 has comments => (
-    isa => 'ArrayRef',
+    isa => 'ArrayRef[Net::Google::Code::Comment]',
     is => 'rw',
     default => sub { [] },
 );
 
 has attachments => (
-    isa     => 'ArrayRef',
+    isa     => 'ArrayRef[Net::Google::CodeTicketAttachment]',
     is      => 'rw',
     default => sub { [] },
 );

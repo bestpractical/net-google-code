@@ -12,7 +12,11 @@ has author    => ( isa => 'Str',     is => 'rw' );
 has date      => ( isa => 'Str',     is => 'rw' );
 has content   => ( isa => 'Str',     is => 'rw' );
 has sequence  => ( isa => 'Int',     is => 'rw' );
-has attachments => ( isa => 'ArrayRef', is => 'rw', default => sub { [] } );
+has attachments => (
+    isa     => 'ArrayRef[Net::Google::Code::TicketAttachment]',
+    is      => 'rw',
+    default => sub { [] },
+);
 
 =head2 parse_entry
 
