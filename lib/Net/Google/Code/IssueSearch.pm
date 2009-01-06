@@ -1,4 +1,4 @@
-package Net::Google::Code::Search;
+package Net::Google::Code::IssueSearch;
 use Moose;
 use Params::Validate qw(:all);
 use Net::Google::Code::Issue;
@@ -121,7 +121,7 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::Search - 
+Net::Google::Code::IssueSearch - 
 
 
 =head1 DESCRIPTION
