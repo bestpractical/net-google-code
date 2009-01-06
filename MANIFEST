@@ -13,7 +13,9 @@ inc/Module/Install/WriteAll.pm
 lib/Net/Google/Code.pm
 lib/Net/Google/Code/Connection.pm
 lib/Net/Google/Code/Mechanize.pm
+lib/Net/Google/Code/Search.pm
 lib/Net/Google/Code/Ticket.pm
+lib/Net/Google/Code/TicketAttachment.pm
 lib/Net/Google/Code/TicketComment.pm
 lib/Net/Google/Code/TicketPropChange.pm
 Makefile.PL
@@ -21,6 +23,10 @@ MANIFEST
 META.yml
 README
 t/00.load.t
+t/01.connection.t
+t/02.ticket.t
+t/03.comment.t
+t/04.attachment.t
 t/kwalitee.t
 t/perlcritic.t
 t/pod-coverage.t
