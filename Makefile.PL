@@ -6,6 +6,7 @@ author   'sunnavy <sunnavy@bestpractical.com>';
 license  'perl';
 
 build_requires 'Test::More';
+build_requires 'Test::MockModule';
 requires 'Moose';
 requires 'WWW::Mechanize';
 requires 'HTML::TreeBuilder';
