@@ -1,7 +1,6 @@
 package Net::Google::Code::IssueSearch;
 use Moose;
 use Params::Validate qw(:all);
-use Net::Google::Code::Issue;
 use Moose::Util::TypeConstraints;
 
 has connection => (
