@@ -11,6 +11,7 @@ requires 'Moose';
 requires 'WWW::Mechanize';
 requires 'HTML::TreeBuilder';
 requires 'Params::Validate';
+requires 'XML::Atom';
 
 auto_install;
 
