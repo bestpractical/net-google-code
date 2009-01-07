@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 10;
+use Test::More tests => 15;
 use Test::MockModule;
 use FindBin qw/$Bin/;
 
@@ -49,6 +49,11 @@ is $entries[0]->{size}, '37.4 KB';
 is $entries[0]->{link}, 'http://code.google.com/p/net-google-code/downloads/detail?name=Net-Google-Code-0.01.tar.gz';
 
 my $entry = $downloads->entry( 'Net-Google-Code-0.01.tar.gz' );
+is $entry->{uploader}, 'sunnavy';
 is $entry->{upload_time}, 'Tue Jan  6 00:16:06 2009';
+is $entry->{download_count}, 6;
+is $entry->{download_url}, 'http://net-google-code.googlecode.com/files/Net-Google-Code-0.01.tar.gz';
+is $entry->{file_size}, '37.4 KB';
+is $entry->{file_SHA1}, '5073de2276f916cf5d74d7abfd78a463e15674a1';
 
 1;
