@@ -53,7 +53,16 @@ sub entry {
 	my $url = "http://code.google.com/p/$project/downloads/detail?name=$filename";
 	my $content = $connection->_fetch( $url );
 	
-	
+	require HTML::TreeBuilder;
+    my $tree = HTML::TreeBuilder->new;
+    $tree->parse_content($content);
+    $tree->elementify;
+    
+    my ($upload_time) = $tree->look_down(class => 'date')->attr('title');
+
+    return {
+    	upload_time => $upload_time,
+    };
 }
 
 no Moose;
@@ -86,6 +95,12 @@ get Downloads details from Google Code Project
 =head2 all_entries
 
 Get all download entries from the Atom feed
+
+=head2 entry
+
+    $download->entry( $entries[0]->{filename} ); # 'Net-Google-Code-0.01.tar.gz'
+
+get an entry details
 
 =head1 AUTHOR
 

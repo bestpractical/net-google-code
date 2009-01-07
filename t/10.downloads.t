@@ -3,11 +3,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 9;
+use Test::More tests => 10;
 use Test::MockModule;
 use FindBin qw/$Bin/;
-
-# http://code.google.com/feeds/p/net-google-code/downloads/basic
 
 my $feed_file = "$Bin/sample/10.download.xml";
 my $down_file = "$Bin/sample/10.download.html";
@@ -30,7 +28,7 @@ $mock_connection->mock(
     	( undef, my $uri ) = @_;
     	if ( $uri eq 'http://code.google.com/feeds/p/net-google-code/downloads/basic' ) {
     		return $feed_content;
-    	} elsif ( $uri eq 'http://code.google.com/p/net-google-code/downloads/detail?name=Net-Google-Code-0.01.tar.gz#makechanges' ) {
+    	} elsif ( $uri eq 'http://code.google.com/p/net-google-code/downloads/detail?name=Net-Google-Code-0.01.tar.gz' ) {
     		return $download_content;
     	}
     }
@@ -41,7 +39,7 @@ use_ok('Net::Google::Code::Downloads');
 my $connection = Net::Google::Code::Connection->new( project => 'net-google-code' );
 my $downloads = Net::Google::Code::Downloads->new( connection => $connection );
 isa_ok( $downloads, 'Net::Google::Code::Downloads' );
-isa_ok( $downloads->connection, 'Net::Google::Code::Connection', '$ticket->connection' );
+isa_ok( $downloads->connection, 'Net::Google::Code::Connection' );
 
 my @entries = $downloads->all_entries;
 is( scalar @entries, 1 );
@@ -51,6 +49,6 @@ is $entries[0]->{size}, '37.4 KB';
 is $entries[0]->{link}, 'http://code.google.com/p/net-google-code/downloads/detail?name=Net-Google-Code-0.01.tar.gz';
 
 my $entry = $downloads->entry( 'Net-Google-Code-0.01.tar.gz' );
-
+is $entry->{upload_time}, 'Tue Jan  6 00:16:06 2009';
 
 1;
