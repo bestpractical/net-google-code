@@ -16,7 +16,7 @@ sub all_entries {
 	
 	my $connection = $self->connection;
 	my $project    = $connection->project;
-	my $feed_url   = "http://code.google.com//feeds/p/$project/downloads/basic";
+	my $feed_url   = "http://code.google.com/feeds/p/$project/downloads/basic";
 	
 	my $content = $connection->_fetch( $feed_url );
 	my $feed = XML::Atom::Feed->new( \$content );
@@ -38,6 +38,22 @@ sub all_entries {
 	}
 	
 	return wantarray ? @dentries : \@dentries;
+}
+
+sub entry {
+	my $self = shift;
+	
+	my ($filename) = validate_pos( @_, { type => SCALAR } );
+	
+	# http://code.google.com/p/net-google-code/downloads/detail?name=Net-Google-Code-0.01.tar.gz
+	
+	my $connection = $self->connection;
+	my $project    = $connection->project;
+	
+	my $url = "http://code.google.com/p/$project/downloads/detail?name=$filename";
+	my $content = $connection->_fetch( $url );
+	
+	
 }
 
 no Moose;
