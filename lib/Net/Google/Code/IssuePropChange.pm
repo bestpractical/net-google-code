@@ -6,6 +6,7 @@ has old_value => ( isa => 'Str', is => 'rw' );
 has new_value => ( isa => 'Str', is => 'rw' );
 
 no Moose;
+__PACKAGE__->meta->make_immutable;
 1;
 
 __END__

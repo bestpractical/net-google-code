@@ -54,6 +54,7 @@ sub _die_on_error {
 }
 
 no Moose;
+__PACKAGE__->meta->make_immutable;
 
 1;
 
