@@ -21,7 +21,12 @@ has mech => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        my $m    = Net::Google::Code::Mechanize->new();
+        my $m    = Net::Google::Code::Mechanize->new(
+			agent       => 'Net-Google-Code',
+            cookie_jar  => {},
+            stack_depth => 1,
+            timeout     => 60,
+        );
         return $m;
     }
 );
