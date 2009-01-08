@@ -3,6 +3,8 @@ package Net::Google::Code::Wiki;
 use Moose;
 use Params::Validate qw(:all);
 
+use Net::Google::Code::WikiEntry;
+
 our $VERSION = '0.02';
 our $AUTHORITY = 'cpan:FAYLAND';
 
@@ -26,12 +28,20 @@ sub all_entries {
 	my @entries;
 	foreach my $line (@lines ) {
 		# <li><a href="AUTHORS.wiki">AUTHORS.wiki</a></li>
-		if ( $line =~ /href\="(.*?)\.wiki\"\>\1\.wiki/ ) {
+		if ( $line =~ /href\=\"(.*?)\.wiki\"\>\1\.wiki/ ) {
 			push @entries, $1;
 		}
 	}
 	
 	return wantarray ? @entries : \@entries;
+}
+
+sub entry {
+    my $self = shift;
+    
+    my ($wiki_item) = validate_pos( @_, { type => SCALAR } );
+    
+    return Net::Google::Code::WikiEntry->new( connection => $self->connection, name => $wiki_item );
 }
 
 no Moose;
@@ -52,6 +62,8 @@ Net::Google::Code::Wiki - Google Code Wiki
     use Net::Google::Code::Wiki;
     my $wiki = Net::Google::Code::Wiki->new( connection => $connection );
     
+    my @entries = $wiki->all_entries;
+    
 =head1 DESCRIPTION
 
 get Wiki details from Google Code Project
@@ -59,6 +71,12 @@ get Wiki details from Google Code Project
 =head1 METHODS
 
 =head2 all_entries
+
+get all entries from wiki svn
+
+=head2 entry
+
+return a instance of L<Net::Google::Code::WikiEntry>
 
 =head1 AUTHOR
 
