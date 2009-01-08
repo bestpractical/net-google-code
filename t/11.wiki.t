@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 10;
+use Test::More tests => 12;
 use Test::MockModule;
 use FindBin qw/$Bin/;
 use File::Slurp;
@@ -48,6 +48,8 @@ my $entry = $wiki->entry('TODO');
 isa_ok( $entry, 'Net::Google::Code::WikiEntry' );
 is $entry->source, 'Please check [http://code.google.com/p/foorum/issues/list] for more issues.';
 like $entry->html, qr/Add your content here/;
+is $entry->updated_time, 'Wed Jan  7 22:32:44 2009';
+is $entry->updated_by, 'fayland';
 
 1;
 

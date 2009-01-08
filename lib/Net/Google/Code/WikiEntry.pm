@@ -82,6 +82,33 @@ has 'html' => (
     },
 );
 
+has 'updated_time' => (
+    isa => 'Str',
+    is  => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        
+        my $tree = $self->__html_tree;
+        return $tree->look_down(id => 'wikimaincol')->find_by_tag_name('td')
+	    ->find_by_tag_name('span')->attr('title');
+    },
+);
+has 'updated_by' => (
+    isa => 'Str',
+    is  => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        
+        my $tree = $self->__html_tree;
+        my $href = $tree->look_down(id => 'wikimaincol')->find_by_tag_name('td')
+	    ->find_by_tag_name('a')->attr('href');
+        my ( $author ) = ( $href =~ /u\/(.*?)\// );
+        return $author;
+    },
+);
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
@@ -113,6 +140,14 @@ wiki source code
 =head2 html
 
 html code of this wiki entry
+
+=head2 updated_time
+
+last updated time of this wiki entry
+
+=head2 updated_by
+
+last updator of this wiki entry
 
 =head1 AUTHOR
 
