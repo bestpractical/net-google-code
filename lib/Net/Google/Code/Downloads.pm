@@ -2,7 +2,6 @@ package Net::Google::Code::Downloads;
 
 use Moose;
 use XML::Atom::Feed;
-use URI;
 use Params::Validate qw(:all);
 
 our $VERSION = '0.02';
