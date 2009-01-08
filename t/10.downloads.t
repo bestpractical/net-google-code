@@ -6,17 +6,10 @@ use warnings;
 use Test::More tests => 15;
 use Test::MockModule;
 use FindBin qw/$Bin/;
+use File::Slurp;
 
 my $feed_file = "$Bin/sample/10.download.xml";
 my $down_file = "$Bin/sample/10.download.html";
-
-sub read_file {
-	open(my $fh, '<', shift) or die $!;
-	local $/;
-	my $t = <$fh>;
-	close($fh);
-	return $t;
-}
 
 my $feed_content = read_file($feed_file);
 my $download_content = read_file($down_file);

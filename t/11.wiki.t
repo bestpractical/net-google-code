@@ -6,18 +6,10 @@ use warnings;
 use Test::More tests => 9;
 use Test::MockModule;
 use FindBin qw/$Bin/;
+use File::Slurp;
 
 my $svn_file  = "$Bin/sample/11.wiki.html";
 my $wiki_file = "$Bin/sample/11.TODO.wiki";
-
-sub read_file {
-	open(my $fh, '<', shift) or die $!;
-	local $/;
-	my $t = <$fh>;
-	close($fh);
-	return $t;
-}
-
 my $svn_content  = read_file($svn_file);
 my $wiki_content = read_file($wiki_file);
 
@@ -53,3 +45,4 @@ isa_ok( $entry, 'Net::Google::Code::WikiEntry' );
 is $entry->source, 'Please check [http://code.google.com/p/foorum/issues/list] for more issues.';
 
 1;
+
