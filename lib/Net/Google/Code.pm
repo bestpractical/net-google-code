@@ -5,12 +5,58 @@ use strict;
 use Moose;
 
 our $VERSION = '0.01';
+use Net::Google::Code::Connection;
 
 has 'project' => (
     isa      => 'Str',
+    is       => 'ro',
     required => 1,
 );
 
+has 'connection' => (
+    isa  => 'Net::Google::Code::Connection',
+    is   => 'ro',
+    lazy => 1,
+    default =>
+      sub { Net::Google::Code::Connection->new( project => $_[0]->project ) },
+);
+
+has 'url' => (
+    isa     => 'Str',
+    is      => 'ro',
+    lazy    => 1,
+    default => sub { $_[0]->connection->base_url . $_[0]->project . '/' },
+);
+
+has 'issue' => (
+    isa     => 'Net::Google::Code::Issue',
+    is      => 'rw',
+    lazy    => 1,
+    default => sub {
+        require Net::Google::Code::Issue;
+        Net::Google::Code::Issue->new( connection => $_[0]->connection );
+    }
+);
+
+has 'downloads' => (
+    isa     => 'Net::Google::Code::Downloads',
+    is      => 'rw',
+    lazy    => 1,
+    default => sub {
+        require Net::Google::Code::Downloads;
+        Net::Google::Code::Downloads->new( connection => $_[0]->connection );
+    }
+);
+
+has 'wiki' => (
+    isa     => 'Net::Google::Code::Wiki',
+    is      => 'rw',
+    lazy    => 1,
+    default => sub {
+        require Net::Google::Code::Wiki;
+        Net::Google::Code::Wiki->new( connection => $_[0]->connection );
+    }
+);
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
@@ -31,18 +77,11 @@ This document describes Net::Google::Code version 0.01
 
 =head1 SYNOPSIS
 
-    use Net::Google::Code::Connection;
-    my $connection = Net::Google::Code::Connection( project => 'foo' );
-
-    use Net::Google::Code::Issue;
-    my $ticket = Net::Google::Code::Issue->new( connection => $connection );
-    $ticket->load( 42 );
-
-    use Net::Google::Code::IssueSearch;
-    my $search = Net::Google::Code::IssueSearch->new( connection => $connection );
-    $search->search( _can => 'all', _q => 'foo bar' );
-    my @ids = $search->ids();
-
+    use Net::Google::Code;
+    my $project = Net::Google::Code->new( project => 'net-google-code' );
+    $project->issue;
+    $project->downloads;
+    $project->wiki;
 
 =head1 DESCRIPTION
 
