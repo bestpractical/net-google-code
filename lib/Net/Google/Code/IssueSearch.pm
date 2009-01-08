@@ -45,8 +45,8 @@ sub search {
     my $self = shift;
     if ( scalar @_ ) {
         my %args = @_;
-        $self->_can( $args{_can} ) if $defined $args{_can};
-        $self->_q( $args{_q} ) if $defined $args{_q};
+        $self->_can( $args{_can} ) if defined $args{_can};
+        $self->_q( $args{_q} ) if defined $args{_q};
     }
 
     my $mech = $self->connection->mech;
