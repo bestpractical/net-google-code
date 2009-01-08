@@ -5,8 +5,9 @@ all_from 'lib/Net/Google/Code.pm';
 author   'sunnavy <sunnavy@bestpractical.com>';
 license  'perl';
 
-build_requires 'Test::More';
-build_requires 'Test::MockModule';
+test_requires 'Test::More';
+test_requires 'Test::MockModule';
+test_requires 'File::Slurp';
 requires 'Moose';
 requires 'WWW::Mechanize';
 requires 'HTML::TreeBuilder';
