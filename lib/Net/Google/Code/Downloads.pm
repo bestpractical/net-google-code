@@ -5,6 +5,9 @@ use XML::Atom::Feed;
 use URI;
 use Params::Validate qw(:all);
 
+our $VERSION = '0.02';
+our $AUTHORITY = 'cpan:FAYLAND';
+
 has connection => (
     isa => 'Net::Google::Code::Connection',
     is  => 'ro',
@@ -61,7 +64,7 @@ sub entry {
     my $entry;
     ($entry->{upload_time}) = $tree->look_down(class => 'date')->attr('title');
     
-    # uploader
+    # uploader, download count etc.
     my ($meta) = $tree->look_down( id => 'issuemeta' );
     my @meta = $meta->find_by_tag_name('tr');
     for my $meta (@meta) {
@@ -127,7 +130,10 @@ Net::Google::Code::Downloads - Google Code Downloads
     my $download = Net::Google::Code::Downloads->new( connection => $connection );
     
     my @entries = $download->all_entries;
-
+    foreach my $e ( @entries ) {
+        my $entry = $download->entry( $e->{filename} );
+        print Dumper(\$entry);
+    }
 
 =head1 DESCRIPTION
 
@@ -141,9 +147,18 @@ Get all download entries from the Atom feed
 
 =head2 entry
 
-    $download->entry( $entries[0]->{filename} ); # 'Net-Google-Code-0.01.tar.gz'
+    my $entry = $download->entry( $entries[0]->{filename} ); # 'Net-Google-Code-0.01.tar.gz'
 
-get an entry details
+get an entry details, sample $entry:
+
+    {
+        'uploader' => 'sunnavy',
+        'file_size' => '37.4 KB',
+        'download_url' => 'http://net-google-code.googlecode.com/files/Net-Google-Code-0.01.tr.gz',
+        'file_SHA1' => '5073de2276f916cf5d74d7abfd78a463e15674a1',
+        'upload_time' => 'Tue Jan  6 00:16:06 2009',
+        'download_count' => '6'
+    };
 
 =head1 AUTHOR
 
