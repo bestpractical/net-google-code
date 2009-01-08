@@ -58,11 +58,54 @@ sub entry {
     $tree->parse_content($content);
     $tree->elementify;
     
-    my ($upload_time) = $tree->look_down(class => 'date')->attr('title');
+    my $entry;
+    ($entry->{upload_time}) = $tree->look_down(class => 'date')->attr('title');
+    
+    # uploader
+    my ($meta) = $tree->look_down( id => 'issuemeta' );
+    my @meta = $meta->find_by_tag_name('tr');
+    for my $meta (@meta) {
 
-    return {
-    	upload_time => $upload_time,
-    };
+        my ( $key, $value );
+        if ( my $k = $meta->find_by_tag_name('th') ) {
+            my $v         = $meta->find_by_tag_name('td');
+            my $k_content = $k->content_array_ref->[0];
+            while ( ref $k_content ) {
+                $k_content = $k_content->content_array_ref->[0];
+            }
+            $key = $k_content;    # $key is like 'Status:#'
+            
+            if ($v) {
+                my $v_content = $v->content_array_ref->[0];
+                while ( ref $v_content ) {
+                    $v_content = $v_content->content_array_ref->[0];
+                }
+                $value = $v_content;
+                $value =~ s/^\s+//;
+                $value =~ s/\s+$//;
+            }
+        }
+        
+        if ( $key =~ /Upload/ and $key =~ /by/ ) {
+        	$entry->{uploader} = $value;
+        } elsif ( $key =~ /Downloads/ ) {
+        	$entry->{download_count} = $value;
+        }
+    }
+    
+    # file size etc.
+    ($meta) = $tree->look_down( class => 'vt issuedescription' );
+    my $meta2 = $meta->find_by_attribute('class', 'box-inner');
+    my $meta3 = $meta->find_by_tag_name('span');
+    $entry->{download_url} = $meta2->content_array_ref->[0]->attr('href');
+    my $file_size = $meta2->content_array_ref->[3];
+    $file_size =~ s/(^\s+\D*|\s+$)//g;
+    $entry->{file_size} = $file_size;
+    my $file_SHA1_text = $meta3->content_array_ref->[0];
+    my ( $file_SHA1 ) = ( $file_SHA1_text =~ /^SHA1 Checksum:\s+(\S+)$/ );
+    $entry->{file_SHA1} = $file_SHA1;
+
+    return $entry;
 }
 
 no Moose;
