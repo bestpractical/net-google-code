@@ -43,6 +43,12 @@ has 'ids' => (
 
 sub search {
     my $self = shift;
+    if ( scalar @_ ) {
+        my %args = @_;
+        $self->_can( $args{_can} ) if $defined $args{_can};
+        $self->_q( $args{_q} ) if $defined $args{_q};
+    }
+
     my $mech = $self->connection->mech;
     $self->connection->_fetch('/issues/list');
     $mech->submit_form(
@@ -62,6 +68,7 @@ sub search {
     if ( $mech->title =~ /Issue\s+(\d+)/ ) {
 # only get one ticket
         @{$self->ids} = $1;
+        return 1;
     }
     elsif ( $mech->title =~ /Issues/ ) {
 # get a ticket list
@@ -105,10 +112,11 @@ sub search {
                 }
             }
         }
-
+        return 1;
     }
     else {
         warn "no idea what the content like";
+        return
     }
 }
 
@@ -127,11 +135,18 @@ Net::Google::Code::IssueSearch -
 
 =head1 INTERFACE
 
-=head2 search
+=head2 search ( _can => 'all', _q = 'foo' )
+
+search with values $self->_can and $self->_q if without arguments.
+if there're arguments for _can or _q, this call will set $self->_can or
+$self_q, then do the search.
+
+return true if search is successful, false on the other hand.
+
 
 =head2 ids
-
-after search, this returns the ticket ids
+this should be called after a successful search.
+returns issue ids as a arrayref.
 
 =head1 AUTHOR
 
