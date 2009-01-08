@@ -32,6 +32,56 @@ has 'source' => (
     }
 );
 
+has '__html' => (
+    isa => 'Str',
+    is  => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        
+        my $name       = $self->name;
+        my $connection = $self->connection;
+        my $project    = $connection->project;
+        
+        # http://code.google.com/p/net-google-code/wiki/TestPage
+        my $wiki_url = "http://code.google.com/p/$project/wiki/$name";
+        my $content = $connection->_fetch( $wiki_url );
+        
+        return $content;
+    }
+);
+
+has '__html_tree' => (
+    is  => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        
+        my $html = $self->__html;
+        
+        require HTML::TreeBuilder;
+        my $tree = HTML::TreeBuilder->new;
+        $tree->parse_content($html);
+        $tree->elementify;
+        
+        return $tree;
+    },
+);
+
+has 'html' => (
+    isa => 'Str',
+    is  => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        
+        my $tree = $self->__html_tree;
+        my $meta = $tree->look_down(id => 'wikimaincol');
+
+        return $tree->content_array_ref->[-1]->as_HTML;
+    },
+);
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
@@ -59,6 +109,10 @@ get Wiki details from Google Code Project
 =head2 source
 
 wiki source code
+
+=head2 html
+
+html code of this wiki entry
 
 =head1 AUTHOR
 
