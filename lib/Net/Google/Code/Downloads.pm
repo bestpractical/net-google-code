@@ -122,11 +122,10 @@ Net::Google::Code::Downloads - Google Code Downloads
 
 =head1 SYNOPSIS
 
-    use Net::Google::Code::Connection;
-    my $connection = Net::Google::Code::Connection( project => 'net-google-code' );
-
-    use Net::Google::Code::Downloads;
-    my $download = Net::Google::Code::Downloads->new( connection => $connection );
+    use Net::Google::Code;
+    
+    my $project = Net::Google::Code->new( project => 'net-google-code' );
+    my $download = $project->downloads;
     
     my @entries = $download->all_entries;
     foreach my $e ( @entries ) {

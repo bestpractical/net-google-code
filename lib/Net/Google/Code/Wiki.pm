@@ -56,13 +56,16 @@ Net::Google::Code::Wiki - Google Code Wiki
 
 =head1 SYNOPSIS
 
-    use Net::Google::Code::Connection;
-    my $connection = Net::Google::Code::Connection( project => 'net-google-code' );
-
-    use Net::Google::Code::Wiki;
-    my $wiki = Net::Google::Code::Wiki->new( connection => $connection );
+    use Net::Google::Code;
+    
+    my $project = Net::Google::Code->new( project => 'net-google-code' );
+    my $wiki = $project->wiki;
     
     my @entries = $wiki->all_entries;
+    foreach my $item ( @entries ) {
+        my $entry = $wiki->entry($item);
+        print $entry->source, "\n";
+    }
     
 =head1 DESCRIPTION
 
@@ -72,7 +75,7 @@ get Wiki details from Google Code Project
 
 =head2 all_entries
 
-get all entries from wiki svn
+get all entries (name ONLY) from wiki svn
 
 =head2 entry
 
