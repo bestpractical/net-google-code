@@ -155,8 +155,16 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::Issue - 
+Net::Google::Code::Issue - Google Code Issue
 
+=head1 SYNOPSIS
+
+    use Net::Google::Code;
+    
+    my $project = Net::Google::Code->new( project => 'net-google-code' );
+    my $issue = $project->issue;
+    
+    $issue->load(42);
 
 =head1 DESCRIPTION
 
@@ -186,11 +194,9 @@ Net::Google::Code::Issue -
 
 sunnavy  C<< <sunnavy@bestpractical.com> >>
 
-
 =head1 LICENCE AND COPYRIGHT
 
 Copyright 2008-2009 Best Practical Solutions.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
-
