@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 
-use Test::More tests => 12;
+use Test::More tests => 10;
 use Test::MockModule;
 use FindBin qw/$Bin/;
 use File::Slurp;
+use Net::Google::Code;
 
 my $svn_file   = "$Bin/sample/11.wiki.html";
 my $wiki_file  = "$Bin/sample/11.TODO.wiki";
@@ -30,12 +31,10 @@ $mock_connection->mock(
     }
 );
 
-use_ok('Net::Google::Code::Connection');
-use_ok('Net::Google::Code::Wiki');
-my $connection = Net::Google::Code::Connection->new( project => 'foorum' );
-my $wiki = Net::Google::Code::Wiki->new( connection => $connection );
+my $project = Net::Google::Code->new( project => 'foorum' );
+my $wiki = $project->wiki;
 isa_ok( $wiki, 'Net::Google::Code::Wiki' );
-isa_ok( $wiki->connection, 'Net::Google::Code::Connection' );
+isa_ok( $wiki->parent, 'Net::Google::Code' );
 
 my @entries = $wiki->all_entries;
 is( scalar @entries, 16 );

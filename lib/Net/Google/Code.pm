@@ -46,7 +46,7 @@ has 'downloads' => (
     lazy    => 1,
     default => sub {
         require Net::Google::Code::Downloads;
-        Net::Google::Code::Downloads->new( connection => $_[0]->connection );
+        Net::Google::Code::Downloads->new( parent => $_[0] );
     }
 );
 
@@ -56,7 +56,7 @@ has 'wiki' => (
     lazy    => 1,
     default => sub {
         require Net::Google::Code::Wiki;
-        Net::Google::Code::Wiki->new( connection => $_[0]->connection );
+        Net::Google::Code::Wiki->new( parent => $_[0] );
     }
 );
 

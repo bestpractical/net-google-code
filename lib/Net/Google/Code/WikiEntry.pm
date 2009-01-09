@@ -6,8 +6,8 @@ use Params::Validate qw(:all);
 our $VERSION = '0.02';
 our $AUTHORITY = 'cpan:FAYLAND';
 
-has connection => (
-    isa => 'Net::Google::Code::Connection',
+has parent => (
+    isa => 'Net::Google::Code',
     is  => 'ro',
     required => 1,
 );
@@ -22,8 +22,8 @@ has 'source' => (
         my $self = shift;
         
         my $name       = $self->name;
-        my $connection = $self->connection;
-        my $project    = $connection->project;
+        my $connection = $self->parent->connection;
+	    my $project    = $self->parent->project;
         
         my $wiki_url = "http://$project.googlecode.com/svn/wiki/$name.wiki";
         my $content = $connection->_fetch( $wiki_url );
@@ -40,8 +40,8 @@ has '__html' => (
         my $self = shift;
         
         my $name       = $self->name;
-        my $connection = $self->connection;
-        my $project    = $connection->project;
+        my $connection = $self->parent->connection;
+	    my $project    = $self->parent->project;
         
         # http://code.google.com/p/net-google-code/wiki/TestPage
         my $wiki_url = "http://code.google.com/p/$project/wiki/$name";
@@ -121,11 +121,13 @@ Net::Google::Code::WikiEntry - Google Code Wiki Entry
 
 =head1 SYNOPSIS
 
-    use Net::Google::Code::Connection;
-    my $connection = Net::Google::Code::Connection( project => 'net-google-code' );
+    use Net::Google::Code;
+    
+    my $project = Net::Google::Code->new( project => 'net-google-code' );
+    my $wiki = $project->wiki;
 
-    use Net::Google::Code::WikiEntry;
-    my $wiki_entry = Net::Google::Code::WikiEntry->new( connection => $connection, name => 'AUTHORS' );
+    my $wiki_entry = $wiki->entry('README');
+    print $wiki_entry->source;
 
 =head1 DESCRIPTION
 

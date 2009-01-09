@@ -7,8 +7,8 @@ use Params::Validate qw(:all);
 our $VERSION = '0.02';
 our $AUTHORITY = 'cpan:FAYLAND';
 
-has connection => (
-    isa => 'Net::Google::Code::Connection',
+has parent => (
+    isa => 'Net::Google::Code',
     is  => 'ro',
     required => 1,
 );
@@ -16,8 +16,8 @@ has connection => (
 sub all_entries {
 	my $self = shift;
 	
-	my $connection = $self->connection;
-	my $project    = $connection->project;
+	my $connection = $self->parent->connection;
+	my $project    = $self->parent->project;
 	my $feed_url   = "http://code.google.com/feeds/p/$project/downloads/basic";
 	
 	my $content = $connection->_fetch( $feed_url );
@@ -49,8 +49,8 @@ sub entry {
 	
 	# http://code.google.com/p/net-google-code/downloads/detail?name=Net-Google-Code-0.01.tar.gz
 	
-	my $connection = $self->connection;
-	my $project    = $connection->project;
+	my $connection = $self->parent->connection;
+	my $project    = $self->parent->project;
 	
 	my $url = "http://code.google.com/p/$project/downloads/detail?name=$filename";
 	my $content = $connection->_fetch( $url );

@@ -8,8 +8,8 @@ use Net::Google::Code::WikiEntry;
 our $VERSION = '0.02';
 our $AUTHORITY = 'cpan:FAYLAND';
 
-has connection => (
-    isa => 'Net::Google::Code::Connection',
+has parent => (
+    isa => 'Net::Google::Code',
     is  => 'ro',
     required => 1,
 );
@@ -17,8 +17,8 @@ has connection => (
 sub all_entries {
 	my $self = shift;
 	
-	my $connection = $self->connection;
-	my $project    = $connection->project;
+	my $connection = $self->parent->connection;
+	my $project    = $self->parent->project;
 	
 	my $wiki_svn = "http://$project.googlecode.com/svn/wiki/";
 	my $content = $connection->_fetch( $wiki_svn );
@@ -41,7 +41,7 @@ sub entry {
     
     my ($wiki_item) = validate_pos( @_, { type => SCALAR } );
     
-    return Net::Google::Code::WikiEntry->new( connection => $self->connection, name => $wiki_item );
+    return Net::Google::Code::WikiEntry->new( parent => $self->parent, name => $wiki_item );
 }
 
 no Moose;

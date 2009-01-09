@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 
-use Test::More tests => 15;
+use Test::More tests => 13;
 use Test::MockModule;
 use FindBin qw/$Bin/;
 use File::Slurp;
+use Net::Google::Code;
 
 my $feed_file = "$Bin/sample/10.download.xml";
 my $down_file = "$Bin/sample/10.download.html";
@@ -27,12 +28,10 @@ $mock_connection->mock(
     }
 );
 
-use_ok('Net::Google::Code::Connection');
-use_ok('Net::Google::Code::Downloads');
-my $connection = Net::Google::Code::Connection->new( project => 'net-google-code' );
-my $downloads = Net::Google::Code::Downloads->new( connection => $connection );
+my $project = Net::Google::Code->new( project => 'net-google-code' );
+my $downloads = $project->downloads;
 isa_ok( $downloads, 'Net::Google::Code::Downloads' );
-isa_ok( $downloads->connection, 'Net::Google::Code::Connection' );
+isa_ok( $downloads->parent, 'Net::Google::Code' );
 
 my @entries = $downloads->all_entries;
 is( scalar @entries, 1 );
