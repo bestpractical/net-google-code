@@ -38,7 +38,7 @@ has 'home'  => (
         require Net::Google::Code::Home;
         Net::Google::Code::Home->new( parent => $_[0] );
     },
-    handles => [ 'owners', 'members', 'description' ],
+    handles => [ 'owners', 'members', 'description', 'labels' ],
 );
 
 has 'issue' => (
@@ -105,39 +105,51 @@ Currently, it focuses on the basic read functionality for that is provided.
 
 =head1 ATTRIBUTES
 
-=head2 url
+=over 4
+
+=item url
 
 the project homepage
 
-=head2 svn_url
+=item svn_url
 
 the project svn url (without trunk)
 
-=head2 description
+=item description
 
-HTML Description in Project Home
+HTML Description in 'Project Home'
 
-=head2 owners
+=item labels
+
+'Labels' in 'Project Home'
+
+=item owners
 
 ArrayRef. project owners
 
-=head2 members
+=item members
 
 ArrayRef. project members
 
+=back
+
 =head1 METHODS
 
-=head2 issue
+=over 4
+
+=item issue
 
 read L<Net::Google::Code::Issue> for the API detail
 
-=head2 downloads
+=item downloads
 
 read L<Net::Google::Code::Downloads> for the API detail
 
-=head2 wiki
+=item wiki
 
 read L<Net::Google::Code::Wiki> for the API detail
+
+=over
 
 =head1 DEPENDENCIES
 

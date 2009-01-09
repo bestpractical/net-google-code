@@ -87,6 +87,23 @@ has 'description' => (
     },
 );
 
+has 'labels' => (
+    isa => 'ArrayRef',
+    is  => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        
+        my $tree = $self->__html_tree;
+        my @tags = $tree->look_down( href => qr/q\=label\:/);
+        my @labels;
+        foreach my $tag ( @tags ) {
+	        push @labels, $tag->content_array_ref->[0];
+	    }
+	    return \@labels;
+    },
+);
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 

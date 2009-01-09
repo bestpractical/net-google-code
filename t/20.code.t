@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 11;
+use Test::More tests => 12;
 use Test::MockModule;
 use FindBin qw/$Bin/;
 use File::Slurp;
@@ -32,6 +32,7 @@ is( $project->project, $name, 'project name' );
 is_deeply( $project->owners, [ 'sunnavy' ] );
 is_deeply( $project->members, [ 'jessev', 'fayland' ] );
 like $project->description, qr/Net\:\:Google\:\:Code/;
+is_deeply( $project->labels, [ 'perl', 'Google' ] );
 
 isa_ok( $project->connection, 'Net::Google::Code::Connection' );
 isa_ok( $project->issue,      'Net::Google::Code::Issue' );
