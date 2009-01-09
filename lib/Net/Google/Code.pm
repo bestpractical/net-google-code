@@ -1,11 +1,9 @@
 package Net::Google::Code;
 
-use warnings;
-use strict;
 use Moose;
-
-our $VERSION = '0.01';
 use Net::Google::Code::Connection;
+
+our $VERSION = '0.02';
 
 has 'project' => (
     isa      => 'Str',
@@ -24,13 +22,17 @@ has 'connection' => (
 has 'url' => (
     isa     => 'Str',
     is      => 'ro',
-    lazy    => 1,
     default => sub { $_[0]->connection->base_url . $_[0]->project . '/' },
+);
+
+has 'svn_url' => (
+    is => 'ro', isa => 'Str',
+    default => sub { 'http://' . $_[0]->project . '.googlecode.com/svn/' },
 );
 
 has 'issue' => (
     isa     => 'Net::Google::Code::Issue',
-    is      => 'rw',
+    is      => 'ro',
     lazy    => 1,
     default => sub {
         require Net::Google::Code::Issue;
@@ -40,7 +42,7 @@ has 'issue' => (
 
 has 'downloads' => (
     isa     => 'Net::Google::Code::Downloads',
-    is      => 'rw',
+    is      => 'ro',
     lazy    => 1,
     default => sub {
         require Net::Google::Code::Downloads;
@@ -50,7 +52,7 @@ has 'downloads' => (
 
 has 'wiki' => (
     isa     => 'Net::Google::Code::Wiki',
-    is      => 'rw',
+    is      => 'ro',
     lazy    => 1,
     default => sub {
         require Net::Google::Code::Wiki;
@@ -62,18 +64,15 @@ no Moose;
 __PACKAGE__->meta->make_immutable;
 
 1;
-
 __END__
 
 =head1 NAME
 
 Net::Google::Code - a simple client library for google code
 
-
 =head1 VERSION
 
-This document describes Net::Google::Code version 0.01
-
+This document describes Net::Google::Code version 0.02
 
 =head1 SYNOPSIS
 
@@ -87,8 +86,31 @@ This document describes Net::Google::Code version 0.01
 
 Net::Google::Code is a simple client library for projects hosted in Google Code.
 
-Currently, it focuses on the issue tracker, and the basic read functionality
-for that is provided.
+Currently, it focuses on the basic read functionality for that is provided.
+
+=head1 ATTRIBUTES
+
+=head2 url
+
+the project homepage
+
+=head2 svn_url
+
+the project svn url (without trunk)
+
+=head1 METHODS
+
+=head2 issue
+
+read L<Net::Google::Code::Issue> for the API detail
+
+=head2 downloads
+
+read L<Net::Google::Code::Downloads> for the API detail
+
+=head2 wiki
+
+read L<Net::Google::Code::Wiki> for the API detail
 
 =head1 DEPENDENCIES
 
@@ -97,7 +119,6 @@ L<Moose>, L<HTML::TreeBuilder>, L<WWW::Mechanize>, L<Params::Validate>
 =head1 INCOMPATIBILITIES
 
 None reported.
-
 
 =head1 BUGS AND LIMITATIONS
 
@@ -110,6 +131,7 @@ production, at least for now.
 
 sunnavy  C<< <sunnavy@bestpractical.com> >>
 
+Fayland Lam  C<< <fayland@gmail.com> >>
 
 =head1 LICENCE AND COPYRIGHT
 
@@ -117,4 +139,3 @@ Copyright 2008-2009 Best Practical Solutions.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
-
