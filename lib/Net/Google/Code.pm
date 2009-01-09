@@ -30,6 +30,17 @@ has 'svn_url' => (
     default => sub { 'http://' . $_[0]->project . '.googlecode.com/svn/' },
 );
 
+has 'home'  => (
+    isa     => 'Net::Google::Code::Home',
+    is      => 'ro',
+    lazy    => 1,
+    default => sub {
+        require Net::Google::Code::Home;
+        Net::Google::Code::Home->new( parent => $_[0] );
+    },
+    handles => [ 'owners', 'members' ],
+);
+
 has 'issue' => (
     isa     => 'Net::Google::Code::Issue',
     is      => 'ro',
@@ -77,7 +88,9 @@ This document describes Net::Google::Code version 0.02
 =head1 SYNOPSIS
 
     use Net::Google::Code;
+    
     my $project = Net::Google::Code->new( project => 'net-google-code' );
+    
     $project->issue;
     $project->downloads;
     $project->wiki;
@@ -97,6 +110,14 @@ the project homepage
 =head2 svn_url
 
 the project svn url (without trunk)
+
+=head2 owners
+
+ArrayRef. project owners
+
+=head2 members
+
+ArrayRef. project members
 
 =head1 METHODS
 
