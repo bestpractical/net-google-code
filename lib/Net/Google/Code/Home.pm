@@ -75,6 +75,18 @@ has 'members' => (
     },
 );
 
+has 'summary' => (
+    isa => 'Str',
+    is  => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        
+        my $tree = $self->__html_tree;
+        return $tree->look_down(id => 'psum')->find_by_tag_name('a')->content_array_ref->[0];
+    },
+);
+
 has 'description' => (
     isa => 'Str',
     is  => 'ro',
