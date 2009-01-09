@@ -75,6 +75,18 @@ has 'members' => (
     },
 );
 
+has 'description' => (
+    isa => 'Str',
+    is  => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        
+        my $tree = $self->__html_tree;
+        return $tree->look_down(id => 'wikicontent')->content_array_ref->[0]->as_HTML;
+    },
+);
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 

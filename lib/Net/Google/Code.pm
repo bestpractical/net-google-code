@@ -38,7 +38,7 @@ has 'home'  => (
         require Net::Google::Code::Home;
         Net::Google::Code::Home->new( parent => $_[0] );
     },
-    handles => [ 'owners', 'members' ],
+    handles => [ 'owners', 'members', 'description' ],
 );
 
 has 'issue' => (
@@ -112,6 +112,10 @@ the project homepage
 =head2 svn_url
 
 the project svn url (without trunk)
+
+=head2 description
+
+HTML Description in Project Home
 
 =head2 owners
 
