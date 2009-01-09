@@ -91,6 +91,8 @@ This document describes Net::Google::Code version 0.02
     
     my $project = Net::Google::Code->new( project => 'net-google-code' );
     
+    print join(', ', @{ $project->owners } );
+    
     $project->issue;
     $project->downloads;
     $project->wiki;
