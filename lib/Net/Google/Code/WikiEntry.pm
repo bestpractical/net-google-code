@@ -100,10 +100,9 @@ Net::Google::Code::WikiEntry - Google Code Wiki Entry
 
 =head1 SYNOPSIS
 
-    use Net::Google::Code;
+    use Net::Google::Code::Wiki;
     
-    my $project = Net::Google::Code->new( project => 'net-google-code' );
-    my $wiki = $project->wiki;
+    my $wiki = Net::Google::Code::Wiki->new( project => 'net-google-code' );
 
     my $wiki_entry = $wiki->entry('README');
     print $wiki_entry->source;

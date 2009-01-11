@@ -48,10 +48,9 @@ Net::Google::Code::Wiki - Google Code Wiki
 
 =head1 SYNOPSIS
 
-    use Net::Google::Code;
+    use Net::Google::Code::Wiki;
     
-    my $project = Net::Google::Code->new( project => 'net-google-code' );
-    my $wiki = $project->wiki;
+    my $wiki = Net::Google::Code::Wiki->new( project => 'net-google-code' );
     
     my @entries = $wiki->all_entries;
     foreach my $item ( @entries ) {

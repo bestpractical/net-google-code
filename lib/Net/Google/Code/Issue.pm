@@ -152,11 +152,9 @@ Net::Google::Code::Issue - Google Code Issue
 
 =head1 SYNOPSIS
 
-    use Net::Google::Code;
+    use Net::Google::Code::Issue;
     
-    my $project = Net::Google::Code->new( project => 'net-google-code' );
-    my $issue = $project->issue;
-    
+    my $issue = Net::Google::Code::Issue->new( project => 'net-google-code' );
     $issue->load(42);
 
 =head1 DESCRIPTION

@@ -82,11 +82,15 @@ Currently, it focuses on the basic read functionality for that is provided.
 
 =over 4
 
-=item url
+=item project
+
+the project name
+
+=item base_url
 
 the project homepage
 
-=item svn_url
+=item base_svn_url
 
 the project svn url (without trunk)
 

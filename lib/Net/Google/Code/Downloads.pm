@@ -111,11 +111,9 @@ Net::Google::Code::Downloads - Google Code Downloads
 
 =head1 SYNOPSIS
 
-    use Net::Google::Code;
+    use Net::Google::Code::Downloads;
     
-    my $project = Net::Google::Code->new( project => 'net-google-code' );
-    my $download = $project->downloads;
-    
+    my $download = Net::Google::Code::Downloads->new( project => 'net-google-code' );
     my @entries = $download->all_entries;
     foreach my $e ( @entries ) {
         my $entry = $download->entry( $e->{filename} );
