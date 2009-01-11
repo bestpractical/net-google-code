@@ -26,7 +26,7 @@ has 'source' => (
 	    my $project    = $self->parent->project;
         
         my $wiki_url = "http://$project.googlecode.com/svn/wiki/$name.wiki";
-        my $content = $connection->_fetch( $wiki_url );
+        my $content = $connection->fetch( $wiki_url );
         
         return $content;
     }
@@ -45,7 +45,7 @@ has '__html' => (
         
         # http://code.google.com/p/net-google-code/wiki/TestPage
         my $wiki_url = "http://code.google.com/p/$project/wiki/$name";
-        my $content = $connection->_fetch( $wiki_url );
+        my $content = $connection->fetch( $wiki_url );
         
         return $content;
     }

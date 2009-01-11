@@ -31,7 +31,7 @@ has mech => (
     }
 );
 
-sub _fetch {
+sub fetch {
     my $self    = shift;
     my $query   = shift;
     my $abs_url;
@@ -73,6 +73,8 @@ Net::Google::Code::Connection -
 =head1 DESCRIPTION
 
 =head1 INTERFACE
+
+=head2 fetch
 
 =head1 AUTHOR
 

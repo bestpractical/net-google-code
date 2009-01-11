@@ -50,7 +50,7 @@ sub search {
     }
 
     my $mech = $self->connection->mech;
-    $self->connection->_fetch('/issues/list');
+    $self->connection->fetch('/issues/list');
     $mech->submit_form(
         form_number => 2,
         fields      => {

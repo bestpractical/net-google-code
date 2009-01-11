@@ -49,7 +49,7 @@ sub parse {
 
 sub content {
     my $self = shift;
-    return $self->connection->_fetch( $self->url );
+    return $self->connection->fetch( $self->url );
 }
 
 

@@ -14,7 +14,7 @@ my $homepage_content = read_file($homepage_file);
 
 my $mock_connection = Test::MockModule->new('Net::Google::Code::Connection');
 $mock_connection->mock(
-    '_fetch',
+    'fetch',
     sub {
     	( undef, my $uri ) = @_;
     	if ( $uri eq 'http://code.google.com/p/net-google-code/' ) {

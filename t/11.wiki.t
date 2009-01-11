@@ -18,7 +18,7 @@ my $entry_content = read_file($entry_file);
 
 my $mock_connection = Test::MockModule->new('Net::Google::Code::Connection');
 $mock_connection->mock(
-    '_fetch',
+    'fetch',
     sub {
     	( undef, my $uri ) = @_;
     	if ( $uri eq 'http://foorum.googlecode.com/svn/wiki/' ) {

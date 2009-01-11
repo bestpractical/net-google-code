@@ -20,7 +20,7 @@ sub all_entries {
 	my $project    = $self->parent->project;
 	my $feed_url   = "http://code.google.com/feeds/p/$project/downloads/basic";
 	
-	my $content = $connection->_fetch( $feed_url );
+	my $content = $connection->fetch( $feed_url );
 	my $feed = XML::Atom::Feed->new( \$content );
 	my @fentries = $feed->entries;
 	
@@ -53,7 +53,7 @@ sub entry {
 	my $project    = $self->parent->project;
 	
 	my $url = "http://code.google.com/p/$project/downloads/detail?name=$filename";
-	my $content = $connection->_fetch( $url );
+	my $content = $connection->fetch( $url );
 	
 	require HTML::TreeBuilder;
     my $tree = HTML::TreeBuilder->new;

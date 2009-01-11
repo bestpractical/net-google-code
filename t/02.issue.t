@@ -14,7 +14,7 @@ my $content = read_file( "$Bin/sample/02.issue.html" );
 
 my $mock_connection = Test::MockModule->new('Net::Google::Code::Connection');
 $mock_connection->mock(
-    '_fetch',
+    'fetch',
     sub { $content }
 );
 

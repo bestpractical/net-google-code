@@ -17,4 +17,4 @@ $mech->mock( 'get',        sub {} );
 $mech->mock( 'response',   sub { HTTP::Response->new } );
 $resp->mock( 'is_success', sub { 1 } );
 
-is( $connection->_fetch('blabla'), 'content', '_fetch' );
+is( $connection->fetch('blabla'), 'content', 'fetch' );

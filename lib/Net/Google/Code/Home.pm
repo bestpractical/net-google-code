@@ -20,7 +20,7 @@ has '__html' => (
         
         my $connection = $self->parent->connection;
         
-        my $content = $connection->_fetch( $self->parent->url );
+        my $content = $connection->fetch( $self->parent->url );
         return $content;
     }
 );

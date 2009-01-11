@@ -21,7 +21,7 @@ sub all_entries {
 	my $project    = $self->parent->project;
 	
 	my $wiki_svn = "http://$project.googlecode.com/svn/wiki/";
-	my $content = $connection->_fetch( $wiki_svn );
+	my $content = $connection->fetch( $wiki_svn );
 	
 	# regex would be OK
 	my @lines = split("\n", $content);
