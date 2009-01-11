@@ -4,24 +4,16 @@ use Moose;
 use Params::Validate qw(:all);
 
 use Net::Google::Code::WikiEntry;
+extends 'Net::Google::Code::Base';
 
 our $VERSION = '0.02';
 our $AUTHORITY = 'cpan:FAYLAND';
 
-has parent => (
-    isa => 'Net::Google::Code',
-    is  => 'ro',
-    required => 1,
-);
-
 sub all_entries {
 	my $self = shift;
 	
-	my $connection = $self->parent->connection;
-	my $project    = $self->parent->project;
-	
-	my $wiki_svn = "http://$project.googlecode.com/svn/wiki/";
-	my $content = $connection->fetch( $wiki_svn );
+	my $wiki_svn = $self->base_svn_url . 'wiki/';
+	my $content = $self->fetch( $wiki_svn );
 	
 	# regex would be OK
 	my @lines = split("\n", $content);
@@ -41,7 +33,7 @@ sub entry {
     
     my ($wiki_item) = validate_pos( @_, { type => SCALAR } );
     
-    return Net::Google::Code::WikiEntry->new( parent => $self->parent, name => $wiki_item );
+    return Net::Google::Code::WikiEntry->new( project => $self->project, name => $wiki_item );
 }
 
 no Moose;

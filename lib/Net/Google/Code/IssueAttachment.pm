@@ -1,15 +1,7 @@
 package Net::Google::Code::IssueAttachment;
 use Moose;
-
-has connection => (
-    isa => 'Net::Google::Code::Connection',
-    is  => 'ro',
-    required => 1,
-);
-
-has filename => ( isa => 'Str', is => 'rw' );
-has url      => ( isa => 'Str', is => 'rw' );
-has size     => ( isa => 'Str', is => 'rw' );
+extends 'Net::Google::Code::Base';
+with 'Net::Google::Code::Role::RemoteFile';
 
 =head2 parse
 there're 2 trs that represent an attachment like the following:
@@ -24,24 +16,24 @@ there're 2 trs that represent an attachment like the following:
 
 sub parse {
     my $self = shift;
-    my $tr1 = shift;
-    my $tr2 = shift;
-    my $b = $tr1->find_by_tag_name('b'); # filename lives here
-    if ( $b ) {
+    my $tr1  = shift;
+    my $tr2  = shift;
+    my $b    = $tr1->find_by_tag_name('b');    # name lives here
+    if ($b) {
         my $name = $b->content_array_ref->[0];
         $name =~ s/^\s+//;
         $name =~ s/\s+$//;
-        $self->filename( $name );
+        $self->name($name);
     }
 
     my $td = $tr2->find_by_tag_name('td');
-    if ( $td ) {
+    if ($td) {
         my $size = $td->content_array_ref->[0];
         $size =~ s/^\s+//;
         $size =~ s/\s+$//;
-        $self->size( $size );
+        $self->size($size);
 
-        $self->url($td->find_by_tag_name('a')->attr_get_i('href'));
+        $self->url( $td->find_by_tag_name('a')->attr_get_i('href') );
     }
 
     return 1;
@@ -49,9 +41,8 @@ sub parse {
 
 sub content {
     my $self = shift;
-    return $self->connection->fetch( $self->url );
+    return $self->fetch( $self->url );
 }
-
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
@@ -66,11 +57,11 @@ Net::Google::Code::IssueAttachment
 
 =head1 DESCRIPTION
 
-This class represents a single attachment for a trac ticket.
+This class represents a single attachment for an issue.
 
 =head1 INTERFACE
 
-=head2 filename
+=head2 name
 
 =head2 content
 

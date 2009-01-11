@@ -1,34 +1,9 @@
 package Net::Google::Code;
 
 use Moose;
-use Net::Google::Code::Connection;
+extends 'Net::Google::Code::Base';
 
 our $VERSION = '0.02';
-
-has 'project' => (
-    isa      => 'Str',
-    is       => 'ro',
-    required => 1,
-);
-
-has 'connection' => (
-    isa  => 'Net::Google::Code::Connection',
-    is   => 'ro',
-    lazy => 1,
-    default =>
-      sub { Net::Google::Code::Connection->new( project => $_[0]->project ) },
-);
-
-has 'url' => (
-    isa     => 'Str',
-    is      => 'ro',
-    default => sub { $_[0]->connection->base_url . $_[0]->project . '/' },
-);
-
-has 'svn_url' => (
-    is => 'ro', isa => 'Str',
-    default => sub { 'http://' . $_[0]->project . '.googlecode.com/svn/' },
-);
 
 has 'home'  => (
     isa     => 'Net::Google::Code::Home',
@@ -36,7 +11,7 @@ has 'home'  => (
     lazy    => 1,
     default => sub {
         require Net::Google::Code::Home;
-        Net::Google::Code::Home->new( parent => $_[0] );
+        Net::Google::Code::Home->new( project => $_[0]->project );
     },
     handles => [ 'owners', 'members', 'summary', 'description', 'labels' ],
 );
@@ -47,7 +22,7 @@ has 'issue' => (
     lazy    => 1,
     default => sub {
         require Net::Google::Code::Issue;
-        Net::Google::Code::Issue->new( connection => $_[0]->connection );
+        Net::Google::Code::Issue->new( project => $_[0]->project );
     }
 );
 
@@ -57,7 +32,7 @@ has 'downloads' => (
     lazy    => 1,
     default => sub {
         require Net::Google::Code::Downloads;
-        Net::Google::Code::Downloads->new( parent => $_[0] );
+        Net::Google::Code::Downloads->new( project => $_[0]->project );
     }
 );
 
@@ -67,7 +42,7 @@ has 'wiki' => (
     lazy    => 1,
     default => sub {
         require Net::Google::Code::Wiki;
-        Net::Google::Code::Wiki->new( parent => $_[0] );
+        Net::Google::Code::Wiki->new( project => $_[0]->project );
     }
 );
 

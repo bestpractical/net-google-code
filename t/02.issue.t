@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 18;
+use Test::More tests => 15;
 use Test::MockModule;
 
 # $content is a real page: http://code.google.com/p/chromium/issues/detail?id=14
@@ -12,18 +12,15 @@ use File::Slurp;
 
 my $content = read_file( "$Bin/sample/02.issue.html" );
 
-my $mock_connection = Test::MockModule->new('Net::Google::Code::Connection');
-$mock_connection->mock(
+my $mock = Test::MockModule->new('Net::Google::Code::Issue');
+$mock->mock(
     'fetch',
     sub { $content }
 );
 
-use_ok('Net::Google::Code::Connection');
-use_ok('Net::Google::Code::Issue');
-my $connection = Net::Google::Code::Connection->new( project => 'test' );
-my $ticket = Net::Google::Code::Issue->new( connection => $connection );
+use Net::Google::Code::Issue;
+my $ticket = Net::Google::Code::Issue->new( project => 'test' );
 isa_ok( $ticket, 'Net::Google::Code::Issue', '$ticket' );
-isa_ok( $ticket->connection, 'Net::Google::Code::Connection', '$ticket->connection' );
 $ticket->load(14);
 
 my $description = <<"EOF";

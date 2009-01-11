@@ -1,17 +1,12 @@
 package Net::Google::Code::IssueComment;
 use Moose;
+extends 'Net::Google::Code::Base';
 
-has connection => (
-    isa => 'Net::Google::Code::Connection',
-    is  => 'ro',
-    required => 1,
-);
-
-has updates   => ( isa => 'HashRef', is => 'rw', default => sub { {} } );
-has author    => ( isa => 'Str',     is => 'rw' );
-has date      => ( isa => 'Str',     is => 'rw' );
-has content   => ( isa => 'Str',     is => 'rw' );
-has sequence  => ( isa => 'Int',     is => 'rw' );
+has updates => ( isa => 'HashRef', is => 'rw', default => sub { {} } );
+has author  => ( isa => 'Str',     is => 'rw' );
+has date    => ( isa => 'Str',     is => 'rw' );
+has content => ( isa => 'Str',     is => 'rw' );
+has sequence => ( isa => 'Int', is => 'rw' );
 has attachments => (
     isa     => 'ArrayRef[Net::Google::Code::IssueAttachment]',
     is      => 'rw',
@@ -65,10 +60,10 @@ parse format like the following:
 =cut
 
 sub parse {
-    my $self = shift;
+    my $self    = shift;
     my $element = shift;
-    my $author = $element->look_down( class => 'author' );
-    my @a = $author->find_by_tag_name('a');
+    my $author  = $element->look_down( class => 'author' );
+    my @a       = $author->find_by_tag_name('a');
     $self->sequence( $a[0]->content_array_ref->[0] );
     $self->author( $a[1]->content_array_ref->[0] );
     $self->date( $element->look_down( class => 'date' )->attr_get_i('title') );
@@ -76,24 +71,25 @@ sub parse {
     $content =~ s/^\s+//;
     $content =~ s/\s+$/\n/;
     $content =~ s/\r\n/\n/g;
-    $self->content( $content );
+    $self->content($content);
 
     my $updates = $element->look_down( class => 'updates' );
-    if ( $updates ) {
+    if ($updates) {
         my $box_inner = $element->look_down( class => 'box-inner' );
         my $content = $box_inner->content_array_ref;
-        while ( @$content ) {
-            my $tag = shift @$content;
+        while (@$content) {
+            my $tag   = shift @$content;
             my $value = shift @$content;
-            shift @$content; # this is for the <br>
+            shift @$content;    # this is for the <br>
 
             my $key = $tag->content_array_ref->[0];
-            $key =~ s/:$//;
+            $key   =~ s/:$//;
             $value =~ s/^\s+//;
             $value =~ s/\s+$//;
 
             if ( $key eq 'Labels' ) {
-# $value here is like "-Pri-2 -Area-Unknown Pri-3 Area-BrowserUI"
+
+               # $value here is like "-Pri-2 -Area-Unknown Pri-3 Area-BrowserUI"
                 my @items = split /\s+/, $value;
 
                 for my $value (@items) {
@@ -123,24 +119,24 @@ sub parse {
                 }
             }
             else {
-                $self->updates->{lc $key} = $value;
+                $self->updates->{ lc $key } = $value;
             }
         }
 
     }
     my $attachments = $element->look_down( class => 'attachments' );
-    if ( $attachments ) {
-        my @items = $attachments->find_by_tag_name( 'tr' );
+    if ($attachments) {
+        my @items = $attachments->find_by_tag_name('tr');
         require Net::Google::Code::IssueAttachment;
         while ( scalar @items ) {
             my $tr1 = shift @items;
             my $tr2 = shift @items;
             my $a =
               Net::Google::Code::IssueAttachment->new(
-                connection => $self->connection );
+                project => $self->project );
 
             if ( $a->parse( $tr1, $tr2 ) ) {
-                push @{$self->attachments}, $a;
+                push @{ $self->attachments }, $a;
             }
         }
     }

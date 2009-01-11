@@ -2,12 +2,7 @@ package Net::Google::Code::IssueSearch;
 use Moose;
 use Params::Validate qw(:all);
 use Moose::Util::TypeConstraints;
-
-has connection => (
-    isa => 'Net::Google::Code::Connection',
-    is  => 'ro',
-    required => 1,
-);
+extends 'Net::Google::Code::Base';
 
 our %CAN = (
     'all'    => 1,
@@ -49,8 +44,8 @@ sub search {
         $self->_q( $args{_q} ) if defined $args{_q};
     }
 
-    my $mech = $self->connection->mech;
-    $self->connection->fetch('/issues/list');
+    $self->fetch('issues/list');
+    my $mech = $self->mech;
     $mech->submit_form(
         form_number => 2,
         fields      => {

@@ -1,13 +1,12 @@
 use strict;
 use warnings;
 
-use Test::More tests => 11;
+use Test::More tests => 9;
 
-use_ok( 'Net::Google::Code::IssueComment' );
-use_ok( 'Net::Google::Code::Connection' );
-my $connection = Net::Google::Code::Connection->new( project => 'haha' );
+use Net::Google::Code::IssueComment;
+use Net::Google::Code::Connection;
 my $comment =
-  Net::Google::Code::IssueComment->new( connection => $connection );
+  Net::Google::Code::IssueComment->new( project => 'test' );
 isa_ok( $comment, 'Net::Google::Code::IssueComment', '$comment' );
 
 my $content;
@@ -51,8 +50,8 @@ my $updates = {
 is_deeply( $updates, $comment->updates, 'updates are extracted' );
 
 is( scalar @{$comment->attachments}, 2, 'attachments are extracted' );
-is( $comment->attachments->[0]->filename, 'proxy_settings.png', '1st attachment' );
-is( $comment->attachments->[1]->filename, 'haha.png', '2nd attachment' );
+is( $comment->attachments->[0]->name, 'proxy_settings.png', '1st attachment' );
+is( $comment->attachments->[1]->name, 'haha.png', '2nd attachment' );
 
 __DATA__
  <td class="vt issuecomment">

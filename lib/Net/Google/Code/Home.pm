@@ -5,11 +5,8 @@ use Moose;
 our $VERSION = '0.02';
 our $AUTHORITY = 'cpan:FAYLAND';
 
-has parent => (
-    isa => 'Net::Google::Code',
-    is  => 'ro',
-    required => 1,
-);
+extends 'Net::Google::Code::Base';
+
 
 has '__html' => (
     isa => 'Str',
@@ -17,11 +14,7 @@ has '__html' => (
     lazy => 1,
     default => sub {
         my $self = shift;
-        
-        my $connection = $self->parent->connection;
-        
-        my $content = $connection->fetch( $self->parent->url );
-        return $content;
+        return $self->fetch( $self->base_url );
     }
 );
 

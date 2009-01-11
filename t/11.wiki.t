@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 10;
+use Test::More tests => 9;
 use Test::MockModule;
 use FindBin qw/$Bin/;
 use File::Slurp;
@@ -16,10 +16,9 @@ my $svn_content   = read_file($svn_file);
 my $wiki_content  = read_file($wiki_file);
 my $entry_content = read_file($entry_file);
 
-my $mock_connection = Test::MockModule->new('Net::Google::Code::Connection');
-$mock_connection->mock(
-    'fetch',
-    sub {
+use Net::Google::Code::Wiki;
+
+my $mock_sub = sub {
     	( undef, my $uri ) = @_;
     	if ( $uri eq 'http://foorum.googlecode.com/svn/wiki/' ) {
     		return $svn_content;
@@ -28,13 +27,17 @@ $mock_connection->mock(
     	} elsif ( $uri eq 'http://code.google.com/p/foorum/wiki/TODO' ) {
     	    return $entry_content;
         }
-    }
-);
 
-my $project = Net::Google::Code->new( project => 'foorum' );
-my $wiki = $project->wiki;
+};
+
+my $mock_wiki = Test::MockModule->new('Net::Google::Code::Wiki');
+$mock_wiki->mock( 'fetch', $mock_sub );
+
+my $mock_wiki_entry = Test::MockModule->new('Net::Google::Code::WikiEntry');
+$mock_wiki_entry->mock( 'fetch', $mock_sub );
+
+my $wiki = Net::Google::Code::Wiki->new( project => 'foorum' );
 isa_ok( $wiki, 'Net::Google::Code::Wiki' );
-isa_ok( $wiki->parent, 'Net::Google::Code' );
 
 my @entries = $wiki->all_entries;
 is( scalar @entries, 16 );

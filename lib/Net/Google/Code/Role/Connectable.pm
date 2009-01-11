@@ -1,19 +1,9 @@
-package Net::Google::Code::Connection;
-use Moose;
+package Net::Google::Code::Role::Connectable;
+use Moose::Role;
 use Params::Validate;
 use Net::Google::Code::Mechanize;
 
-has base_url => (
-    isa => 'Str',
-    is  => 'ro',
-    default => 'http://code.google.com/p/',
-);
-
-has project => (
-    isa => 'Str',
-    is  => 'ro',
-    required => 1,
-);
+with 'Net::Google::Code::Role::URL';
 
 has mech => (
     isa     => 'Net::Google::Code::Mechanize',
@@ -39,27 +29,21 @@ sub fetch {
         $abs_url = $query;
     }
     else {
-        $abs_url = $self->base_url . $self->project .  $query;
+        $abs_url = $self->base_url . $query;
     }
 
     $self->mech->get($abs_url);
-    $self->_die_on_error($abs_url);
-    return $self->mech->content;
-}
-
-sub _die_on_error {
-    my $self = shift;
-    my $url  = shift;
     if ( !$self->mech->response->is_success ) {
         die "Server threw an error "
           . $self->mech->response->status_line . " for "
-          . $url;
+          . $abs_url;
     }
-    return
+    else {
+        return $self->mech->content;
+    }
 }
 
-no Moose;
-__PACKAGE__->meta->make_immutable;
+no Moose::Role;
 
 1;
 
@@ -67,7 +51,7 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::Connection - 
+Net::Google::Code::Role::Connectable - 
 
 
 =head1 DESCRIPTION

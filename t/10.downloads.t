@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 13;
+use Test::More tests => 12;
 use Test::MockModule;
 use FindBin qw/$Bin/;
 use File::Slurp;
@@ -15,8 +15,8 @@ my $down_file = "$Bin/sample/10.download.html";
 my $feed_content = read_file($feed_file);
 my $download_content = read_file($down_file);
 
-my $mock_connection = Test::MockModule->new('Net::Google::Code::Connection');
-$mock_connection->mock(
+my $mock_downloads = Test::MockModule->new('Net::Google::Code::Downloads');
+$mock_downloads->mock(
     'fetch',
     sub {
     	( undef, my $uri ) = @_;
@@ -28,10 +28,8 @@ $mock_connection->mock(
     }
 );
 
-my $project = Net::Google::Code->new( project => 'net-google-code' );
-my $downloads = $project->downloads;
+my $downloads = Net::Google::Code::Downloads->new( project => 'net-google-code' );
 isa_ok( $downloads, 'Net::Google::Code::Downloads' );
-isa_ok( $downloads->parent, 'Net::Google::Code' );
 
 my @entries = $downloads->all_entries;
 is( scalar @entries, 1 );
@@ -49,3 +47,4 @@ is $entry->{file_size}, '37.4 KB';
 is $entry->{file_SHA1}, '5073de2276f916cf5d74d7abfd78a463e15674a1';
 
 1;
+

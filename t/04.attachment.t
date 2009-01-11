@@ -1,16 +1,10 @@
 use strict;
 use warnings;
 
-use Test::More tests => 7;
+use Test::More tests => 5;
 
-
-
-use_ok( 'Net::Google::Code::IssueAttachment' );
-use_ok( 'Net::Google::Code::Connection' );
-my $connection = Net::Google::Code::Connection->new( project => 'haha' );
-my $attachment =
-  Net::Google::Code::IssueAttachment->new( connection => $connection );
-
+use Net::Google::Code::IssueAttachment;
+my $attachment = Net::Google::Code::IssueAttachment->new( project => 'test' );
 isa_ok( $attachment, 'Net::Google::Code::IssueAttachment', '$attachment' );
 
 
@@ -32,7 +26,7 @@ $attachment->parse( @tr );
 my %info = (
     url =>
 'http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&name=proxy_settings.png',
-    filename => 'proxy_settings.png',
+    name => 'proxy_settings.png',
     size     => '14.3 KB',
 );
 

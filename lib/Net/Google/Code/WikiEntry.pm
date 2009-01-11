@@ -2,15 +2,10 @@ package Net::Google::Code::WikiEntry;
 
 use Moose;
 use Params::Validate qw(:all);
+extends 'Net::Google::Code::Base';
 
 our $VERSION = '0.02';
 our $AUTHORITY = 'cpan:FAYLAND';
-
-has parent => (
-    isa => 'Net::Google::Code',
-    is  => 'ro',
-    required => 1,
-);
 
 has name => ( is => 'ro', isa => 'Str', required => 1 );
 
@@ -20,15 +15,7 @@ has 'source' => (
     lazy => 1,
     default => sub {
         my $self = shift;
-        
-        my $name       = $self->name;
-        my $connection = $self->parent->connection;
-	    my $project    = $self->parent->project;
-        
-        my $wiki_url = "http://$project.googlecode.com/svn/wiki/$name.wiki";
-        my $content = $connection->fetch( $wiki_url );
-        
-        return $content;
+        return $self->fetch( $self->base_svn_url . 'wiki/' . $self->name . '.wiki' );
     }
 );
 
@@ -38,16 +25,8 @@ has '__html' => (
     lazy => 1,
     default => sub {
         my $self = shift;
-        
-        my $name       = $self->name;
-        my $connection = $self->parent->connection;
-	    my $project    = $self->parent->project;
-        
         # http://code.google.com/p/net-google-code/wiki/TestPage
-        my $wiki_url = "http://code.google.com/p/$project/wiki/$name";
-        my $content = $connection->fetch( $wiki_url );
-        
-        return $content;
+        return $self->fetch( $self->base_url . 'wiki/' .  $self->name );
     }
 );
 

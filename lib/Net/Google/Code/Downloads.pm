@@ -4,23 +4,15 @@ use Moose;
 use XML::Atom::Feed;
 use Params::Validate qw(:all);
 
+extends 'Net::Google::Code::Base';
+
 our $VERSION = '0.02';
 our $AUTHORITY = 'cpan:FAYLAND';
-
-has parent => (
-    isa => 'Net::Google::Code',
-    is  => 'ro',
-    required => 1,
-);
 
 sub all_entries {
 	my $self = shift;
 	
-	my $connection = $self->parent->connection;
-	my $project    = $self->parent->project;
-	my $feed_url   = "http://code.google.com/feeds/p/$project/downloads/basic";
-	
-	my $content = $connection->fetch( $feed_url );
+	my $content = $self->fetch( $self->base_feeds_url . 'downloads/basic' );
 	my $feed = XML::Atom::Feed->new( \$content );
 	my @fentries = $feed->entries;
 	
@@ -49,11 +41,8 @@ sub entry {
 	
 	# http://code.google.com/p/net-google-code/downloads/detail?name=Net-Google-Code-0.01.tar.gz
 	
-	my $connection = $self->parent->connection;
-	my $project    = $self->parent->project;
-	
-	my $url = "http://code.google.com/p/$project/downloads/detail?name=$filename";
-	my $content = $connection->fetch( $url );
+    my $content =
+      $self->fetch( $self->base_url . "downloads/detail?name=$filename" );
 	
 	require HTML::TreeBuilder;
     my $tree = HTML::TreeBuilder->new;
