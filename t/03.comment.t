@@ -4,7 +4,6 @@ use warnings;
 use Test::More tests => 9;
 
 use Net::Google::Code::IssueComment;
-use Net::Google::Code::Connection;
 my $comment =
   Net::Google::Code::IssueComment->new( project => 'test' );
 isa_ok( $comment, 'Net::Google::Code::IssueComment', '$comment' );
