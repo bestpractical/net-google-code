@@ -1,7 +1,6 @@
 package Net::Google::Code::IssueAttachment;
 use Moose;
-extends 'Net::Google::Code::Base';
-with 'Net::Google::Code::Role::RemoteFile';
+with 'Net::Google::Code::Role', 'Net::Google::Code::Role::RemoteFile';
 
 =head2 parse
 there're 2 trs that represent an attachment like the following:

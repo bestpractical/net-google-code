@@ -5,7 +5,7 @@ use Moose;
 our $VERSION = '0.02';
 our $AUTHORITY = 'cpan:FAYLAND';
 
-extends 'Net::Google::Code::Base';
+with 'Net::Google::Code::Role';
 
 
 has '__html' => (

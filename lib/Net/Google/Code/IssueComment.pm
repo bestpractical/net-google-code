@@ -1,6 +1,6 @@
 package Net::Google::Code::IssueComment;
 use Moose;
-extends 'Net::Google::Code::Base';
+with 'Net::Google::Code::Role';
 
 has updates => ( isa => 'HashRef', is => 'rw', default => sub { {} } );
 has author  => ( isa => 'Str',     is => 'rw' );

@@ -4,7 +4,7 @@ use Moose;
 use Params::Validate qw(:all);
 
 use Net::Google::Code::WikiEntry;
-extends 'Net::Google::Code::Base';
+with 'Net::Google::Code::Role';
 
 our $VERSION = '0.02';
 our $AUTHORITY = 'cpan:FAYLAND';

@@ -1,6 +1,8 @@
-package Net::Google::Code::Base;
-use Moose;
-with 'Net::Google::Code::Role::URL';
+package Net::Google::Code::Role;
+use Moose::Role;
+use Params::Validate;
+use Net::Google::Code::Mechanize;
+
 with 'Net::Google::Code::Role::Connectable';
 
 has 'project' => (
@@ -18,8 +20,9 @@ has 'project' => (
 
 sub project { return shift->_project }
 
-no Moose;
-__PACKAGE__->meta->make_immutable;
+
+
+no Moose::Role;
 
 1;
 
@@ -27,7 +30,7 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::Connection - 
+Net::Google::Code::Role - 
 
 
 =head1 DESCRIPTION

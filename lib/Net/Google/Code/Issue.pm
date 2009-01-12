@@ -1,7 +1,7 @@
 package Net::Google::Code::Issue;
 use Moose;
 use Params::Validate qw(:all);
-extends 'Net::Google::Code::Base';
+with 'Net::Google::Code::Role';
 use Net::Google::Code::IssueComment;
 
 has state => (

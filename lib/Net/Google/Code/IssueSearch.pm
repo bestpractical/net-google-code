@@ -2,7 +2,7 @@ package Net::Google::Code::IssueSearch;
 use Moose;
 use Params::Validate qw(:all);
 use Moose::Util::TypeConstraints;
-extends 'Net::Google::Code::Base';
+with 'Net::Google::Code::Role';
 
 our %CAN = (
     'all'    => 1,

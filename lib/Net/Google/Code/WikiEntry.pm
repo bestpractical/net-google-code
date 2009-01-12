@@ -2,7 +2,7 @@ package Net::Google::Code::WikiEntry;
 
 use Moose;
 use Params::Validate qw(:all);
-extends 'Net::Google::Code::Base';
+with 'Net::Google::Code::Role';
 
 our $VERSION = '0.02';
 our $AUTHORITY = 'cpan:FAYLAND';
