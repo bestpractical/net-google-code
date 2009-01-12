@@ -1,7 +1,7 @@
 package Net::Google::Code;
 
 use Moose;
-extends 'Net::Google::Code::Base';
+with 'Net::Google::Code::Role';
 
 our $VERSION = '0.02';
 
