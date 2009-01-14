@@ -1,8 +1,10 @@
 ---
-abstract: ''
+abstract: 'a simple client library for google code'
 author:
   - 'sunnavy <sunnavy@bestpractical.com>'
 build_requires:
+  File::Slurp: 0
+  Test::MockModule: 0
   Test::More: 0
 distribution_type: module
 generated_by: 'Module::Install version 0.77'
@@ -20,6 +22,7 @@ requires:
   Moose: 0
   Params::Validate: 0
   WWW::Mechanize: 0
+  XML::Atom: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.01
+version: 0.02
