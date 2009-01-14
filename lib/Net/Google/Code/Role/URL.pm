@@ -41,8 +41,6 @@ Net::Google::Code::Role::URL -
 
 =head1 INTERFACE
 
-=head2 fetch
-
 =head1 AUTHOR
 
 sunnavy  C<< <sunnavy@bestpractical.com> >>
