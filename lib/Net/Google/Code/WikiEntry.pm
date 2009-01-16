@@ -4,7 +4,7 @@ use Moose;
 use Params::Validate qw(:all);
 with 'Net::Google::Code::Role';
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 our $AUTHORITY = 'cpan:FAYLAND';
 
 has name => ( is => 'ro', isa => 'Str', required => 1 );
@@ -13,6 +13,7 @@ has 'source' => (
     isa => 'Str',
     is  => 'ro',
     lazy => 1,
+    predicate => 'has_source',
     default => sub {
         my $self = shift;
         return $self->fetch( $self->base_svn_url . 'wiki/' . $self->name . '.wiki' );
@@ -88,6 +89,32 @@ has 'updated_by' => (
     },
 );
 
+has 'summary' => (
+    isa => 'Maybe[Str]',
+    is  => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        
+        if ( $self->has_source ) { # get from source
+            my @lines = split(/\n/, $self->source);
+            foreach my $line (@lines ) {
+                if ( $line =~ /^\#summary\s+(.*?)$/ ) {
+                    return $1;
+                }
+                last if ( $line !~ /^\#/ );
+            }
+            return;
+        }
+        # get from the html tree
+        my $tree  = $self->__html_tree;
+        my $title = $tree->find_by_tag_name('title')->content_array_ref->[0];
+        my @parts = split(/\s+\-\s+/, $title, 4);
+        return $parts[3] if ( scalar @parts == 4 );
+        return;
+    },
+);
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
@@ -120,6 +147,10 @@ wiki source code
 =head2 html
 
 html code of this wiki entry
+
+=head2 summary
+
+summary of this wiki entry
 
 =head2 updated_time
 
