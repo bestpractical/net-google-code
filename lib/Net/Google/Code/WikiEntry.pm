@@ -110,8 +110,36 @@ has 'summary' => (
         my $tree  = $self->__html_tree;
         my $title = $tree->find_by_tag_name('title')->content_array_ref->[0];
         my @parts = split(/\s+\-\s+/, $title, 4);
-        return $parts[3] if ( scalar @parts == 4 );
+        return $parts[2] if ( scalar @parts == 4 );
         return;
+    },
+);
+
+has 'labels' => (
+    isa => 'ArrayRef',
+    is  => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        
+        if ( $self->has_source ) { # get from source
+            my @lines = split(/\n/, $self->source);
+            foreach my $line (@lines ) {
+                if ( $line =~ /^\#labels\s+(.*?)$/ ) {
+                    return [ split(/\,/, $1) ];
+                }
+                last if ( $line !~ /^\#/ );
+            }
+            return [];
+        }
+        # get from the html tree
+        my $tree  = $self->__html_tree;
+        my @tags = $tree->look_down( href => qr/q\=label\:/);
+        my @labels;
+        foreach my $tag ( @tags ) {
+	        push @labels, $tag->content_array_ref->[0];
+	    }
+	    return \@labels;
     },
 );
 
@@ -140,25 +168,33 @@ get Wiki details from Google Code Project
 
 =head1 ATTRIBUTES
 
-=head2 source
+=over 4
+
+=item source
 
 wiki source code
 
-=head2 html
+=item html
 
 html code of this wiki entry
 
-=head2 summary
+=item summary
 
 summary of this wiki entry
 
-=head2 updated_time
+=item labels
+
+labels of this wiki entry
+
+=item updated_time
 
 last updated time of this wiki entry
 
-=head2 updated_by
+=item updated_by
 
 last updator of this wiki entry
+
+=back
 
 =head1 AUTHOR
 
