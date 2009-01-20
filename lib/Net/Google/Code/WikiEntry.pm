@@ -115,6 +115,38 @@ has 'summary' => (
     },
 );
 
+has 'comments' => (
+    isa => 'ArrayRef',
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        
+        my @rets;
+        
+        my $tree  = $self->__html_tree;
+        my @comments = $tree->look_down( class => 'artifactcomment' );
+        foreach my $comment ( @comments ) {
+            my $href = $comment->look_down( class => 'author' )->find_by_tag_name('a')->attr('href');
+            my ( $author ) = ( $href =~ /u\/(.*?)\// );
+            my $date = $comment->look_down( class => 'date' )->attr('title');
+            my $content = $comment->look_down( class => 'commentcontent' )->as_HTML(undef, undef, { } );
+            # remove <div class="commentcontent">
+            # STUPID I!
+            $content =~ s/^\<div class\=\"commentcontent\"\>//;
+            $content =~ s/\<\/div\>$//;
+            chomp($content);
+            push @rets, {
+                author  => $author,
+                date    => $date,
+                content => $content,
+            };
+        }
+        
+        return \@rets;
+    },
+);
+
 has 'labels' => (
     isa => 'ArrayRef',
     is  => 'ro',
@@ -193,6 +225,10 @@ last updated time of this wiki entry
 =item updated_by
 
 last updator of this wiki entry
+
+=item comments
+
+wiki entry comments
 
 =back
 

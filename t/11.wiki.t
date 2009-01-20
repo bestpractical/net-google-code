@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 13;
+use Test::More tests => 14;
 use Test::MockModule;
 use FindBin qw/$Bin/;
 use File::Slurp;
@@ -64,6 +64,21 @@ is $entry->updated_time, 'Sat Jan 17 15:21:27 2009';
 is $entry->updated_by, 'fayland';
 is $entry->summary, 'One-sentence summary of this page.';
 is_deeply $entry->labels, ['Phase-QA', 'Phase-Support'];
+
+is_deeply $entry->comments, [
+
+{
+    author => 'fayland',
+    date   => 'Wed Jan  7 22:37:57 2009',
+    content => '<p>comment1 </p>',
+},
+{
+    author => 'fayland',
+    date   => 'Wed Jan  7 22:38:07 2009',
+    content => '<p>two line comment 2. </p>',
+}
+
+];
 
 1;
 
