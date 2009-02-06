@@ -99,7 +99,7 @@ has 'summary' => (
         if ( $self->has_source ) { # get from source
             my @lines = split(/\n/, $self->source);
             foreach my $line (@lines ) {
-                if ( $line =~ /^\#summary\s+(.*?)$/ ) {
+                if ( $line =~ /^\#summary\s+(.*?)\s+$/ ) {
                     return $1;
                 }
                 last if ( $line !~ /^\#/ );
@@ -157,7 +157,7 @@ has 'labels' => (
         if ( $self->has_source ) { # get from source
             my @lines = split(/\n/, $self->source);
             foreach my $line (@lines ) {
-                if ( $line =~ /^\#labels\s+(.*?)$/ ) {
+                if ( $line =~ /^\#labels\s+(.*?)\s+$/ ) {
                     return [ split(/\,/, $1) ];
                 }
                 last if ( $line !~ /^\#/ );
