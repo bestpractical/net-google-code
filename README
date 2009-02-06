@@ -2,8 +2,6 @@ Net-Google-Code version 0.01
 
 Net::Google::Code is a simple client library for projects hosted in Google Code.
 
-Currently, only the basic read functionality is provided.
-
 Patches would be gratefully appreciated.
 
 
