@@ -36,6 +36,17 @@ sub signin {
     return 1;
 }
 
+sub signout {
+    my $self = shift;
+    $self->mech->follow_link(
+        url_regex => qr!^https?://www\.google\.com/accounts/Logout! )
+      || $self->mech->get('https://www.google.com/accounts/Logout');
+    die 'sign out failed to google code'
+      unless $self->mech->content =~ m!Sign In!;
+
+    return 1;
+}
+
 sub ask_password {
     my $self = shift;
     while ( !defined $self->password or $self->password eq '' ) {
@@ -63,6 +74,10 @@ Net::Google::Code::Role::Authentication -
 =head2 signin
 
 sign in
+
+=head2 signout
+
+sign out
 
 =head2 ask_password
 
