@@ -19,7 +19,10 @@ sub signin {
     my $self = shift;
     $self->ask_password unless $self->has_password;
 
-    $self->mech->get('https://www.google.com/accounts/Login');
+    $self->mech->follow_link(
+        url_regex => qr!^https?://www\.google\.com/accounts/Login! )
+      || $self->mech->get('https://www.google.com/accounts/Login');
+
     $self->mech->submit_form(
         with_fields => {
             Email  => $self->email,
