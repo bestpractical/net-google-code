@@ -13,6 +13,7 @@ requires 'WWW::Mechanize';
 requires 'HTML::TreeBuilder';
 requires 'Params::Validate';
 requires 'XML::Atom';
+requires 'Term::ReadPassword';
 
 auto_install;
 
