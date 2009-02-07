@@ -11,13 +11,12 @@ has 'email' => (
 has 'password' => (
     isa       => 'Str',
     is        => 'rw',
-    predicate => 'has_password',
 );
 
 
 sub signin {
     my $self = shift;
-    $self->ask_password unless $self->has_password;
+    $self->ask_password unless $self->password && length $self->password;
 
     $self->mech->follow_link(
         url_regex => qr!^https?://www\.google\.com/accounts/Login! )
