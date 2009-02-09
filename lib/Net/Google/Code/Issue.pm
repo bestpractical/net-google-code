@@ -149,16 +149,16 @@ sub update {
               qw/comment summary status owner merge_into cc blocked_on/,
         }
     );
-
-    $self->signin;
-    $self->fetch( 'issues/detail?id=' . $self->id );
-    $self->mech->form_with_fields( 'comment', 'summary' );
-
     # convert hash to array. e.g. Type => Defect to Type-Defect
     if ( $args{label} && ref $args{label} eq 'HASH' ) {
         $args{label} =
           [ map { $_ . '-' . $args{label}{$_} } keys %{ $args{label} } ];
     }
+
+    $self->signin;
+    $self->fetch( 'issues/detail?id=' . $self->id );
+    $self->mech->form_with_fields( 'comment', 'summary' );
+
     $self->mech->field( 'label', $args{label} );
     $self->mech->submit_form(
         fields => {
