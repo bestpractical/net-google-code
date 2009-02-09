@@ -1,19 +1,18 @@
 package Net::Google::Code::Role::HTMLTree;
 use Moose::Role;
-use HTML::TreeBuilder;
-
 with 'Net::Google::Code::Role::Connectable';
 
 use HTML::TreeBuilder;
 use Params::Validate qw(:all);
 
-has 'html_tree' => (
-    isa     => 'HTML::TreeBuilder',
-    is      => 'rw',
-    default => sub {
-        return HTML::TreeBuilder->new;
-    },
-);
+sub html_tree {
+    my $self = shift;
+    my %args = validate( @_, { content => { type => SCALAR, optional => 1 } } );
+    my $tree = HTML::TreeBuilder->new;
+    $tree->parse_content($args{content} || $self->mech->content);
+    $tree->elementify;
+    return $tree;
+}
 
 sub html_contains {
     my $self = shift;
@@ -28,8 +27,6 @@ sub html_contains {
     );
 
     my $tree = $self->html_tree;
-    $tree = $tree->parse( $self->mech->content );
-    $tree->elementify;
     my $part = $tree;
     if ( $args{look_down} ) {
         ($part) = $tree->look_down( @{ $args{look_down} } );
@@ -60,6 +57,9 @@ Net::Google::Code::Role::HTMLTree -
 
 =head1 INTERFACE
 
+=head2 html_tree
+
+return a new HTML::TreeBuilder object, with current content parsed
 
 =head2 html_contains
 

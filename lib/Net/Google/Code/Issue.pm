@@ -48,9 +48,7 @@ sub parse {
     my $self    = shift;
     my $content = shift;
 
-    my $tree = $self->html_tree;
-    $tree->parse_content($content);
-    $tree->elementify;
+    my $tree = $self->html_tree( content => $content );
 
     # extract summary
     my ($summary) = $tree->look_down( class => 'h3' );

@@ -44,9 +44,7 @@ sub entry {
     my $content =
       $self->fetch( $self->base_url . "downloads/detail?name=$filename" );
 	
-    my $tree = $self->html_tree;
-    $tree->parse_content($content);
-    $tree->elementify;
+    my $tree = $self->html_tree( content => $content );
     
     my $entry;
     ($entry->{upload_time}) = $tree->look_down(class => 'date')->attr('title');

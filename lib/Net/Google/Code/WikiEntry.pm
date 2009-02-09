@@ -39,9 +39,7 @@ has '__html_tree' => (
         
         my $html = $self->__html;
         
-        my $tree = $self->html_tree;
-        $tree->parse_content($html);
-        $tree->elementify;
+        my $tree = $self->html_tree( content => $html );
         
         return $tree;
     },
