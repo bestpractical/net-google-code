@@ -159,13 +159,12 @@ sub update {
         $args{label} =
           [ map { $_ . '-' . $args{label}{$_} } keys %{ $args{label} } ];
     }
-
+    $self->mech->field( 'label', $args{label} );
     $self->mech->submit_form(
         fields => {
             map { $_ => $args{$_} }
               grep { exists $args{$_} }
-              qw/comment summary status owner merge_into cc label
-              blocked_on/
+              qw/comment summary status owner merge_into cc blocked_on/
         }
     );
 
