@@ -5,6 +5,11 @@ with 'Net::Google::Code::Role::Connectable';
 use HTML::TreeBuilder;
 use Params::Validate qw(:all);
 
+has 'html' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
 sub html_tree {
     my $self = shift;
     my %args = validate( @_, { content => { type => SCALAR, optional => 1 } } );
