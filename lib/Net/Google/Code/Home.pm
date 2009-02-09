@@ -26,8 +26,7 @@ has '__html_tree' => (
         
         my $html = $self->__html;
         
-        require HTML::TreeBuilder;
-        my $tree = HTML::TreeBuilder->new;
+        my $tree = $self->html_tree;
         $tree->parse_content($html);
         $tree->elementify;
         

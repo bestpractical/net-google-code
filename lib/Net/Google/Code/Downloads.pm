@@ -44,8 +44,7 @@ sub entry {
     my $content =
       $self->fetch( $self->base_url . "downloads/detail?name=$filename" );
 	
-	require HTML::TreeBuilder;
-    my $tree = HTML::TreeBuilder->new;
+    my $tree = $self->html_tree;
     $tree->parse_content($content);
     $tree->elementify;
     

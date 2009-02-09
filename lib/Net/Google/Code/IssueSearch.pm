@@ -69,8 +69,7 @@ sub search {
 # get a ticket list
         $self->ids([]); # clean previous ids
 
-        require HTML::TreeBuilder;
-        my $tree = HTML::TreeBuilder->new;
+        my $tree = $self->html_tree;
         $tree->parse_content($content);
         my $pagination = $tree->look_down( class => 'pagination' );
         if ( my ( $start, $end, $total ) =
@@ -87,7 +86,7 @@ sub search {
                 if ($mech->follow_link( text_regex => qr/Next\s+/ ) ) {
                     if ( $mech->response->is_success ) {
                         my $content = $mech->content;
-                        my $tree    = HTML::TreeBuilder->new;
+                        my $tree = $self->html_tree;
                         $tree->parse_content($content);
                         my @ids = $tree->look_down( class => 'vt id col_0' );
                         @ids =

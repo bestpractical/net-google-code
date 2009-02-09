@@ -48,8 +48,7 @@ sub parse {
     my $self    = shift;
     my $content = shift;
 
-    require HTML::TreeBuilder;
-    my $tree = HTML::TreeBuilder->new;
+    my $tree = $self->html_tree;
     $tree->parse_content($content);
     $tree->elementify;
 
@@ -149,6 +148,7 @@ sub update {
               qw/comment summary status owner merge_into cc blocked_on/,
         }
     );
+
     # convert hash to array. e.g. Type => Defect to Type-Defect
     if ( $args{label} && ref $args{label} eq 'HASH' ) {
         $args{label} =
@@ -168,17 +168,11 @@ sub update {
         }
     );
 
-    require HTML::TreeBuilder;
-    my $tree = HTML::TreeBuilder->new;
-    $tree->parse_content( $self->mech->content );
-    $tree->elementify;
+    return $self->html_contains(
+        look_down => [ class => 'notice' ],
+        as_text   => qr/has been updated/,
+    );
 
-    my ($notice) = $tree->look_down( class => 'notice' );
-    if ( $notice && $notice->as_text =~ /has been updated/ ) {
-        return 1;
-    }
-
-    return;
 }
 
 
