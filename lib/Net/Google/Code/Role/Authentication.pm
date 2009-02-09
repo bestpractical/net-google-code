@@ -46,6 +46,9 @@ sub signout {
     return 1;
 }
 
+*sign_in = \&signin;
+*sign_out = \&signout;
+
 sub ask_password {
     my $self = shift;
     while ( !defined $self->password or $self->password eq '' ) {
@@ -53,6 +56,15 @@ sub ask_password {
         my $pass = Term::ReadPassword::read_password("password: ");
         $self->password($pass);
     }
+}
+
+
+sub signed_in {
+    my $self = shift;
+    return 1
+      if $self->mech->uri =~ m!https?://[-\w]+\.google\.com/!
+          && $self->mech->content =~ /Sign Out/;
+    return;
 }
 
 no Moose::Role;
@@ -71,12 +83,18 @@ Net::Google::Code::Role::Authentication -
 
 
 =head2 signin
+=head2 sign_in
 
 sign in
 
 =head2 signout
+=head2 sign_out
 
 sign out
+
+=head2 signed_in
+
+return 1 if already signed in, return undef elsewise.
 
 =head2 ask_password
 
