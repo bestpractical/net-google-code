@@ -5,13 +5,15 @@ with 'Net::Google::Code::Role';
 
 our $VERSION = '0.02';
 
-has 'home'  => (
+has 'home' => (
     isa     => 'Net::Google::Code::Home',
     is      => 'ro',
     lazy    => 1,
     default => sub {
         require Net::Google::Code::Home;
-        Net::Google::Code::Home->new( project => $_[0]->project );
+        Net::Google::Code::Home->new( map { $_ => $_[0]->$_ }
+              grep { defined $_[0]->$_ } qw/project email password/ );
+        
     },
     handles => [ 'owners', 'members', 'summary', 'description', 'labels' ],
 );
@@ -22,7 +24,8 @@ has 'issue' => (
     lazy    => 1,
     default => sub {
         require Net::Google::Code::Issue;
-        Net::Google::Code::Issue->new( project => $_[0]->project );
+        Net::Google::Code::Issue->new( map { $_ => $_[0]->$_ }
+              grep { defined $_[0]->$_ } qw/project email password/ );
     }
 );
 
@@ -32,7 +35,8 @@ has 'downloads' => (
     lazy    => 1,
     default => sub {
         require Net::Google::Code::Downloads;
-        Net::Google::Code::Downloads->new( project => $_[0]->project );
+        Net::Google::Code::Downloads->new( map { $_ => $_[0]->$_ }
+              grep { defined $_[0]->$_ } qw/project email password/ );
     }
 );
 
@@ -42,7 +46,8 @@ has 'wiki' => (
     lazy    => 1,
     default => sub {
         require Net::Google::Code::Wiki;
-        Net::Google::Code::Wiki->new( project => $_[0]->project );
+        Net::Google::Code::Wiki->new( map { $_ => $_[0]->$_ }
+              grep { defined $_[0]->$_ } qw/project email password/ );
     }
 );
 
