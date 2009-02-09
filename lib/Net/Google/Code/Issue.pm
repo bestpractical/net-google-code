@@ -139,6 +139,50 @@ sub parse {
 
 }
 
+sub update {
+    my $self = shift;
+    my %args = validate(
+        @_,
+        {
+            label => { type => HASHREF | ARRAYREF, optional => 1 },
+            map { $_ => { type => SCALAR, optional => 1 } }
+              qw/comment summary status owner merge_into cc blocked_on/,
+        }
+    );
+
+    $self->signin;
+    $self->fetch( 'issues/detail?id=' . $self->id );
+    $self->mech->form_with_fields( 'comment', 'summary' );
+
+    # convert hash to array. e.g. Type => Defect to Type-Defect
+    if ( $args{label} && ref $args{label} eq 'HASH' ) {
+        $args{label} =
+          [ map { $_ . '-' . $args{label}{$_} } keys %{ $args{label} } ];
+    }
+
+    $self->mech->submit_form(
+        fields => {
+            map { $_ => $args{$_} }
+              grep { exists $args{$_} }
+              qw/comment summary status owner merge_into cc label
+              blocked_on/
+        }
+    );
+
+    require HTML::TreeBuilder;
+    my $tree = HTML::TreeBuilder->new;
+    $tree->parse_content( $self->mech->content );
+    $tree->elementify;
+
+    my ($notice) = $tree->look_down( class => 'notice' );
+    if ( $notice && $notice->as_text =~ /has been updated/ ) {
+        return 1;
+    }
+
+    return;
+}
+
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
@@ -180,6 +224,9 @@ Net::Google::Code::Issue - Google Code Issue
 =head2 summary
 
 =head2 description
+
+=head2 update
+comment, summary, status, owner, merge_into, cc, label, blocked_on
 
 =head1 AUTHOR
 
