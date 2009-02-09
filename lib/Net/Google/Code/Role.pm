@@ -5,6 +5,7 @@ use Net::Google::Code::Mechanize;
 
 with 'Net::Google::Code::Role::Connectable';
 with 'Net::Google::Code::Role::Authentication';
+with 'Net::Google::Code::Role::HTMLTree';
 
 has 'project' => (
     isa      => 'Str',
