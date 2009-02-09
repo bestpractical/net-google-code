@@ -7,39 +7,13 @@ our $AUTHORITY = 'cpan:FAYLAND';
 
 with 'Net::Google::Code::Role';
 
-
-has '__html' => (
-    isa => 'Str',
-    is  => 'ro',
-    lazy => 1,
-    default => sub {
-        my $self = shift;
-        return $self->fetch( $self->base_url );
-    }
-);
-
-has '__html_tree' => (
-    is  => 'ro',
-    lazy => 1,
-    default => sub {
-        my $self = shift;
-        
-        my $html = $self->__html;
-        
-        my $tree = $self->html_tree( content => $html );
-        
-        return $tree;
-    },
-);
-
 has 'owners' => (
     isa => 'ArrayRef',
     is  => 'ro',
     lazy => 1,
     default => sub {
         my $self = shift;
-        
-        my $tree = $self->__html_tree;
+        my $tree = $self->html_tree( content => $self->html );
         my @tags = $tree->look_down(id => 'owners')->find_by_tag_name('a');
         my @owners;
         foreach my $tag ( @tags ) {
@@ -55,7 +29,7 @@ has 'members' => (
     default => sub {
         my $self = shift;
         
-        my $tree = $self->__html_tree;
+        my $tree = $self->html_tree( content => $self->html );
         my @tags = $tree->look_down(id => 'members')->find_by_tag_name('a');
         my @members;
         foreach my $tag ( @tags ) {
@@ -72,7 +46,7 @@ has 'summary' => (
     default => sub {
         my $self = shift;
         
-        my $tree = $self->__html_tree;
+        my $tree = $self->html_tree( content => $self->html );
         return $tree->look_down(id => 'psum')->find_by_tag_name('a')->content_array_ref->[0];
     },
 );
@@ -83,8 +57,7 @@ has 'description' => (
     lazy => 1,
     default => sub {
         my $self = shift;
-        
-        my $tree = $self->__html_tree;
+        my $tree = $self->html_tree( content => $self->html );
         return $tree->look_down(id => 'wikicontent')->content_array_ref->[0]->as_HTML;
     },
 );
@@ -96,7 +69,7 @@ has 'labels' => (
     default => sub {
         my $self = shift;
         
-        my $tree = $self->__html_tree;
+        my $tree = $self->html_tree( content => $self->html );
         my @tags = $tree->look_down( href => qr/q\=label\:/);
         my @labels;
         foreach my $tag ( @tags ) {
@@ -105,6 +78,11 @@ has 'labels' => (
 	    return \@labels;
     },
 );
+
+sub BUILD {
+    my $self = shift;
+    $self->html( $self->fetch( $self->base_url ) );
+}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

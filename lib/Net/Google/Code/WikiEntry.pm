@@ -20,39 +20,13 @@ has 'source' => (
     }
 );
 
-has '__html' => (
+has 'wiki_html' => (
     isa => 'Str',
     is  => 'ro',
     lazy => 1,
     default => sub {
         my $self = shift;
-        # http://code.google.com/p/net-google-code/wiki/TestPage
-        return $self->fetch( $self->base_url . 'wiki/' .  $self->name );
-    }
-);
-
-has '__html_tree' => (
-    is  => 'ro',
-    lazy => 1,
-    default => sub {
-        my $self = shift;
-        
-        my $html = $self->__html;
-        
-        my $tree = $self->html_tree( content => $html );
-        
-        return $tree;
-    },
-);
-
-has 'html' => (
-    isa => 'Str',
-    is  => 'ro',
-    lazy => 1,
-    default => sub {
-        my $self = shift;
-        
-        my $tree = $self->__html_tree;
+        my $tree = $self->html_tree( content => $self->html );
         my $meta = $tree->look_down(id => 'wikimaincol');
 
         return $tree->content_array_ref->[-1]->as_HTML;
@@ -65,8 +39,7 @@ has 'updated_time' => (
     lazy => 1,
     default => sub {
         my $self = shift;
-        
-        my $tree = $self->__html_tree;
+        my $tree = $self->html_tree( content => $self->html );
         return $tree->look_down(id => 'wikimaincol')->find_by_tag_name('td')
 	    ->find_by_tag_name('span')->attr('title');
     },
@@ -77,8 +50,7 @@ has 'updated_by' => (
     lazy => 1,
     default => sub {
         my $self = shift;
-        
-        my $tree = $self->__html_tree;
+        my $tree = $self->html_tree( content => $self->html );
         my $href = $tree->look_down(id => 'wikimaincol')->find_by_tag_name('td')
 	    ->find_by_tag_name('a')->attr('href');
         my ( $author ) = ( $href =~ /u\/(.*?)\// );
@@ -104,7 +76,8 @@ has 'summary' => (
             return;
         }
         # get from the html tree
-        my $tree  = $self->__html_tree;
+        my $tree = $self->html_tree( content => $self->html );
+        
         my $title = $tree->find_by_tag_name('title')->content_array_ref->[0];
         my @parts = split(/\s+\-\s+/, $title, 4);
         return $parts[2] if ( scalar @parts == 4 );
@@ -121,7 +94,7 @@ has 'comments' => (
         
         my @rets;
         
-        my $tree  = $self->__html_tree;
+        my $tree = $self->html_tree( content => $self->html );
         my @comments = $tree->look_down( class => 'artifactcomment' );
         foreach my $comment ( @comments ) {
             my $href = $comment->look_down( class => 'author' )->find_by_tag_name('a')->attr('href');
@@ -162,7 +135,7 @@ has 'labels' => (
             return [];
         }
         # get from the html tree
-        my $tree  = $self->__html_tree;
+        my $tree = $self->html_tree( content => $self->html );
         my @tags = $tree->look_down( href => qr/q\=label\:/);
         my @labels;
         foreach my $tag ( @tags ) {
@@ -171,6 +144,13 @@ has 'labels' => (
 	    return \@labels;
     },
 );
+
+sub BUILD {
+    my ( $self, $params ) = @_;
+
+    # http://code.google.com/p/net-google-code/wiki/TestPage
+    $self->html( $self->fetch( $self->base_url . 'wiki/' . $params->{name} ) );
+}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
@@ -226,6 +206,7 @@ last updator of this wiki entry
 =item comments
 
 wiki entry comments
+
 
 =back
 
