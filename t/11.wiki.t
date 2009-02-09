@@ -59,7 +59,7 @@ is_deeply $entry->labels, ['Featured', 'Phase-Support'];
 
 # test HTML
 $entry = $wiki->entry('TestPage');
-like $entry->html, qr/Add your content here/;
+like $entry->wiki_html, qr/Add your content here/;
 is $entry->updated_time, 'Sat Jan 17 15:21:27 2009';
 is $entry->updated_by, 'fayland';
 is $entry->summary, 'One-sentence summary of this page.';
