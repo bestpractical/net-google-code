@@ -165,11 +165,20 @@ sub update {
         }
     );
 
-    return $self->html_contains(
-        look_down => [ class => 'notice' ],
-        as_text   => qr/has been updated/,
-    );
-
+    if (
+        $self->html_contains(
+            look_down => [ class => 'notice' ],
+            as_text   => qr/has been updated/,
+        )
+      )
+    {
+        $self->load( $self->id ); # maybe this is too much?
+        return 1;
+    }
+    else {
+        warn 'update failed';
+        return;
+    }
 }
 
 
