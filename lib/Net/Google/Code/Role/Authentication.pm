@@ -9,10 +9,9 @@ has 'email' => (
 );
 
 has 'password' => (
-    isa       => 'Str',
-    is        => 'rw',
+    isa => 'Str',
+    is  => 'rw',
 );
-
 
 sub signin {
     my $self = shift;
@@ -41,7 +40,10 @@ sub signin {
 
     die 'signin failed to google code'
       unless ( $already_in_google && $self->mech->uri =~ /CheckCookie/ )
-      || ( !$already_in_google && $self->mech->content =~ /Sign Out/ );
+      || !$already_in_google && $self->html_contains(
+        look_down => [ id => 'gaia' ],
+        as_text   => qr/Sign out/,
+      );
 
     return 1;
 }
@@ -52,12 +54,15 @@ sub signout {
         url_regex => qr!^https?://www\.google\.com/accounts/Logout! )
       || $self->mech->get('https://www.google.com/accounts/Logout');
     die 'sign out failed to google code'
-      unless $self->mech->content =~ m!Sign In!;
+      unless $self->html_contains(
+        look_down => [ id => 'gaia' ],
+        as_text   => qr/Sign in/,
+      );
 
     return 1;
 }
 
-*sign_in = \&signin;
+*sign_in  = \&signin;
 *sign_out = \&signout;
 
 sub ask_password {
@@ -69,13 +74,14 @@ sub ask_password {
     }
 }
 
-
 sub signed_in {
     my $self = shift;
     return 1
       if $self->mech->content
-          && $self->mech->uri =~ m!https?://[-\w]+\.google\.com/!
-          && $self->mech->content =~ /Sign Out/;
+          && $self->html_contains(
+              look_down => [ id => 'gaia' ],
+              as_text   => qr/Sign out/,
+          );
     return;
 }
 
