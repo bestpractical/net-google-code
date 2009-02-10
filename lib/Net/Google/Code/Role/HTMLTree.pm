@@ -36,9 +36,6 @@ sub html_contains {
     if ( $args{look_down} ) {
         ($part) = $tree->look_down( @{ $args{look_down} } );
     }
-    open my $fh, '>', '/tmp/t.html';
-    print $fh $self->mech->content;
-    close $fh;
 
     return unless $part;
 
