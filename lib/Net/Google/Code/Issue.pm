@@ -135,6 +135,62 @@ sub parse {
 
 }
 
+sub create {
+    my $self = shift;
+    my %args = validate(
+        @_,
+        {
+            labels => { type => HASHREF | ARRAYREF, optional => 1 },
+            files  => { type => ARRAYREF, optional => 1 },
+            map { $_ => { type => SCALAR, optional => 1 } }
+              qw/comment summary status owner cc/,
+        }
+    );
+
+    # convert hash to array. e.g. Type => Defect to Type-Defect
+    if ( $args{labels} && ref $args{labels} eq 'HASH' ) {
+        $args{labels} =
+          [ map { $_ . '-' . $args{labels}{$_} } keys %{ $args{labels} } ];
+    }
+
+    $self->sign_in;
+    $self->fetch( 'issues/entry' );
+
+    $self->mech->form_with_fields( 'comment', 'summary' );
+
+    $self->mech->field( 'label', $args{labels} );
+
+    # the page doesn't have any file field yet :/
+    if ( $args{files} ) {
+        for ( my $i = 0; $i < scalar @{ $args{files} }; $i++ ) {
+            $self->mech->field( 'file' . ($i + 1), $args{files}[$i] );
+        }
+    }
+
+    $self->mech->submit_form(
+        fields => {
+            map { $_ => $args{$_} }
+              grep { exists $args{$_} }
+              qw/comment summary status owner cc/
+        }
+    );
+
+    my ( $contains, $id ) = $self->html_contains(
+        look_down => [ class => 'notice' ],
+        as_text   => qr/Issue\s+(\d+)/i,
+    );
+
+    if ( $contains )
+    {
+        $self->load( $id );
+        return $id;
+    }
+    else {
+        warn 'create issue failed';
+        return;
+    }
+}
+
 sub update {
     my $self = shift;
     my %args = validate(
@@ -233,11 +289,15 @@ Net::Google::Code::Issue - Google Code Issue
 
 =head2 description
 
+=head2 create
+comment, summary, status, owner, cc, labels, files.
+
+Caveat: 'files' field doesn't work right now, please don't use it.
+
 =head2 update
 comment, summary, status, owner, merge_into, cc, labels, blocked_on, files.
 
-Caveat: currently, 'files' field doesn't work right now, please don't try to
-use it.
+Caveat: 'files' field doesn't work right now, please don't use it.
 
 =head1 AUTHOR
 
