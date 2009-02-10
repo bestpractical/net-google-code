@@ -141,6 +141,7 @@ sub update {
         @_,
         {
             labels => { type => HASHREF | ARRAYREF, optional => 1 },
+            files  => { type => ARRAYREF, optional => 1 },
             map { $_ => { type => SCALAR, optional => 1 } }
               qw/comment summary status owner merge_into cc blocked_on/,
         }
@@ -154,9 +155,18 @@ sub update {
 
     $self->sign_in;
     $self->fetch( 'issues/detail?id=' . $self->id );
+
     $self->mech->form_with_fields( 'comment', 'summary' );
 
     $self->mech->field( 'label', $args{labels} );
+
+    # the page doesn't have any file field yet :/
+    if ( $args{files} ) {
+        for ( my $i = 0; $i < scalar @{ $args{files} }; $i++ ) {
+            $self->mech->field( 'file' . ($i + 1), $args{files}[$i] );
+        }
+    }
+
     $self->mech->submit_form(
         fields => {
             map { $_ => $args{$_} }
@@ -224,7 +234,10 @@ Net::Google::Code::Issue - Google Code Issue
 =head2 description
 
 =head2 update
-comment, summary, status, owner, merge_into, cc, labels, blocked_on
+comment, summary, status, owner, merge_into, cc, labels, blocked_on, files.
+
+Caveat: currently, 'files' field doesn't work right now, please don't try to
+use it.
 
 =head1 AUTHOR
 
