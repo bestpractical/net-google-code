@@ -250,7 +250,7 @@ sub labels_array {
     my $labels = $args{labels} || $self->labels;
 
     if ( keys %$labels ) {
-        return map { $_ . '-' . $labels->{$_} } keys %$labels;
+        return map { $_ . '-' . ( $labels->{$_} || '' ) } keys %$labels;
     }
     return;
 }
