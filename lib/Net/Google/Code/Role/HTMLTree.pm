@@ -39,9 +39,17 @@ sub html_contains {
 
     return unless $part;
 
-    return 1
-      if ref $args{as_text} eq 'Regexp' && $part->as_text =~ $args{as_text}
-          || $part->as_text eq $args{as_text};
+    my $text = $part->as_text;
+    return 1 if $text eq $args{as_text};
+
+    if ( ( ref $args{as_text} eq 'Regexp' ) && ( my @captures =
+        $text =~ $args{as_text} ) )
+    {
+# note, if there's no captures at all but the string matches, 
+# @captures will be set to (1), so don't use @captures unless you 
+# know there's some capture in the regex
+        return wantarray ? ( 1, @captures ) : 1;
+    }
     return;
 }
 
