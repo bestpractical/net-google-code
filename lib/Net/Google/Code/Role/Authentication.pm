@@ -13,7 +13,7 @@ has 'password' => (
     is  => 'rw',
 );
 
-sub signin {
+sub sign_in {
     my $self = shift;
     return 1 if $self->signed_in;
     $self->ask_password unless $self->password && length $self->password;
@@ -48,7 +48,7 @@ sub signin {
     return 1;
 }
 
-sub signout {
+sub sign_out {
     my $self = shift;
     $self->mech->follow_link(
         url_regex => qr!^https?://www\.google\.com/accounts/Logout! )
@@ -61,9 +61,6 @@ sub signout {
 
     return 1;
 }
-
-*sign_in  = \&signin;
-*sign_out = \&signout;
 
 sub ask_password {
     my $self = shift;
@@ -100,12 +97,10 @@ Net::Google::Code::Role::Authentication -
 =head1 INTERFACE
 
 
-=head2 signin
 =head2 sign_in
 
 sign in
 
-=head2 signout
 =head2 sign_out
 
 sign out
