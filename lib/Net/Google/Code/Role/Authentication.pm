@@ -41,7 +41,6 @@ sub sign_in {
     die 'sign in failed to google code'
       unless ( $already_in_google && $self->mech->uri =~ /CheckCookie/ )
       || !$already_in_google && $self->html_contains(
-        look_down => [ id => 'gaia' ],
         as_text   => qr/Sign out/i,
       );
 
@@ -55,7 +54,6 @@ sub sign_out {
       || $self->mech->get('https://www.google.com/accounts/Logout');
     die 'sign out failed to google code'
       unless $self->html_contains(
-        look_down => [ id => 'gaia' ],
         as_text   => qr/Sign in/i,
       );
 
@@ -76,7 +74,6 @@ sub signed_in {
     return 1
       if $self->mech->content
           && $self->html_contains(
-              look_down => [ id => 'gaia' ],
               as_text   => qr/Sign out/,
           );
     return;
