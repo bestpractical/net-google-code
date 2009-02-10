@@ -147,10 +147,8 @@ sub create {
         }
     );
 
-    # convert hash to array. e.g. Type => Defect to Type-Defect
-    if ( $args{labels} && ref $args{labels} eq 'HASH' ) {
-        $args{labels} =
-          [ map { $_ . '-' . $args{labels}{$_} } keys %{ $args{labels} } ];
+    if ( ref $args{labels} eq 'HASH' ) {
+        $args{labels} = [ $self->labels_array( labels => $args{labels} ) ];
     }
 
     $self->sign_in;
@@ -203,10 +201,8 @@ sub update {
         }
     );
 
-    # convert hash to array. e.g. Type => Defect to Type-Defect
-    if ( $args{labels} && ref $args{labels} eq 'HASH' ) {
-        $args{labels} =
-          [ map { $_ . '-' . $args{labels}{$_} } keys %{ $args{labels} } ];
+    if ( ref $args{labels} eq 'HASH' ) {
+        $args{labels} = [ $self->labels_array( labels => $args{labels} ) ];
     }
 
     $self->sign_in;
@@ -245,6 +241,18 @@ sub update {
         warn 'update failed';
         return;
     }
+}
+
+
+sub labels_array {
+    my $self = shift;
+    my %args = validate( @_, { labels => { type => HASHREF, optional => 1 } } );
+    my $labels = $args{labels} || $self->labels;
+
+    if ( keys %$labels ) {
+        return map { $_ . '-' . $labels->{$_} } keys %$labels;
+    }
+    return;
 }
 
 no Moose;
@@ -298,6 +306,13 @@ Caveat: 'files' field doesn't work right now, please don't use it.
 comment, summary, status, owner, merge_into, cc, labels, blocked_on, files.
 
 Caveat: 'files' field doesn't work right now, please don't use it.
+
+=head2 labels_array
+convert hashref to array.
+accept labels as arg, e.g. lables_array( labels => { label_hash } )
+if there is no labels arg, use the $self->labels
+
+e.g. { Type => 'Defect', Priority => 'High' } to ( 'Type-Defect', 'Priority-High' )
 
 =head1 AUTHOR
 
