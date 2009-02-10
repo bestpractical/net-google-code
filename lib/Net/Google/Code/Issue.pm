@@ -140,23 +140,23 @@ sub update {
     my %args = validate(
         @_,
         {
-            label => { type => HASHREF | ARRAYREF, optional => 1 },
+            labels => { type => HASHREF | ARRAYREF, optional => 1 },
             map { $_ => { type => SCALAR, optional => 1 } }
               qw/comment summary status owner merge_into cc blocked_on/,
         }
     );
 
     # convert hash to array. e.g. Type => Defect to Type-Defect
-    if ( $args{label} && ref $args{label} eq 'HASH' ) {
-        $args{label} =
-          [ map { $_ . '-' . $args{label}{$_} } keys %{ $args{label} } ];
+    if ( $args{labels} && ref $args{labels} eq 'HASH' ) {
+        $args{labels} =
+          [ map { $_ . '-' . $args{labels}{$_} } keys %{ $args{labels} } ];
     }
 
     $self->signin;
     $self->fetch( 'issues/detail?id=' . $self->id );
     $self->mech->form_with_fields( 'comment', 'summary' );
 
-    $self->mech->field( 'label', $args{label} );
+    $self->mech->field( 'label', $args{labels} );
     $self->mech->submit_form(
         fields => {
             map { $_ => $args{$_} }
@@ -224,7 +224,7 @@ Net::Google::Code::Issue - Google Code Issue
 =head2 description
 
 =head2 update
-comment, summary, status, owner, merge_into, cc, label, blocked_on
+comment, summary, status, owner, merge_into, cc, labels, blocked_on
 
 =head1 AUTHOR
 
