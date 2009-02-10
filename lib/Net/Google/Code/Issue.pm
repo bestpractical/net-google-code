@@ -152,7 +152,7 @@ sub update {
           [ map { $_ . '-' . $args{labels}{$_} } keys %{ $args{labels} } ];
     }
 
-    $self->signin;
+    $self->sign_in;
     $self->fetch( 'issues/detail?id=' . $self->id );
     $self->mech->form_with_fields( 'comment', 'summary' );
 
