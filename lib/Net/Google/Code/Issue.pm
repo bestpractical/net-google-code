@@ -154,11 +154,19 @@ sub create {
     $self->sign_in;
     $self->fetch( 'issues/entry' );
 
+    if ( $args{files} ) {
+# hack hack hack
+# manually add file fields since we don't have them in page.
+        my $html = $self->mech->content;
+        for ( 1 .. @{$args{files}} ) {
+            $html =~
+s{(?<=id="attachmentareadeventry"></div>)}{<input name="file$_" type="file">};
+        }
+        $self->mech->update_html( $html );
+    }
+
     $self->mech->form_with_fields( 'comment', 'summary' );
-
     $self->mech->field( 'label', $args{labels} );
-
-    # the page doesn't have any file field yet :/
     if ( $args{files} ) {
         for ( my $i = 0; $i < scalar @{ $args{files} }; $i++ ) {
             $self->mech->field( 'file' . ($i + 1), $args{files}[$i] );
@@ -208,11 +216,19 @@ sub update {
     $self->sign_in;
     $self->fetch( 'issues/detail?id=' . $self->id );
 
+    if ( $args{files} ) {
+# hack hack hack
+# manually add file fields since we don't have them in page.
+        my $html = $self->mech->content;
+        for ( 1 .. @{$args{files}} ) {
+            $html =~
+s{(?<=id="attachmentarea"></div>)}{<input name="file$_" type="file">};
+        }
+        $self->mech->update_html( $html );
+    }
+
     $self->mech->form_with_fields( 'comment', 'summary' );
-
     $self->mech->field( 'label', $args{labels} );
-
-    # the page doesn't have any file field yet :/
     if ( $args{files} ) {
         for ( my $i = 0; $i < scalar @{ $args{files} }; $i++ ) {
             $self->mech->field( 'file' . ($i + 1), $args{files}[$i] );
