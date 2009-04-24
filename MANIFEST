@@ -44,6 +44,7 @@ t/pod.t
 t/sample/02.issue.html
 t/sample/10.download.html
 t/sample/10.download.xml
+t/sample/11.TestPage.wiki
 t/sample/11.TODO.wiki
 t/sample/11.wiki.html
 t/sample/11.wiki.TestPage.html

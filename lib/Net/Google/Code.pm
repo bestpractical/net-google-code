@@ -3,7 +3,7 @@ package Net::Google::Code;
 use Moose;
 with 'Net::Google::Code::Role';
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 has 'home'  => (
     isa     => 'Net::Google::Code::Home',
@@ -55,10 +55,6 @@ __END__
 =head1 NAME
 
 Net::Google::Code - a simple client library for google code
-
-=head1 VERSION
-
-This document describes Net::Google::Code version 0.02
 
 =head1 SYNOPSIS
 
