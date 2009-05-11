@@ -1,6 +1,10 @@
 package Net::Google::Code::IssueAttachment;
 use Moose;
-with 'Net::Google::Code::Role', 'Net::Google::Code::Role::RemoteFile';
+with 'Net::Google::Code::Role';
+
+has name    => ( isa => 'Str', is => 'rw' );
+has url     => ( isa => 'Str', is => 'rw' );
+has size    => ( isa => 'Str', is => 'rw' );
 
 =head2 parse
 there're 2 trs that represent an attachment like the following:
