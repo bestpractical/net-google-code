@@ -14,6 +14,8 @@ requires 'HTML::TreeBuilder';
 requires 'Params::Validate';
 requires 'XML::Atom';
 
+recursive_author_tests('xt/');
+
 auto_install;
 
 WriteAll;

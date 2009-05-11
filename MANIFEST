@@ -2,6 +2,7 @@ AUTHORS
 Changes
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
+inc/Module/Install/AuthorTests.pm
 inc/Module/Install/AutoInstall.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
@@ -15,19 +16,17 @@ lib/Net/Google/Code.pm
 lib/Net/Google/Code/Downloads.pm
 lib/Net/Google/Code/Home.pm
 lib/Net/Google/Code/Issue.pm
-lib/Net/Google/Code/IssueAttachment.pm
-lib/Net/Google/Code/IssueComment.pm
-lib/Net/Google/Code/IssuePropChange.pm
-lib/Net/Google/Code/IssueSearch.pm
-lib/Net/Google/Code/Mechanize.pm
+lib/Net/Google/Code/Issue/Attachment.pm
+lib/Net/Google/Code/Issue/Comment.pm
+lib/Net/Google/Code/Issue/PropChange.pm
+lib/Net/Google/Code/Issue/Search.pm
 lib/Net/Google/Code/Role.pm
-lib/Net/Google/Code/Role/Connectable.pm
-lib/Net/Google/Code/Role/RemoteFile.pm
+lib/Net/Google/Code/Role/Fetchable.pm
 lib/Net/Google/Code/Role/URL.pm
 lib/Net/Google/Code/Wiki.pm
 lib/Net/Google/Code/WikiEntry.pm
 Makefile.PL
-MANIFEST
+MANIFEST			This list of files
 META.yml
 README
 t/00.load.t
@@ -37,10 +36,6 @@ t/04.attachment.t
 t/10.downloads.t
 t/11.wiki.t
 t/20.code.t
-t/kwalitee.t
-t/perlcritic.t
-t/pod-coverage.t
-t/pod.t
 t/sample/02.issue.html
 t/sample/10.download.html
 t/sample/10.download.xml
@@ -49,3 +44,7 @@ t/sample/11.TODO.wiki
 t/sample/11.wiki.html
 t/sample/11.wiki.TestPage.html
 t/sample/20.code.html
+xt/kwalitee.t
+xt/perlcritic.t
+xt/pod-coverage.t
+xt/pod.t
