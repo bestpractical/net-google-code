@@ -3,9 +3,9 @@ use warnings;
 
 use Test::More tests => 5;
 
-use Net::Google::Code::IssueAttachment;
-my $attachment = Net::Google::Code::IssueAttachment->new( project => 'test' );
-isa_ok( $attachment, 'Net::Google::Code::IssueAttachment', '$attachment' );
+use Net::Google::Code::Issue::Attachment;
+my $attachment = Net::Google::Code::Issue::Attachment->new( project => 'test' );
+isa_ok( $attachment, 'Net::Google::Code::Issue::Attachment', '$attachment' );
 
 
 my $content;

@@ -1,4 +1,4 @@
-package Net::Google::Code::IssueSearch;
+package Net::Google::Code::Issue::Search;
 use Moose;
 use Params::Validate qw(:all);
 use Moose::Util::TypeConstraints;
@@ -123,7 +123,7 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::IssueSearch - 
+Net::Google::Code::Issue::Search - 
 
 
 =head1 DESCRIPTION

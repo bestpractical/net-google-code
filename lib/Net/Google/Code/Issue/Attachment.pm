@@ -1,4 +1,4 @@
-package Net::Google::Code::IssueAttachment;
+package Net::Google::Code::Issue::Attachment;
 use Moose;
 with 'Net::Google::Code::Role';
 
@@ -56,7 +56,7 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::IssueAttachment
+Net::Google::Code::Issue::Attachment
 
 =head1 DESCRIPTION
 

@@ -2,7 +2,7 @@ package Net::Google::Code::Issue;
 use Moose;
 use Params::Validate qw(:all);
 with 'Net::Google::Code::Role';
-use Net::Google::Code::IssueComment;
+use Net::Google::Code::Issue::Comment;
 
 has state => (
     isa     => 'HashRef',
@@ -71,12 +71,12 @@ sub parse {
     my $attachments = $description->look_down( class => 'attachments' );
     if ($attachments) {
         my @items = $attachments->find_by_tag_name('tr');
-        require Net::Google::Code::IssueAttachment;
+        require Net::Google::Code::Issue::Attachment;
         while ( scalar @items ) {
             my $tr1 = shift @items;
             my $tr2 = shift @items;
             my $a =
-              Net::Google::Code::IssueAttachment->new(
+              Net::Google::Code::Issue::Attachment->new(
                 project => $self->project );
 
             if ( $a->parse( $tr1, $tr2 ) ) {
@@ -132,7 +132,7 @@ sub parse {
     pop @comments;    # last one is for adding comment
     for my $comment (@comments) {
         my $object =
-          Net::Google::Code::IssueComment->new( project => $self->project );
+          Net::Google::Code::Issue::Comment->new( project => $self->project );
         $object->parse($comment);
         push @{ $self->comments }, $object;
     }
