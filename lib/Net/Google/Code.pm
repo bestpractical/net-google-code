@@ -5,46 +5,117 @@ with 'Net::Google::Code::Role';
 
 our $VERSION = '0.03';
 
-has 'home'  => (
-    isa     => 'Net::Google::Code::Home',
-    is      => 'ro',
-    lazy    => 1,
-    default => sub {
-        require Net::Google::Code::Home;
-        Net::Google::Code::Home->new( project => $_[0]->project );
-    },
-    handles => [ 'owners', 'members', 'summary', 'description', 'labels' ],
+has 'labels' => (
+    isa => 'ArrayRef',
+    is  => 'rw',
 );
 
-has 'issue' => (
-    isa     => 'Net::Google::Code::Issue',
-    is      => 'ro',
-    lazy    => 1,
-    default => sub {
-        require Net::Google::Code::Issue;
-        Net::Google::Code::Issue->new( project => $_[0]->project );
-    }
+has 'owners' => (
+    isa => 'ArrayRef',
+    is  => 'rw',
 );
 
-has 'downloads' => (
-    isa     => 'Net::Google::Code::Downloads',
-    is      => 'ro',
-    lazy    => 1,
-    default => sub {
-        require Net::Google::Code::Downloads;
-        Net::Google::Code::Downloads->new( project => $_[0]->project );
-    }
+has 'members' => (
+    isa => 'ArrayRef',
+    is  => 'rw',
 );
 
-has 'wiki' => (
-    isa     => 'Net::Google::Code::Wiki',
-    is      => 'ro',
-    lazy    => 1,
-    default => sub {
-        require Net::Google::Code::Wiki;
-        Net::Google::Code::Wiki->new( project => $_[0]->project );
-    }
+has 'summary' => (
+    isa => 'Str',
+    is  => 'rw',
 );
+
+has 'description' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
+=head2 load
+
+load project's home page, and parse its metadata
+
+=cut
+
+sub load {
+    my $self = shift;
+    my $content = $self->fetch( $self->base_url );
+    return $self->parse( $content );
+}
+
+=head2 parse
+
+acturally do the parse job, for load();
+
+=cut
+
+sub parse {
+    my $self    = shift;
+    my $content = shift;
+    require HTML::TreeBuilder;
+    my $tree = HTML::TreeBuilder->new;
+    $tree->parse_content($content);
+    $tree->elementify;
+
+    my $summary =
+      $tree->look_down( id => 'psum' )->find_by_tag_name('a')->content_array_ref->[0];
+    $self->summary($summary) if $summary;
+
+    my $description =
+      $tree->look_down( id => 'wikicontent' )->content_array_ref->[0]->as_text;
+    $self->description($description) if $description;
+
+    my @members;
+    my @members_tags =
+      $tree->look_down( id => 'members' )->find_by_tag_name('a');
+    for my $tag (@members_tags) {
+        push @members, $tag->content_array_ref->[0];
+    }
+    $self->members( \@members ) if @members;
+
+    my @owners;
+    my @owners_tags = $tree->look_down( id => 'owners' )->find_by_tag_name('a');
+    for my $tag (@owners_tags) {
+        push @owners, $tag->content_array_ref->[0];
+    }
+    $self->owners( \@owners ) if @owners;
+
+    my @labels;
+    my @labels_tags = $tree->look_down( href => qr/q\=label\:/ );
+    for my $tag (@labels_tags) {
+        push @labels, $tag->content_array_ref->[0];
+    }
+    $self->labels( \@labels ) if @labels;
+
+}
+
+sub issue {
+    my $self = shift;
+    require Net::Google::Code::Issue;
+    return Net::Google::Code::Issue->new(
+        project => $self->project,
+        @_
+    );
+}
+
+sub downloads {
+
+    my $self = shift;
+    require Net::Google::Code::Downloads;
+    return Net::Google::Code::Downloads->new(
+        project => $self->project,
+        @_
+    );
+}
+
+sub wiki {
+
+    my $self = shift;
+    require Net::Google::Code::Wiki;
+    return Net::Google::Code::Wiki->new(
+        project => $self->project,
+        @_
+    );
+}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
@@ -61,6 +132,7 @@ Net::Google::Code - a simple client library for google code
     use Net::Google::Code;
     
     my $project = Net::Google::Code->new( project => 'net-google-code' );
+    $project->load; # load its metadata, e.g. summary, owners, members, etc.
     
     print join(', ', @{ $project->owners } );
     

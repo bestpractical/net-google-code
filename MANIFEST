@@ -14,7 +14,6 @@ inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/Net/Google/Code.pm
 lib/Net/Google/Code/Downloads.pm
-lib/Net/Google/Code/Home.pm
 lib/Net/Google/Code/Issue.pm
 lib/Net/Google/Code/Issue/Attachment.pm
 lib/Net/Google/Code/Issue/Comment.pm

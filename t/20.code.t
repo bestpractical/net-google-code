@@ -12,7 +12,7 @@ use_ok('Net::Google::Code');
 my $homepage_file = "$Bin/sample/20.code.html";
 my $homepage_content = read_file($homepage_file);
 
-my $mock = Test::MockModule->new('Net::Google::Code::Home');
+my $mock = Test::MockModule->new('Net::Google::Code');
 $mock->mock(
     'fetch',
     sub {
@@ -29,6 +29,8 @@ my $project = Net::Google::Code->new( project => $name );
 is( $project->base_url, "http://code.google.com/p/$name/", 'default url' );
 is( $project->base_svn_url, "http://$name.googlecode.com/svn/", 'svn url' );
 is( $project->project, $name, 'project name' );
+
+$project->load;
 is_deeply( $project->owners, [ 'sunnavy' ] );
 is_deeply( $project->members, [ 'jessev', 'fayland' ] );
 like $project->description, qr/Net\:\:Google\:\:Code/;
