@@ -39,7 +39,7 @@ sub load {
     my $self = shift;
     my ($id) = validate_pos( @_, { type => SCALAR } );
     $self->state->{id} = $id;
-    my $content = $self->fetch( "issues/detail?id=" . $id );
+    my $content = $self->fetch( $self->base_url . "issues/detail?id=" . $id );
     $self->parse($content);
     return $id;
 }

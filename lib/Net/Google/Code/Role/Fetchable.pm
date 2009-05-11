@@ -1,18 +1,16 @@
-package Net::Google::Code::Role::Connectable;
+package Net::Google::Code::Role::Fetchable;
 use Moose::Role;
-use Params::Validate;
-use Net::Google::Code::Mechanize;
-
-with 'Net::Google::Code::Role::URL';
+use Params::Validate ':all';
+use WWW::Mechanize;
 
 has mech => (
-    isa     => 'Net::Google::Code::Mechanize',
+    isa     => 'WWW::Mechanize',
     is      => 'ro',
     lazy    => 1,
     default => sub {
         my $self = shift;
-        my $m    = Net::Google::Code::Mechanize->new(
-			agent       => 'Net-Google-Code',
+        my $m    = WWW::Mechanize->new(
+            agent       => 'Net-Google-Code',
             cookie_jar  => {},
             stack_depth => 1,
             timeout     => 60,
@@ -22,21 +20,13 @@ has mech => (
 );
 
 sub fetch {
-    my $self    = shift;
-    my $query   = shift;
-    my $abs_url;
-    if ( $query =~ /^http(s)?:/ ) {
-        $abs_url = $query;
-    }
-    else {
-        $abs_url = $self->base_url . $query;
-    }
-
-    $self->mech->get($abs_url);
+    my $self = shift;
+    my ($url) = validate_pos( @_, { type => SCALAR } );
+    $self->mech->get($url);
     if ( !$self->mech->response->is_success ) {
         die "Server threw an error "
           . $self->mech->response->status_line . " for "
-          . $abs_url;
+          . $url;
     }
     else {
         return $self->mech->content;
@@ -64,10 +54,9 @@ Net::Google::Code::Role::Connectable -
 
 sunnavy  C<< <sunnavy@bestpractical.com> >>
 
-
 =head1 LICENCE AND COPYRIGHT
 
-Copyright 2008-2009 Best Practical Solutions.
+Copyright 2009 Best Practical Solutions.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

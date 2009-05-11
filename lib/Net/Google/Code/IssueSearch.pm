@@ -44,7 +44,7 @@ sub search {
         $self->_q( $args{_q} ) if defined $args{_q};
     }
 
-    $self->fetch('issues/list');
+    $self->fetch( $self->base_url . 'issues/list');
     my $mech = $self->mech;
     $mech->submit_form(
         form_number => 2,
