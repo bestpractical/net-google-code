@@ -123,9 +123,9 @@ sub parse {
 
     # extract comments
     my @comments_tag = $tree->look_down( class => 'vt issuecomment' );
-    pop @comments_tag;    # last one is for adding comment
     my @comments;
     for my $tag (@comments_tag) {
+        next unless $tag->look_down( class => 'author' );
         my $comment =
           Net::Google::Code::Issue::Comment->new( project => $self->project );
         $comment->parse($tag);
