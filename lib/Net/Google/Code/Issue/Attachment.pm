@@ -6,21 +6,11 @@ has name    => ( isa => 'Str', is => 'rw' );
 has url     => ( isa => 'Str', is => 'rw' );
 has size    => ( isa => 'Str', is => 'rw' );
 
-=head2 parse
-there're 2 trs that represent an attachment like the following:
-
- <tr><td rowspan="2" width="24"><a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png" target="new"><img width="16" height="16" src="/hosting/images/generic.gif" border="0" ></a></td>
- <td><b>proxy_settings.png</b></td></tr>
- <tr><td>14.3 KB
-  
- <a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png">Download</a></td></tr>
-
-=cut
-
 sub parse {
     my $self = shift;
     my $tr1  = shift;
     my $tr2  = shift;
+
     my $b    = $tr1->find_by_tag_name('b');    # name lives here
     if ($b) {
         my $name = $b->content_array_ref->[0];
@@ -64,13 +54,29 @@ This class represents a single attachment for an issue.
 
 =head1 INTERFACE
 
-=head2 name
+=over 4
 
-=head2 content
+=item parse( tr1, tr2 )
 
-=head2 size
+there're 2 trs that represent an attachment like the following:
 
-=head2 url
+ <tr><td rowspan="2" width="24"><a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png" target="new"><img width="16" height="16" src="/hosting/images/generic.gif" border="0" ></a></td>
+ <td><b>proxy_settings.png</b></td></tr>
+ <tr><td>14.3 KB
+  
+ <a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png">Download</a></td></tr>
+
+=cut
+
+=item name
+
+=item content
+
+=item size
+
+=item url
+
+=back
 
 =head1 AUTHOR
 

@@ -161,25 +161,29 @@ Net::Google::Code::Issue - Google Code Issue
 
 =head1 INTERFACE
 
-=head2 load
+=over 4
 
-=head2 parse
+=item load
 
-=head2 id
+=item parse
 
-=head2 status
+=item id
 
-=head2 owner 
+=item status
 
-=head2 reporter
+=item owner 
 
-=head2 closed
+=item reporter
 
-=head2 cc
+=item closed
 
-=head2 summary
+=item cc
 
-=head2 description
+=item summary
+
+=item description
+
+=back
 
 =head1 AUTHOR
 

@@ -45,23 +45,11 @@ has 'wikis' => (
     is  => 'rw',
 );
 
-=head2 load
-
-load project's home page, and parse its metadata
-
-=cut
-
 sub load {
     my $self = shift;
     my $content = $self->fetch( $self->base_url );
     return $self->parse( $content );
 }
-
-=head2 parse
-
-acturally do the parse job, for load();
-
-=cut
 
 sub parse {
     my $self    = shift;
@@ -121,11 +109,6 @@ sub issue {
     );
 }
 
-=head2 load_downloads
-
-load all the downloads
-
-=cut
 
 sub load_downloads {
 	my $self = shift;
@@ -161,12 +144,6 @@ sub wiki {
         @_
     );
 }
-
-=head2 load_wikis
-
-load all the wikis
-
-=cut
 
 sub load_wikis {
 	my $self = shift;
@@ -232,9 +209,25 @@ Net::Google::Code is a simple client library for projects hosted in Google Code.
 
 Currently, it focuses on the basic read functionality for that is provided.
 
-=head1 ATTRIBUTES
+=head1 INTERFACE
 
 =over 4
+
+=item load
+
+load project's home page, and parse its metadata
+
+=item parse
+
+acturally do the parse job, for load();
+
+=item load_downloads
+
+load all the downloads, and store them as an arrayref in $self->downloads
+
+=item load_wikis
+
+load all the wikis, and store them as an arrayref in $self->wikis
 
 =item project
 
@@ -248,43 +241,34 @@ the project homepage
 
 the project svn url (without trunk)
 
-=item summary
+=item base_feeds_url
 
-short Summary in 'Project Home'
+the project feeds url
+
+=item summary
 
 =item description
 
-HTML Description in 'Project Home'
-
 =item labels
-
-'Labels' in 'Project Home'
 
 =item owners
 
-ArrayRef. project owners
-
 =item members
-
-ArrayRef. project members
-
-=back
-
-=head1 METHODS
-
-=over 4
 
 =item issue
 
-read L<Net::Google::Code::Issue> for the API detail
+return a new L<Net::Google::Code::Issue> object, arguments will be passed to
+L<Net::Google::Code::Issue>'s new method.
 
 =item download
 
-read L<Net::Google::Code::Download> for the API detail
+return a new L<Net::Google::Code::Download> object, arguments will be passed to
+L<Net::Google::Code::Download>'s new method.
 
 =item wiki
 
-read L<Net::Google::Code::Wiki> for the API detail
+return a new L<Net::Google::Code::Wiki> object, arguments will be passed to
+L<Net::Google::Code::Wiki>'s new method.
 
 =back
 

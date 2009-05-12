@@ -23,18 +23,22 @@ has 'updated' => (
     isa => 'Str',
     is  => 'rw',
 );
+
 has 'updated_by' => (
     isa => 'Str',
     is  => 'rw',
 );
+
 has 'labels' => (
     isa => 'ArrayRef[Str]',
     is  => 'rw',
 );
+
 has 'summary' => (
     isa => 'Str',
     is  => 'rw',
 );
+
 has 'comments' => (
     isa => 'ArrayRef[Net::Google::Code::Wiki::Comment]',
     is  => 'rw',
@@ -121,34 +125,38 @@ Net::Google::Code::Wiki - Google Code Wiki
         project => 'net-google-code',
         name    => 'TestPage',
     );
-
+    $wiki->load;
     $wiki_entry->source;
 
 =head1 INTERFACE
 
-=head2 load
+=over 4
 
-=head2 parse
+=item load
 
-=head2 load_source
+=item parse
 
-=head2 parse_source
+=item load_source
 
-=head2 name
+=item parse_source
 
-=head2 source
+=item name
 
-=head2 summary
+=item source
 
-=head2 labels
+=item summary
 
-=head2 content
+=item labels
 
-=head2 updated_by
+=item content
 
-=head2 updated
+=item updated_by
 
-=head2 comments
+=item updated
+
+=item comments
+
+=back
 
 =head1 AUTHOR
 

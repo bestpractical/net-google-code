@@ -13,52 +13,6 @@ has attachments => (
     default => sub { [] },
 );
 
-=head2 parse
-
-parse format like the following:
-
- <td class="vt issuecomment">
- 
- 
- 
- <span class="author">Comment <a name="c18"
- href="#c18">18</a>
- by
- <a href="/u/jsykari/">jsykari</a></span>,
- <span class="date" title="Wed Sep  3 04:44:39 2008">Sep 03, 2008</span>
-<pre>
-<b>haha</b>
-
-</pre>
- 
- <div class="attachments">
- 
- <table cellspacing="0" cellpadding="2" border="0">
- <tr><td rowspan="2" width="24"><a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png" target="new"><img width="16" height="16" src="/hosting/images/generic.gif" border="0" ></a></td>
- <td><b>proxy_settings.png</b></td></tr>
- <tr><td>14.3 KB
-  
- <a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png">Download</a></td></tr>
- </table>
- 
- </div>
-
- <div class="updates">
- <div class="round4"></div>
- <div class="round2"></div>
- <div class="round1"></div>
- <div class="box-inner">
- <b>Cc:</b> thatan...@google.com<br><b>Status:</b> Available<br><b>Labels:</b> Mstone-X<br>
- </div>
- <div class="round1"></div>
- <div class="round2"></div>
- <div class="round4"></div>
- </div>
- 
- </td>
-
-=cut
-
 sub parse {
     my $self    = shift;
     my $element = shift;
@@ -158,7 +112,53 @@ Net::Google::Code::Issue::Comment -
 
 =head1 INTERFACE
 
-=head2 parse
+=over 4
+
+=item parse( element )
+
+parse format like the following:
+
+ <td class="vt issuecomment">
+ 
+ 
+ 
+ <span class="author">Comment <a name="c18"
+ href="#c18">18</a>
+ by
+ <a href="/u/jsykari/">jsykari</a></span>,
+ <span class="date" title="Wed Sep  3 04:44:39 2008">Sep 03, 2008</span>
+<pre>
+<b>haha</b>
+
+</pre>
+ 
+ <div class="attachments">
+ 
+ <table cellspacing="0" cellpadding="2" border="0">
+ <tr><td rowspan="2" width="24"><a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png" target="new"><img width="16" height="16" src="/hosting/images/generic.gif" border="0" ></a></td>
+ <td><b>proxy_settings.png</b></td></tr>
+ <tr><td>14.3 KB
+  
+ <a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png">Download</a></td></tr>
+ </table>
+ 
+ </div>
+
+ <div class="updates">
+ <div class="round4"></div>
+ <div class="round2"></div>
+ <div class="round1"></div>
+ <div class="box-inner">
+ <b>Cc:</b> thatan...@google.com<br><b>Status:</b> Available<br><b>Labels:</b> Mstone-X<br>
+ </div>
+ <div class="round1"></div>
+ <div class="round2"></div>
+ <div class="round4"></div>
+ </div>
+ 
+ </td>
+
+=back
 
 =head1 AUTHOR
 

@@ -138,25 +138,29 @@ Net::Google::Code::Download - Google Code Download
 
 =head1 INTERFACE
 
-=head2 load
+=over 4
 
-=head2 parse
+=item load
 
-=head2 name
+=item parse
 
-=head2 size
+=item name
 
-=head2 download_url
+=item size
 
-=head2 count
+=item download_url
 
-=head2 labels
+=item count
 
-=head2 checksum
+=item labels
 
-=head2 uploaded_by
+=item checksum
 
-=head2 uploaded
+=item uploaded_by
+
+=item uploaded
+
+=back
 
 =head1 AUTHOR
 

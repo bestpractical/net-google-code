@@ -46,7 +46,11 @@ Net::Google::Code::Wiki::Comment - Google Code Wiki Comment
 
 =head1 INTERFACE
 
-=head2 parse
+=over 4
+
+=item parse( element )
+
+=back
 
 =head1 AUTHOR
 
