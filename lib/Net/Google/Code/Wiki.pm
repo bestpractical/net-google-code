@@ -1,0 +1,163 @@
+package Net::Google::Code::Wiki;
+
+use Moose;
+use Params::Validate qw(:all);
+with 'Net::Google::Code::Role';
+
+has 'name' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
+has 'source' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
+has 'content' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
+has 'updated' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+has 'updated_by' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+has 'labels' => (
+    isa => 'ArrayRef[Str]',
+    is  => 'rw',
+);
+has 'summary' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+has 'comments' => (
+    isa => 'ArrayRef[Net::Google::Code::Wiki::Comment]',
+    is  => 'rw',
+);
+
+sub load_source {
+    my $self = shift;
+    my $source =
+      $self->fetch( $self->base_svn_url . 'wiki/' . $self->name . '.wiki' );
+    $self->source($source);
+    return $self->parse_source;
+}
+
+sub parse_source {
+    my $self = shift;
+    my @meta = grep { /^#/ } split /\n/, $self->source;
+    for my $meta (@meta) {
+        chomp $meta;
+        if ( $meta =~ /summary\s+(.*)/ ) {
+            $self->summary($1);
+        }
+        elsif ( $meta =~ /labels\s+(.*)/ ) {
+            my @labels = split /,\s*/, $1;
+            $self->labels( \@labels );
+        }
+    }
+}
+
+sub load {
+    my $self = shift;
+    my $name = shift || $self->name;
+
+    # http://code.google.com/p/net-google-code/wiki/TestPage
+    my $content = $self->fetch( $self->base_url . 'wiki/' . $name );
+
+    $self->name($name) unless $self->name && $self->name eq $name;
+    $self->load_source;
+    return $self->parse($content);
+}
+
+sub parse {
+    my $self    = shift;
+    my $content = shift;
+    require HTML::TreeBuilder;
+    my $tree = HTML::TreeBuilder->new;
+    $tree->parse_content($content);
+    $tree->elementify;
+    my $wiki = $tree->look_down( id => 'wikimaincol' );
+    my $updated =
+      $wiki->find_by_tag_name('td')->find_by_tag_name('span')->attr('title');
+    my $updated_by =
+      $wiki->find_by_tag_name('td')->find_by_tag_name('a')->as_text;
+    $self->updated($updated)       if $updated;
+    $self->updated_by($updated_by) if $updated_by;
+
+    $self->content( $tree->content_array_ref->[-1]->as_HTML );
+
+    my @comments = ();
+    my @comments_element = $tree->look_down( class => 'artifactcomment' );
+    for my $element (@comments_element) {
+        require Net::Google::Code::Wiki::Comment;
+        my $comment = Net::Google::Code::Wiki::Comment->new;
+        $comment->parse($element);
+        push @comments, $comment;
+    }
+    $self->comments( \@comments );
+}
+
+no Moose;
+__PACKAGE__->meta->make_immutable;
+
+1;
+__END__
+
+=head1 NAME
+
+Net::Google::Code::Wiki - Google Code Wiki
+
+=head1 SYNOPSIS
+
+    use Net::Google::Code::Wiki;
+    
+    my $wiki = Net::Google::Code::Wiki->new(
+        project => 'net-google-code',
+        name    => 'TestPage',
+    );
+
+    $wiki_entry->source;
+
+=head1 INTERFACE
+
+=head2 load
+
+=head2 parse
+
+=head2 load_source
+
+=head2 parse_source
+
+=head2 name
+
+=head2 source
+
+=head2 summary
+
+=head2 labels
+
+=head2 content
+
+=head2 updated_by
+
+=head2 updated
+
+=head2 comments
+
+=head1 AUTHOR
+
+sunnavy  C<< <sunnavy@bestpractical.com> >>
+
+=head1 LICENCE AND COPYRIGHT
+
+Copyright 2008-2009 Best Practical Solutions.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+

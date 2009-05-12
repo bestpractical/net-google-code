@@ -1,4 +1,0 @@
-#summary TODO list
-#labels Featured,Phase-Support
-
-Please check [http://code.google.com/p/foorum/issues/list] for more issues.

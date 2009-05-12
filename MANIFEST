@@ -23,7 +23,7 @@ lib/Net/Google/Code/Role.pm
 lib/Net/Google/Code/Role/Fetchable.pm
 lib/Net/Google/Code/Role/URL.pm
 lib/Net/Google/Code/Wiki.pm
-lib/Net/Google/Code/WikiEntry.pm
+lib/Net/Google/Code/Wiki/Comment.pm
 Makefile.PL
 MANIFEST			This list of files
 META.yml
@@ -38,10 +38,9 @@ t/20.code.t
 t/sample/02.issue.html
 t/sample/10.download.html
 t/sample/10.downloads.xml
+t/sample/11.TestPage.html
 t/sample/11.TestPage.wiki
-t/sample/11.TODO.wiki
-t/sample/11.wiki.html
-t/sample/11.wiki.TestPage.html
+t/sample/11.wikis.html
 t/sample/20.code.html
 xt/kwalitee.t
 xt/perlcritic.t

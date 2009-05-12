@@ -40,6 +40,11 @@ has 'downloads' => (
     is  => 'rw',
 );
 
+has 'wikis' => (
+    isa => 'ArrayRef[Net::Google::Code::Wiki]',
+    is  => 'rw',
+);
+
 =head2 load
 
 load project's home page, and parse its metadata
@@ -155,6 +160,41 @@ sub wiki {
         project => $self->project,
         @_
     );
+}
+
+=head2 load_wikis
+
+load all the wikis
+
+=cut
+
+sub load_wikis {
+	my $self = shift;
+	
+	my $wiki_svn = $self->base_svn_url . 'wiki/';
+	my $content = $self->fetch( $wiki_svn );
+
+    require HTML::TreeBuilder;
+    my $tree = HTML::TreeBuilder->new;
+    $tree->parse_content($content);
+    $tree->elementify;
+	
+    my @wikis;
+    my @li = $tree->find_by_tag_name('li');
+    for my $li ( @li ) {
+        my $name = $li->as_text;
+        if ( $name =~ /(\S+)\.wiki$/ ) {
+            $name = $1;
+            require Net::Google::Code::Wiki;
+            my $wiki = Net::Google::Code::Wiki->new(
+                project => $self->project,
+                name    => $name,
+            );
+            $wiki->load;
+            push @wikis, $wiki;
+        }
+    }
+    $self->wikis( \@wikis );
 }
 
 no Moose;
