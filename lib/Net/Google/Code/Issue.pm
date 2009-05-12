@@ -136,7 +136,7 @@ sub create {
     my %args = validate(
         @_,
         {
-            labels => { type => HASHREF | ARRAYREF, optional => 1 },
+            labels => { type => ARRAYREF, optional => 1 },
             files  => { type => ARRAYREF, optional => 1 },
             map { $_ => { type => SCALAR, optional => 1 } }
               qw/comment summary status owner cc/,
@@ -144,7 +144,7 @@ sub create {
     );
 
     $self->sign_in;
-    $self->fetch( 'issues/entry' );
+    $self->fetch( $self->base_url . 'issues/entry' );
 
     if ( $args{files} ) {
 # hack hack hack
@@ -202,7 +202,7 @@ sub update {
     );
 
     $self->sign_in;
-    $self->fetch( 'issues/detail?id=' . $self->id );
+    $self->fetch( $self->base_url . 'issues/detail?id=' . $self->id );
 
     if ( $args{files} ) {
 # hack hack hack
@@ -293,12 +293,8 @@ Net::Google::Code::Issue - Google Code Issue
 =item create
 comment, summary, status, owner, cc, labels, files.
 
-Caveat: 'files' field doesn't work right now, please don't use it.
-
 =item update
 comment, summary, status, owner, merge_into, cc, labels, blocked_on, files.
-
-Caveat: 'files' field doesn't work right now, please don't use it.
 
 =item description
 
