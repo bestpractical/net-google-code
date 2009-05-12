@@ -3,7 +3,7 @@ use Moose::Role;
 use Params::Validate ':all';
 use WWW::Mechanize;
 
-has mech => (
+has 'mech' => (
     isa     => 'WWW::Mechanize',
     is      => 'ro',
     lazy    => 1,

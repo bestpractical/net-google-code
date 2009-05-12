@@ -2,12 +2,12 @@ package Net::Google::Code::Issue::Comment;
 use Moose;
 with 'Net::Google::Code::Role';
 
-has updates => ( isa => 'HashRef', is => 'rw', default => sub { {} } );
-has author  => ( isa => 'Str',     is => 'rw' );
-has date    => ( isa => 'Str',     is => 'rw' );
-has content => ( isa => 'Str',     is => 'rw' );
-has sequence => ( isa => 'Int', is => 'rw' );
-has attachments => (
+has 'updates' => ( isa => 'HashRef', is => 'rw', default => sub { {} } );
+has 'author'  => ( isa => 'Str',     is => 'rw' );
+has 'date'    => ( isa => 'Str',     is => 'rw' );
+has 'content' => ( isa => 'Str',     is => 'rw' );
+has 'sequence' => ( isa => 'Int', is => 'rw' );
+has 'attachments' => (
     isa     => 'ArrayRef[Net::Google::Code::Issue::Attachment]',
     is      => 'rw',
     default => sub { [] },
@@ -90,9 +90,10 @@ sub parse {
         }
 
     }
-    my $attachments = $element->look_down( class => 'attachments' );
-    if ($attachments) {
-        my @items = $attachments->find_by_tag_name('tr');
+    my @att_tags = $element->look_down( class => 'attachments' );
+    my @attachments;
+    for my $tag (@att_tags) {
+        my @items = $tag->find_by_tag_name('tr');
         require Net::Google::Code::Issue::Attachment;
         while ( scalar @items ) {
             my $tr1 = shift @items;
@@ -102,10 +103,11 @@ sub parse {
                 project => $self->project );
 
             if ( $a->parse( [ $tr1, $tr2 ] ) ) {
-                push @{ $self->attachments }, $a;
+                push @attachments, $a;
             }
         }
     }
+    $self->attachments( \@attachments );
 
     return 1;
 }

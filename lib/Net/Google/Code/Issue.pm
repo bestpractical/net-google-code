@@ -4,26 +4,26 @@ use Params::Validate qw(:all);
 with 'Net::Google::Code::Role';
 use Net::Google::Code::Issue::Comment;
 
-has state => (
+has 'state' => (
     isa     => 'HashRef',
     is      => 'rw',
     default => sub { {} },
 );
 
-has labels => (
+has 'labels' => (
     isa     => 'HashRef',
     is      => 'rw',
     default => sub { {} },
 );
 
-has comments => (
-    isa     => 'ArrayRef[Net::Google::Code::Comment]',
+has 'comments' => (
+    isa     => 'ArrayRef[Net::Google::Code::Issue::Comment]',
     is      => 'rw',
     default => sub { [] },
 );
 
-has attachments => (
-    isa     => 'ArrayRef[Net::Google::CodeTicketAttachment]',
+has 'attachments' => (
+    isa     => 'ArrayRef[Net::Google::Code::Issue::Attachment]',
     is      => 'rw',
     default => sub { [] },
 );
@@ -68,9 +68,10 @@ sub parse {
     $text =~ s/\r\n/\n/g;
     $self->state->{description} = $text;
 
-    my $attachments = $description->look_down( class => 'attachments' );
-    if ($attachments) {
-        my @items = $attachments->find_by_tag_name('tr');
+    my $att_tags = $tree->look_down( class => 'attachments' );
+    my @attachments;
+    for my $tag ($att_tags) {
+        my @items = $att_tags->find_by_tag_name('tr');
         require Net::Google::Code::Issue::Attachment;
         while ( scalar @items ) {
             my $tr1 = shift @items;
@@ -79,11 +80,12 @@ sub parse {
               Net::Google::Code::Issue::Attachment->new(
                 project => $self->project );
 
-            if ( $a->parse( [$tr1, $tr2] ) ) {
-                push @{ $self->attachments }, $a;
+            if ( $a->parse( [ $tr1, $tr2 ] ) ) {
+                push @attachments, $a;
             }
         }
     }
+    $self->attachments( \@attachments );
 
     my ($meta) = $tree->look_down( id => 'issuemeta' );
     my @meta = $meta->find_by_tag_name('tr');
@@ -128,14 +130,16 @@ sub parse {
     }
 
     # extract comments
-    my @comments = $tree->look_down( class => 'vt issuecomment' );
-    pop @comments;    # last one is for adding comment
-    for my $comment (@comments) {
-        my $object =
+    my @comments_tag = $tree->look_down( class => 'vt issuecomment' );
+    pop @comments_tag;    # last one is for adding comment
+    my @comments;
+    for my $tag (@comments_tag) {
+        my $comment =
           Net::Google::Code::Issue::Comment->new( project => $self->project );
-        $object->parse($comment);
-        push @{ $self->comments }, $object;
+        $comment->parse($tag);
+        push @comments, $comment;
     }
+    $self->comments( \@comments );
 
 }
 

@@ -81,7 +81,7 @@ sub search {
             my @ids = $tree->look_down( class => 'vt id col_0' );
             @ids =
               map { $_->content_array_ref->[0]->content_array_ref->[0] } @ids;
-            push @{ $self->ids }, @ids;
+            $self->ids( [ @{$self->ids}, @ids ] );
 
             while ( scalar @{$self->ids} < $total ) {
                 if ($mech->follow_link( text_regex => qr/Next\s+/ ) ) {
@@ -94,7 +94,7 @@ sub search {
                           map {
                             $_->content_array_ref->[0]->content_array_ref->[0]
                           } @ids;
-                        push @{ $self->ids }, @ids;
+                        $self->ids( [ @{$self->ids}, @ids ] );
                     }
                     else {
                         die "failed to follow link: Next";

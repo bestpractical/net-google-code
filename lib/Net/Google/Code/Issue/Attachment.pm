@@ -3,9 +3,9 @@ use Moose;
 with 'Net::Google::Code::Role';
 use Scalar::Util qw/blessed/;
 
-has name    => ( isa => 'Str', is => 'rw' );
-has url     => ( isa => 'Str', is => 'rw' );
-has size    => ( isa => 'Str', is => 'rw' );
+has 'name'    => ( isa => 'Str', is => 'rw' );
+has 'url'     => ( isa => 'Str', is => 'rw' );
+has 'size'    => ( isa => 'Str', is => 'rw' );
 
 sub parse {
     my $self = shift;
