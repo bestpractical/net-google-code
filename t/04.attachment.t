@@ -3,9 +3,9 @@ use warnings;
 
 use Test::More tests => 5;
 
-use Net::Google::Code::IssueAttachment;
-my $attachment = Net::Google::Code::IssueAttachment->new( project => 'test' );
-isa_ok( $attachment, 'Net::Google::Code::IssueAttachment', '$attachment' );
+use Net::Google::Code::Issue::Attachment;
+my $attachment = Net::Google::Code::Issue::Attachment->new( project => 'test' );
+isa_ok( $attachment, 'Net::Google::Code::Issue::Attachment', '$attachment' );
 
 
 my $content;
@@ -21,7 +21,7 @@ $tree->elementify;
 
 my @tr = $tree->find_by_tag_name('tr');
 is( scalar @tr, 2, '@tr has 2 elements' );
-$attachment->parse( @tr );
+$attachment->parse( $content );
 
 my %info = (
     url =>

@@ -3,53 +3,176 @@ package Net::Google::Code;
 use Moose;
 with 'Net::Google::Code::Role';
 
-our $VERSION = '0.02';
+our $VERSION = '0.04';
 
-has 'home' => (
-    isa     => 'Net::Google::Code::Home',
-    is      => 'ro',
-    lazy    => 1,
-    default => sub {
-        require Net::Google::Code::Home;
-        Net::Google::Code::Home->new( map { $_ => $_[0]->$_ }
-              grep { defined $_[0]->$_ } qw/project email password/ );
-        
-    },
-    handles => [ 'owners', 'members', 'summary', 'description', 'labels' ],
+has 'labels' => (
+    isa => 'ArrayRef',
+    is  => 'rw',
 );
 
-has 'issue' => (
-    isa     => 'Net::Google::Code::Issue',
-    is      => 'ro',
-    lazy    => 1,
-    default => sub {
-        require Net::Google::Code::Issue;
-        Net::Google::Code::Issue->new( map { $_ => $_[0]->$_ }
-              grep { defined $_[0]->$_ } qw/project email password/ );
-    }
+has 'owners' => (
+    isa => 'ArrayRef',
+    is  => 'rw',
+);
+
+has 'members' => (
+    isa => 'ArrayRef',
+    is  => 'rw',
+);
+
+has 'summary' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
+has 'description' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
+has 'issues' => (
+    isa => 'ArrayRef[Net::Google::Code::Issue]',
+    is  => 'rw',
 );
 
 has 'downloads' => (
-    isa     => 'Net::Google::Code::Downloads',
-    is      => 'ro',
-    lazy    => 1,
-    default => sub {
-        require Net::Google::Code::Downloads;
-        Net::Google::Code::Downloads->new( map { $_ => $_[0]->$_ }
-              grep { defined $_[0]->$_ } qw/project email password/ );
-    }
+    isa => 'ArrayRef[Net::Google::Code::Download]',
+    is  => 'rw',
 );
 
-has 'wiki' => (
-    isa     => 'Net::Google::Code::Wiki',
-    is      => 'ro',
-    lazy    => 1,
-    default => sub {
-        require Net::Google::Code::Wiki;
-        Net::Google::Code::Wiki->new( map { $_ => $_[0]->$_ }
-              grep { defined $_[0]->$_ } qw/project email password/ );
-    }
+has 'wikis' => (
+    isa => 'ArrayRef[Net::Google::Code::Wiki]',
+    is  => 'rw',
 );
+
+sub load {
+    my $self = shift;
+    my $content = $self->fetch( $self->base_url );
+    return $self->parse( $content );
+}
+
+sub parse {
+    my $self    = shift;
+    my $content = shift;
+    require HTML::TreeBuilder;
+    my $tree = HTML::TreeBuilder->new;
+    $tree->parse_content($content);
+    $tree->elementify;
+
+    my $summary =
+      $tree->look_down( id => 'psum' )->find_by_tag_name('a')->content_array_ref->[0];
+    $self->summary($summary) if $summary;
+
+    my $description =
+      $tree->look_down( id => 'wikicontent' )->content_array_ref->[0]->as_text;
+    $self->description($description) if $description;
+
+    my @members;
+    my @members_tags =
+      $tree->look_down( id => 'members' )->find_by_tag_name('a');
+    for my $tag (@members_tags) {
+        push @members, $tag->content_array_ref->[0];
+    }
+    $self->members( \@members ) if @members;
+
+    my @owners;
+    my @owners_tags = $tree->look_down( id => 'owners' )->find_by_tag_name('a');
+    for my $tag (@owners_tags) {
+        push @owners, $tag->content_array_ref->[0];
+    }
+    $self->owners( \@owners ) if @owners;
+
+    my @labels;
+    my @labels_tags = $tree->look_down( href => qr/q\=label\:/ );
+    for my $tag (@labels_tags) {
+        push @labels, $tag->content_array_ref->[0];
+    }
+    $self->labels( \@labels ) if @labels;
+
+}
+
+sub download {
+    my $self = shift;
+    require Net::Google::Code::Download;
+    return Net::Google::Code::Download->new(
+        project => $self->project,
+        @_
+    );
+}
+
+sub issue {
+    my $self = shift;
+    require Net::Google::Code::Issue;
+    return Net::Google::Code::Issue->new(
+        project => $self->project,
+        @_
+    );
+}
+
+
+sub load_downloads {
+	my $self = shift;
+	
+    require XML::Atom::Feed;
+	my $content = $self->fetch( $self->base_feeds_url . 'downloads/basic' );
+	my $feed = XML::Atom::Feed->new( \$content );
+	my @fentries = $feed->entries;
+	
+    my @downloads;
+	foreach my $entry (@fentries) {
+        require Net::Google::Code::Download;
+		my $title  = $entry->title;
+        # title is like: Net-Google-Code-0.01.tar.gz (37.4 KB)
+		my ($filename) = ( $title =~ /^\s*(.+)\s+\(.+\)\s*$/ );
+        my $download = Net::Google::Code::Download->new(
+            project => $self->project,
+            name    => $filename
+        );
+        $download->load;
+        push @downloads, $download;
+	}
+    $self->downloads( \@downloads );
+}
+
+
+sub wiki {
+
+    my $self = shift;
+    require Net::Google::Code::Wiki;
+    return Net::Google::Code::Wiki->new(
+        project => $self->project,
+        @_
+    );
+}
+
+sub load_wikis {
+	my $self = shift;
+	
+	my $wiki_svn = $self->base_svn_url . 'wiki/';
+	my $content = $self->fetch( $wiki_svn );
+
+    require HTML::TreeBuilder;
+    my $tree = HTML::TreeBuilder->new;
+    $tree->parse_content($content);
+    $tree->elementify;
+	
+    my @wikis;
+    my @li = $tree->find_by_tag_name('li');
+    for my $li ( @li ) {
+        my $name = $li->as_text;
+        if ( $name =~ /(\S+)\.wiki$/ ) {
+            $name = $1;
+            require Net::Google::Code::Wiki;
+            my $wiki = Net::Google::Code::Wiki->new(
+                project => $self->project,
+                name    => $name,
+            );
+            $wiki->load;
+            push @wikis, $wiki;
+        }
+    }
+    $self->wikis( \@wikis );
+}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
@@ -61,29 +184,56 @@ __END__
 
 Net::Google::Code - a simple client library for google code
 
-=head1 VERSION
-
-This document describes Net::Google::Code version 0.02
-
 =head1 SYNOPSIS
 
     use Net::Google::Code;
     
     my $project = Net::Google::Code->new( project => 'net-google-code' );
+    $project->load; # load its metadata, e.g. summary, owners, members, etc.
     
     print join(', ', @{ $project->owners } );
-    
-    $project->issue;
-    $project->downloads;
-    $project->wiki;
+
+    # return a Net::Google::Code::Issue object, of which the id is 30
+    $project->issue( id => 30 ); 
+
+    # return a Net::Google::Code::Download object, of which the file name is
+    # 'FooBar-0.01.tar.gz'
+    $project->download( name => 'FooBar-0.01.tar.gz' );
+
+    # return a Net::Google::Code::Wiki object, of which the page name is 'Test'
+    $project->wiki( name => 'Test' );
+
+    # loads all the downloads
+    $project->load_downloads;
+    my $downloads = $project->downloads;
+
+    # loads all the wikis
+    $project->load_wikis;
+    my $wikis = $project->wikis;
 
 =head1 DESCRIPTION
 
 Net::Google::Code is a simple client library for projects hosted in Google Code.
 
-=head1 ATTRIBUTES
+=head1 INTERFACE
 
 =over 4
+
+=item load
+
+load project's home page, and parse its metadata
+
+=item parse
+
+acturally do the parse job, for load();
+
+=item load_downloads
+
+load all the downloads, and store them as an arrayref in $self->downloads
+
+=item load_wikis
+
+load all the wikis, and store them as an arrayref in $self->wikis
 
 =item project
 
@@ -97,43 +247,34 @@ the project homepage
 
 the project svn url (without trunk)
 
-=item summary
+=item base_feeds_url
 
-short Summary in 'Project Home'
+the project feeds url
+
+=item summary
 
 =item description
 
-HTML Description in 'Project Home'
-
 =item labels
-
-'Labels' in 'Project Home'
 
 =item owners
 
-ArrayRef. project owners
-
 =item members
-
-ArrayRef. project members
-
-=back
-
-=head1 METHODS
-
-=over 4
 
 =item issue
 
-read L<Net::Google::Code::Issue> for the API detail
+return a new L<Net::Google::Code::Issue> object, arguments will be passed to
+L<Net::Google::Code::Issue>'s new method.
 
-=item downloads
+=item download
 
-read L<Net::Google::Code::Downloads> for the API detail
+return a new L<Net::Google::Code::Download> object, arguments will be passed to
+L<Net::Google::Code::Download>'s new method.
 
 =item wiki
 
-read L<Net::Google::Code::Wiki> for the API detail
+return a new L<Net::Google::Code::Wiki> object, arguments will be passed to
+L<Net::Google::Code::Wiki>'s new method.
 
 =back
 

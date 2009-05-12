@@ -15,6 +15,8 @@ requires 'Params::Validate';
 requires 'XML::Atom';
 requires 'Term::ReadPassword';
 
+recursive_author_tests('xt/');
+
 auto_install;
 
 WriteAll;

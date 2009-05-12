@@ -3,82 +3,66 @@
 use strict;
 use warnings;
 
-use Test::More tests => 14;
+use Test::More tests => 15;
 use Test::MockModule;
 use FindBin qw/$Bin/;
 use File::Slurp;
 use Net::Google::Code;
 
-my $svn_file   = "$Bin/sample/11.wiki.html";
-my $wiki_file  = "$Bin/sample/11.TODO.wiki";
-my $wiki_file2 = "$Bin/sample/11.TestPage.wiki";
-my $entry_file = "$Bin/sample/11.wiki.TestPage.html";
-my $svn_content   = read_file($svn_file);
-my $wiki_content  = read_file($wiki_file);
-my $wiki_content2 = read_file($wiki_file2);
-my $entry_content = read_file($entry_file);
+my $svn_file = "$Bin/sample/11.TestPage.wiki";
+my $svn_content = read_file( $svn_file );
+my $wiki_file = "$Bin/sample/11.TestPage.html";
 
 use Net::Google::Code::Wiki;
 
-my $mock_sub = sub {
-    	( undef, my $uri ) = @_;
-    	if ( $uri eq 'http://foorum.googlecode.com/svn/wiki/' ) {
-    		return $svn_content;
-    	} elsif ( $uri eq 'http://foorum.googlecode.com/svn/wiki/TODO.wiki' ) {
-    	    return $wiki_content;
-    	} elsif ( $uri eq 'http://code.google.com/p/foorum/wiki/TestPage' ) {
-    	    return $entry_content;
-        } elsif ( $uri eq 'http://foorum.googlecode.com/svn/wiki/TestPage.wiki' ) {
-    	    return $wiki_content2;
-        }
-};
-
 my $mock_wiki = Test::MockModule->new('Net::Google::Code::Wiki');
-$mock_wiki->mock( 'fetch', $mock_sub );
+$mock_wiki->mock(
+    'fetch',
+    sub {
+        shift;
+        my $url = shift;
+        if ( $url =~ /svn/ ) {
+            $svn_content;
+        }
+        else {
+            read_file($wiki_file);
+        }
+    }
+);
 
-my $mock_wiki_entry = Test::MockModule->new('Net::Google::Code::WikiEntry');
-$mock_wiki_entry->mock( 'fetch', $mock_sub );
+my $wiki = Net::Google::Code::Wiki->new(
+    project => 'net-google-code',
+    name    => 'TestPage',
+);
 
-my $wiki = Net::Google::Code::Wiki->new( project => 'foorum' );
 isa_ok( $wiki, 'Net::Google::Code::Wiki' );
-
-my @entries = $wiki->all_entries;
-is( scalar @entries, 16 );
-is $entries[0], 'AUTHORS';
-is_deeply(\@entries, ['AUTHORS', 'Configure', 'HowRSS', 'I18N', 'INSTALL', 'PreRelease',
-	'README', 'RULES', 'TODO', 'TroubleShooting', 'Tutorial1', 'Tutorial2', 'Tutorial3',
-	'Tutorial4', 'Tutorial5', 'Upgrade' ]);
-
-my $entry = $wiki->entry('TODO');
-isa_ok( $entry, 'Net::Google::Code::WikiEntry' );
+is( $wiki->name, 'TestPage', 'name' );
+$wiki->load;
 
 # test source
-is $entry->source, $wiki_content;
-is $entry->summary, 'TODO list';
-is_deeply $entry->labels, ['Featured', 'Phase-Support'];
+is( $wiki->source, $svn_content, 'source' );
+is(
+    $wiki->summary,
+    'One-sentence summary of this page.',
+    'summary is parsed'
+);
+is_deeply( $wiki->labels, [ 'Phase-QA', 'Phase-Support' ], 'labels are parsed' );
 
-# test HTML
-$entry = $wiki->entry('TestPage');
-like $entry->wiki_html, qr/Add your content here/;
-is $entry->updated_time, 'Sat Jan 17 15:21:27 2009';
-is $entry->updated_by, 'fayland';
-is $entry->summary, 'One-sentence summary of this page.';
-is_deeply $entry->labels, ['Phase-QA', 'Phase-Support'];
+is( $wiki->updated, 'Sat Jan 17 15:21:27 2009', 'updated is parsed' );
+is( $wiki->updated_by, 'fayland', 'updated_by is parsed' );
+like( $wiki->content, qr/<p>Add your content here/, 'content is parsed' );
+is( scalar @{$wiki->comments}, 2, '2 comments' );
+my $comments = $wiki->comments;
 
-is_deeply $entry->comments, [
+is( $comments->[0]->author, 'fayland', '1st comment author is parsed' );
+is( $comments->[0]->date, 'Wed Jan  7 22:37:57 2009',
+    '1st comment date is parsed' );
+is( $comments->[0]->content, 'comment1', '1st comment content is parsed' );
 
-{
-    author => 'fayland',
-    date   => 'Wed Jan  7 22:37:57 2009',
-    content => '<p>comment1 </p>',
-},
-{
-    author => 'fayland',
-    date   => 'Wed Jan  7 22:38:07 2009',
-    content => '<p>two line comment 2. </p>',
-}
-
-];
+is( $comments->[1]->author, 'fayland', '2nd comment author is parsed' );
+is( $comments->[1]->date, 'Wed Jan  7 22:38:07 2009',
+    '2nd comment date is parsed' );
+is( $comments->[1]->content, 'two line comment 2.', '2nd comment content is parsed' );
 
 1;
 

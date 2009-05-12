@@ -2,28 +2,28 @@ package Net::Google::Code::Issue;
 use Moose;
 use Params::Validate qw(:all);
 with 'Net::Google::Code::Role';
-use Net::Google::Code::IssueComment;
+use Net::Google::Code::Issue::Comment;
 
-has state => (
+has 'state' => (
     isa     => 'HashRef',
     is      => 'rw',
     default => sub { {} },
 );
 
-has labels => (
-    isa     => 'HashRef',
-    is      => 'rw',
-    default => sub { {} },
-);
-
-has comments => (
-    isa     => 'ArrayRef[Net::Google::Code::Comment]',
+has 'labels' => (
+    isa     => 'ArrayRef',
     is      => 'rw',
     default => sub { [] },
 );
 
-has attachments => (
-    isa     => 'ArrayRef[Net::Google::CodeTicketAttachment]',
+has 'comments' => (
+    isa     => 'ArrayRef[Net::Google::Code::Issue::Comment]',
+    is      => 'rw',
+    default => sub { [] },
+);
+
+has 'attachments' => (
+    isa     => 'ArrayRef[Net::Google::Code::Issue::Attachment]',
     is      => 'rw',
     default => sub { [] },
 );
@@ -39,7 +39,7 @@ sub load {
     my $self = shift;
     my ($id) = validate_pos( @_, { type => SCALAR } );
     $self->state->{id} = $id;
-    $self->html( $self->fetch( "issues/detail?id=" . $id ) );
+    $self->html( $self->fetch( $self->base_url . "issues/detail?id=" . $id ) );
     $self->parse;
     return $id;
 }
@@ -64,22 +64,24 @@ sub parse {
     $text =~ s/\r\n/\n/g;
     $self->state->{description} = $text;
 
-    my $attachments = $description->look_down( class => 'attachments' );
-    if ($attachments) {
-        my @items = $attachments->find_by_tag_name('tr');
-        require Net::Google::Code::IssueAttachment;
+    my $att_tags = $tree->look_down( class => 'attachments' );
+    my @attachments;
+    for my $tag ($att_tags) {
+        my @items = $att_tags->find_by_tag_name('tr');
+        require Net::Google::Code::Issue::Attachment;
         while ( scalar @items ) {
             my $tr1 = shift @items;
             my $tr2 = shift @items;
             my $a =
-              Net::Google::Code::IssueAttachment->new(
+              Net::Google::Code::Issue::Attachment->new(
                 project => $self->project );
 
-            if ( $a->parse( $tr1, $tr2 ) ) {
-                push @{ $self->attachments }, $a;
+            if ( $a->parse( [ $tr1, $tr2 ] ) ) {
+                push @attachments, $a;
             }
         }
     }
+    $self->attachments( \@attachments );
 
     my ($meta) = $tree->look_down( id => 'issuemeta' );
     my @meta = $meta->find_by_tag_name('tr');
@@ -109,29 +111,23 @@ sub parse {
         else {
             my $href = $meta->find_by_tag_name('a')->attr_get_i('href');
 
-# from issue tracking faq:
-# The prefix before the first dash is the key, and the part after it is the value.
-            if ( $href =~ /list\?q=label:([^-]+?)-(.+)/ ) {
-                $self->labels->{$1} = $2;
-            }
-            elsif ( $href =~ /list\?q=label:([^-]+)$/ ) {
-                $self->labels->{$1} = undef;
-            }
-            else {
-                warn "can't parse label from $href";
+            if ( $href =~ /list\?q=label:(.+)/ ) {
+                $self->labels( [ @{$self->labels}, $1 ] );
             }
         }
     }
 
     # extract comments
-    my @comments = $tree->look_down( class => 'vt issuecomment' );
-    pop @comments;    # last one is for adding comment
-    for my $comment (@comments) {
-        my $object =
-          Net::Google::Code::IssueComment->new( project => $self->project );
-        $object->parse($comment);
-        push @{ $self->comments }, $object;
+    my @comments_tag = $tree->look_down( class => 'vt issuecomment' );
+    my @comments;
+    for my $tag (@comments_tag) {
+        next unless $tag->look_down( class => 'author' );
+        my $comment =
+          Net::Google::Code::Issue::Comment->new( project => $self->project );
+        $comment->parse($tag);
+        push @comments, $comment;
     }
+    $self->comments( \@comments );
 
 }
 
@@ -146,10 +142,6 @@ sub create {
               qw/comment summary status owner cc/,
         }
     );
-
-    if ( ref $args{labels} eq 'HASH' ) {
-        $args{labels} = [ $self->labels_array( labels => $args{labels} ) ];
-    }
 
     $self->sign_in;
     $self->fetch( 'issues/entry' );
@@ -202,16 +194,12 @@ sub update {
     my %args = validate(
         @_,
         {
-            labels => { type => HASHREF | ARRAYREF, optional => 1 },
+            labels => { type => ARRAYREF, optional => 1 },
             files  => { type => ARRAYREF, optional => 1 },
             map { $_ => { type => SCALAR, optional => 1 } }
               qw/comment summary status owner merge_into cc blocked_on/,
         }
     );
-
-    if ( ref $args{labels} eq 'HASH' ) {
-        $args{labels} = [ $self->labels_array( labels => $args{labels} ) ];
-    }
 
     $self->sign_in;
     $self->fetch( 'issues/detail?id=' . $self->id );
@@ -260,17 +248,6 @@ s{(?<=id="attachmentarea"></div>)}{<input name="file$_" type="file">};
 }
 
 
-sub labels_array {
-    my $self = shift;
-    my %args = validate( @_, { labels => { type => HASHREF, optional => 1 } } );
-    my $labels = $args{labels} || $self->labels;
-
-    if ( keys %$labels ) {
-        return map { $_ . '-' . ( $labels->{$_} || '' ) } sort keys %$labels;
-    }
-    return;
-}
-
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
@@ -293,42 +270,45 @@ Net::Google::Code::Issue - Google Code Issue
 
 =head1 INTERFACE
 
-=head2 load
+=over 4
 
-=head2 parse
+=item load
 
-=head2 id
+=item parse
 
-=head2 status
+=item id
 
-=head2 owner 
+=item status
 
-=head2 reporter
+=item owner 
 
-=head2 closed
+=item reporter
 
-=head2 cc
+=item closed
 
-=head2 summary
+=item cc
 
-=head2 description
+=item summary
 
-=head2 create
+=item create
 comment, summary, status, owner, cc, labels, files.
 
 Caveat: 'files' field doesn't work right now, please don't use it.
 
-=head2 update
+=item update
 comment, summary, status, owner, merge_into, cc, labels, blocked_on, files.
 
 Caveat: 'files' field doesn't work right now, please don't use it.
 
-=head2 labels_array
-convert hashref to array.
-accept labels as arg, e.g. lables_array( labels => { label_hash } )
-if there is no labels arg, use the $self->labels
+=item description
 
-e.g. { Type => 'Defect', Priority => 'High' } to ( 'Type-Defect', 'Priority-High' )
+=item labels
+
+=item comments
+
+=item attachments
+
+=back
 
 =head1 AUTHOR
 

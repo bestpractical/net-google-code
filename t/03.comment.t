@@ -3,10 +3,10 @@ use warnings;
 
 use Test::More tests => 9;
 
-use Net::Google::Code::IssueComment;
+use Net::Google::Code::Issue::Comment;
 my $comment =
-  Net::Google::Code::IssueComment->new( project => 'test' );
-isa_ok( $comment, 'Net::Google::Code::IssueComment', '$comment' );
+  Net::Google::Code::Issue::Comment->new( project => 'test' );
+isa_ok( $comment, 'Net::Google::Code::Issue::Comment', '$comment' );
 
 my $content;
 {
@@ -30,7 +30,7 @@ my %info = (
 
 for my $item ( keys %info ) {
     if ( defined $info{$item} ) {
-        is ( $comment->$item, $info{$item}, "$item is extracted" );
+        is( $comment->$item, $info{$item}, "$item is extracted" );
     }
     else {
         ok( !defined $comment->$item, "$item is not defined" );
@@ -40,10 +40,7 @@ for my $item ( keys %info ) {
 my $updates = {
     cc     => 'thatan...@google.com',
     status => 'Available',
-    labels => {
-        Mstone => { new_value => 'X' },
-        Pri    => { old_value => 2,     new_value => 3 },
-    },
+    labels => [ qw/-Pri-2 Mstone-X Pri-3/ ],
 };
 
 is_deeply( $updates, $comment->updates, 'updates are extracted' );

@@ -1,9 +1,9 @@
 package Net::Google::Code::Role;
 use Moose::Role;
 use Params::Validate;
-use Net::Google::Code::Mechanize;
 
-with 'Net::Google::Code::Role::Connectable';
+with 'Net::Google::Code::Role::Fetchable';
+with 'Net::Google::Code::Role::URL';
 with 'Net::Google::Code::Role::Authentication';
 with 'Net::Google::Code::Role::HTMLTree';
 

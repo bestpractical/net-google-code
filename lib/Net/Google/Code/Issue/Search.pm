@@ -1,4 +1,4 @@
-package Net::Google::Code::IssueSearch;
+package Net::Google::Code::Issue::Search;
 use Moose;
 use Params::Validate qw(:all);
 use Moose::Util::TypeConstraints;
@@ -44,7 +44,7 @@ sub search {
         $self->_q( $args{_q} ) if defined $args{_q};
     }
 
-    $self->fetch('issues/list');
+    $self->fetch( $self->base_url . 'issues/list');
     my $mech = $self->mech;
     $mech->submit_form(
         form_number => 2,
@@ -80,7 +80,7 @@ sub search {
             my @ids = $tree->look_down( class => 'vt id col_0' );
             @ids =
               map { $_->content_array_ref->[0]->content_array_ref->[0] } @ids;
-            push @{ $self->ids }, @ids;
+            $self->ids( [ @{$self->ids}, @ids ] );
 
             while ( scalar @{$self->ids} < $total ) {
                 if ($mech->follow_link( text_regex => qr/Next\s+/ ) ) {
@@ -93,7 +93,7 @@ sub search {
                           map {
                             $_->content_array_ref->[0]->content_array_ref->[0]
                           } @ids;
-                        push @{ $self->ids }, @ids;
+                        $self->ids( [ @{$self->ids}, @ids ] );
                     }
                     else {
                         die "failed to follow link: Next";
@@ -122,7 +122,7 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::IssueSearch - 
+Net::Google::Code::Issue::Search - 
 
 
 =head1 DESCRIPTION

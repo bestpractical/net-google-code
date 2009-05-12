@@ -2,38 +2,110 @@ package Net::Google::Code::Wiki;
 
 use Moose;
 use Params::Validate qw(:all);
-
-use Net::Google::Code::WikiEntry;
 with 'Net::Google::Code::Role';
 
-our $VERSION = '0.02';
-our $AUTHORITY = 'cpan:FAYLAND';
+has 'name' => (
+    isa => 'Str',
+    is  => 'rw',
+);
 
-sub all_entries {
-	my $self = shift;
-	
-	my $wiki_svn = $self->base_svn_url . 'wiki/';
-	my $content = $self->fetch( $wiki_svn );
-	
-	# regex would be OK
-	my @lines = split("\n", $content);
-	my @entries;
-	foreach my $line (@lines ) {
-		# <li><a href="AUTHORS.wiki">AUTHORS.wiki</a></li>
-		if ( $line =~ /href\=\"(.*?)\.wiki\"\>\1\.wiki/ ) {
-			push @entries, $1;
-		}
-	}
-	
-	return wantarray ? @entries : \@entries;
+has 'source' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
+has 'content' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
+has 'updated' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
+has 'updated_by' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
+has 'labels' => (
+    isa => 'ArrayRef[Str]',
+    is  => 'rw',
+);
+
+has 'summary' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
+has 'comments' => (
+    isa => 'ArrayRef[Net::Google::Code::Wiki::Comment]',
+    is  => 'rw',
+);
+
+sub load_source {
+    my $self = shift;
+    my $source =
+      $self->fetch( $self->base_svn_url . 'wiki/' . $self->name . '.wiki' );
+    $self->source($source);
+    return $self->parse_source;
 }
 
-sub entry {
+sub parse_source {
     my $self = shift;
-    
-    my ($wiki_item) = validate_pos( @_, { type => SCALAR } );
-    
-    return Net::Google::Code::WikiEntry->new( project => $self->project, name => $wiki_item );
+    my @meta = grep { /^#/ } split /\n/, $self->source;
+    for my $meta (@meta) {
+        chomp $meta;
+        if ( $meta =~ /summary\s+(.*)/ ) {
+            $self->summary($1);
+        }
+        elsif ( $meta =~ /labels\s+(.*)/ ) {
+            my @labels = split /,\s*/, $1;
+            $self->labels( \@labels );
+        }
+    }
+}
+
+sub load {
+    my $self = shift;
+    my $name = shift || $self->name;
+
+    # http://code.google.com/p/net-google-code/wiki/TestPage
+    my $content = $self->fetch( $self->base_url . 'wiki/' . $name );
+
+    $self->name($name) unless $self->name && $self->name eq $name;
+    $self->load_source;
+    return $self->parse($content);
+}
+
+sub parse {
+    my $self    = shift;
+    my $content = shift;
+    require HTML::TreeBuilder;
+    my $tree = HTML::TreeBuilder->new;
+    $tree->parse_content($content);
+    $tree->elementify;
+    my $wiki = $tree->look_down( id => 'wikimaincol' );
+    my $updated =
+      $wiki->find_by_tag_name('td')->find_by_tag_name('span')->attr('title');
+    my $updated_by =
+      $wiki->find_by_tag_name('td')->find_by_tag_name('a')->as_text;
+    $self->updated($updated)       if $updated;
+    $self->updated_by($updated_by) if $updated_by;
+
+    $self->content( $tree->content_array_ref->[-1]->as_HTML );
+
+    my @comments = ();
+    my @comments_element = $tree->look_down( class => 'artifactcomment' );
+    for my $element (@comments_element) {
+        next unless $element->look_down( class => 'commentcontent' );
+        require Net::Google::Code::Wiki::Comment;
+        my $comment = Net::Google::Code::Wiki::Comment->new;
+        $comment->parse($element);
+        push @comments, $comment;
+    }
+    $self->comments( \@comments );
 }
 
 no Moose;
@@ -50,31 +122,46 @@ Net::Google::Code::Wiki - Google Code Wiki
 
     use Net::Google::Code::Wiki;
     
-    my $wiki = Net::Google::Code::Wiki->new( project => 'net-google-code' );
-    
-    my @entries = $wiki->all_entries;
-    foreach my $item ( @entries ) {
-        my $entry = $wiki->entry($item);
-        print $entry->source, "\n";
-    }
-    
-=head1 DESCRIPTION
+    my $wiki = Net::Google::Code::Wiki->new(
+        project => 'net-google-code',
+        name    => 'TestPage',
+    );
+    $wiki->load;
+    $wiki_entry->source;
 
-get Wiki details from Google Code Project
+=head1 INTERFACE
 
-=head1 METHODS
+=over 4
 
-=head2 all_entries
+=item load
 
-get all entries (name ONLY) from wiki svn
+=item parse
 
-=head2 entry
+=item load_source
 
-return a instance of L<Net::Google::Code::WikiEntry>
+=item parse_source
+
+=item name
+
+=item source
+
+=item summary
+
+=item labels
+
+=item content
+
+=item updated_by
+
+=item updated
+
+=item comments
+
+=back
 
 =head1 AUTHOR
 
-Fayland Lam, C<< <fayland at gmail.com> >>
+sunnavy  C<< <sunnavy@bestpractical.com> >>
 
 =head1 LICENCE AND COPYRIGHT
 
