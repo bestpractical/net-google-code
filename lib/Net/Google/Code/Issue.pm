@@ -11,9 +11,9 @@ has 'state' => (
 );
 
 has 'labels' => (
-    isa     => 'HashRef',
+    isa     => 'ArrayRef',
     is      => 'rw',
-    default => sub { {} },
+    default => sub { [] },
 );
 
 has 'comments' => (
@@ -115,16 +115,8 @@ sub parse {
         else {
             my $href = $meta->find_by_tag_name('a')->attr_get_i('href');
 
-# from issue tracking faq:
-# The prefix before the first dash is the key, and the part after it is the value.
-            if ( $href =~ /list\?q=label:([^-]+?)-(.+)/ ) {
-                $self->labels->{$1} = $2;
-            }
-            elsif ( $href =~ /list\?q=label:([^-]+)$/ ) {
-                $self->labels->{$1} = undef;
-            }
-            else {
-                warn "can't parse label from $href";
+            if ( $href =~ /list\?q=label:(.+)/ ) {
+                $self->labels( [ @{$self->labels}, $1 ] );
             }
         }
     }
@@ -186,6 +178,12 @@ Net::Google::Code::Issue - Google Code Issue
 =item summary
 
 =item description
+
+=item labels
+
+=item comments
+
+=item attachments
 
 =back
 

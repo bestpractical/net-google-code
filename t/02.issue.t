@@ -49,14 +49,9 @@ my %info = (
     closed => undef,
 );
 
-my %labels = (
-    Type   => 'Bug',
-    Pri    => 2,
-    OS     => 'All',
-    Area   => 'Installer',
-    intext => undef,
-    Mstone => 'X',
-    Foo    => 'Bar-Baz', # this is one we fake, for more than 1 hyphen
+my @labels = (
+    'Type-Bug', 'Pri-2',    'OS-All', 'Area-Installer',
+    'intext',   'Mstone-X', 'Foo-Bar-Baz',
 );
 
 for my $item ( qw/id summary description owner cc reporter status closed/ ) {
@@ -68,7 +63,7 @@ for my $item ( qw/id summary description owner cc reporter status closed/ ) {
     }
 }
 
-is_deeply( $ticket->labels, \%labels, 'labels is extracted' );
+is_deeply( $ticket->labels, \@labels, 'labels is extracted' );
 
 is( scalar @{$ticket->comments}, 50, 'comments are extracted' );
 is( $ticket->comments->[0]->sequence, 1, 'sequence of 1st comments is 1' );
