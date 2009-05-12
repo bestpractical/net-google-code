@@ -13,7 +13,7 @@ inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/Net/Google/Code.pm
-lib/Net/Google/Code/Downloads.pm
+lib/Net/Google/Code/Download.pm
 lib/Net/Google/Code/Issue.pm
 lib/Net/Google/Code/Issue/Attachment.pm
 lib/Net/Google/Code/Issue/Comment.pm
@@ -37,7 +37,7 @@ t/11.wiki.t
 t/20.code.t
 t/sample/02.issue.html
 t/sample/10.download.html
-t/sample/10.download.xml
+t/sample/10.downloads.xml
 t/sample/11.TestPage.wiki
 t/sample/11.TODO.wiki
 t/sample/11.wiki.html

@@ -30,6 +30,16 @@ has 'description' => (
     is  => 'rw',
 );
 
+has 'issues' => (
+    isa => 'ArrayRef[Net::Google::Code::Issue]',
+    is  => 'rw',
+);
+
+has 'downloads' => (
+    isa => 'ArrayRef[Net::Google::Code::Download]',
+    is  => 'rw',
+);
+
 =head2 load
 
 load project's home page, and parse its metadata
@@ -88,6 +98,15 @@ sub parse {
 
 }
 
+sub download {
+    my $self = shift;
+    require Net::Google::Code::Download;
+    return Net::Google::Code::Download->new(
+        project => $self->project,
+        @_
+    );
+}
+
 sub issue {
     my $self = shift;
     require Net::Google::Code::Issue;
@@ -97,15 +116,36 @@ sub issue {
     );
 }
 
-sub downloads {
+=head2 load_downloads
 
-    my $self = shift;
-    require Net::Google::Code::Downloads;
-    return Net::Google::Code::Downloads->new(
-        project => $self->project,
-        @_
-    );
+load all the downloads
+
+=cut
+
+sub load_downloads {
+	my $self = shift;
+	
+    require XML::Atom::Feed;
+	my $content = $self->fetch( $self->base_feeds_url . 'downloads/basic' );
+	my $feed = XML::Atom::Feed->new( \$content );
+	my @fentries = $feed->entries;
+	
+    my @downloads;
+	foreach my $entry (@fentries) {
+        require Net::Google::Code::Download;
+		my $title  = $entry->title;
+        # title is like: Net-Google-Code-0.01.tar.gz (37.4 KB)
+		my ($filename) = ( $title =~ /^\s*(.+)\s+\(.+\)\s*$/ );
+        my $download = Net::Google::Code::Download->new(
+            project => $self->project,
+            name    => $filename
+        );
+        $download->load;
+        push @downloads, $download;
+	}
+    $self->downloads( \@downloads );
 }
+
 
 sub wiki {
 
@@ -135,10 +175,16 @@ Net::Google::Code - a simple client library for google code
     $project->load; # load its metadata, e.g. summary, owners, members, etc.
     
     print join(', ', @{ $project->owners } );
-    
-    $project->issue;
-    $project->downloads;
-    $project->wiki;
+
+    # return a Net::Google::Code::Issue object, of which the id is 30
+    $project->issue( id => 30 ); 
+
+    # return a Net::Google::Code::Download object, of which the file name is
+    # 'FooBar-0.01.tar.gz'
+    $project->download( name => 'FooBar-0.01.tar.gz' );
+
+    # return a Net::Google::Code::Wiki object, of which the page name is 'Test'
+    $project->wiki( name => 'Test' );
 
 =head1 DESCRIPTION
 
@@ -192,9 +238,9 @@ ArrayRef. project members
 
 read L<Net::Google::Code::Issue> for the API detail
 
-=item downloads
+=item download
 
-read L<Net::Google::Code::Downloads> for the API detail
+read L<Net::Google::Code::Download> for the API detail
 
 =item wiki
 

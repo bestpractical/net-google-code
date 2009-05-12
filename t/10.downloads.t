@@ -3,48 +3,41 @@
 use strict;
 use warnings;
 
-use Test::More tests => 12;
+use Test::More tests => 10;
 use Test::MockModule;
 use FindBin qw/$Bin/;
 use File::Slurp;
 use Net::Google::Code;
 
-my $feed_file = "$Bin/sample/10.download.xml";
 my $down_file = "$Bin/sample/10.download.html";
 
-my $feed_content = read_file($feed_file);
 my $download_content = read_file($down_file);
+my $mock_downloads = Test::MockModule->new('Net::Google::Code::Download');
+$mock_downloads->mock( 'fetch', sub { $download_content } );
 
-my $mock_downloads = Test::MockModule->new('Net::Google::Code::Downloads');
-$mock_downloads->mock(
-    'fetch',
-    sub {
-    	( undef, my $uri ) = @_;
-    	if ( $uri eq 'http://code.google.com/feeds/p/net-google-code/downloads/basic' ) {
-    		return $feed_content;
-    	} elsif ( $uri eq 'http://code.google.com/p/net-google-code/downloads/detail?name=Net-Google-Code-0.01.tar.gz' ) {
-    		return $download_content;
-    	}
-    }
+my $download = Net::Google::Code::Download->new(
+    project => 'net-google-code',
+    name    => 'Net-Google-Code-0.01.tar.gz',
 );
-
-my $downloads = Net::Google::Code::Downloads->new( project => 'net-google-code' );
-isa_ok( $downloads, 'Net::Google::Code::Downloads' );
-
-my @entries = $downloads->all_entries;
-is( scalar @entries, 1 );
-is $entries[0]->{filename}, 'Net-Google-Code-0.01.tar.gz';
-is $entries[0]->{author}, 'sunnavy';
-is $entries[0]->{size}, '37.4 KB';
-is $entries[0]->{link}, 'http://code.google.com/p/net-google-code/downloads/detail?name=Net-Google-Code-0.01.tar.gz';
-
-my $entry = $downloads->entry( 'Net-Google-Code-0.01.tar.gz' );
-is $entry->{uploader}, 'sunnavy';
-is $entry->{upload_time}, 'Tue Jan  6 00:16:06 2009';
-is $entry->{download_count}, 6;
-is $entry->{download_url}, 'http://net-google-code.googlecode.com/files/Net-Google-Code-0.01.tar.gz';
-is $entry->{file_size}, '37.4 KB';
-is $entry->{file_SHA1}, '5073de2276f916cf5d74d7abfd78a463e15674a1';
+$download->load;
+is( $download->name,  'Net-Google-Code-0.01.tar.gz', 'name is set' );
+is( $download->size,  '37.4 KB',                     'size is parsed' );
+is( $download->count, 16,                            'count is parsed' );
+is( scalar @{ $download->labels }, 2,        'labels number' );
+is( $download->labels->[0],        '0.01',   '1st label is parsed' );
+is( $download->labels->[1],        'simple', '2nd label is parsed' );
+is(
+    $download->checksum,
+    '5073de2276f916cf5d74d7abfd78a463e15674a1',
+    'checksum is parsed'
+);
+is(
+    $download->download_url,
+    'http://net-google-code.googlecode.com/files/Net-Google-Code-0.01.tar.gz',
+    'download_url is parsed'
+);
+is( $download->uploaded_by, 'sunnavy', 'uploaded_by is parsed' );
+is( $download->uploaded, 'Tue Jan  6 00:16:06 2009', 'uploaded is parsed' );
 
 1;
 
