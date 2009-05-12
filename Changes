@@ -1,4 +1,19 @@
 Revision history for Net-Google-Code
+
+0.04 Tue May 12 16:07:09 CST 2009
+
+refactor version.
+
+CAVEAT: this release is not back compatible, the changes are:
+
+* lables are not parsed any more, now they're just an array ref with unparsed
+    string, e.g. [ 'Pri-2', 'Mstone-X' ]
+* no Home.pm, its related functions are moved to Code.pm, 
+    see Net::Google::Code::load and Net::Google::Code::parse
+* no Downloads.pm, see Net::Google::Code::load_downloads and Net::Google::Code::Download
+* no WikiEntry.pm. see Net::Google::Code::load_wikis, the new Net::Google::Code::Wiki 
+    and Net::Google::Code::Wiki::Comment
+
 0.03 Fri Apr 24 16:08:06 CST 2009
 
 * mostly a bug fix version

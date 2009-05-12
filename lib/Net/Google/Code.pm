@@ -3,7 +3,7 @@ package Net::Google::Code;
 use Moose;
 with 'Net::Google::Code::Role';
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 has 'labels' => (
     isa => 'ArrayRef',
@@ -202,6 +202,14 @@ Net::Google::Code - a simple client library for google code
 
     # return a Net::Google::Code::Wiki object, of which the page name is 'Test'
     $project->wiki( name => 'Test' );
+
+    # loads all the downloads
+    $project->load_downloads;
+    my $downloads = $project->downloads;
+
+    # loads all the wikis
+    $project->load_wikis;
+    my $wikis = $project->wikis;
 
 =head1 DESCRIPTION
 
