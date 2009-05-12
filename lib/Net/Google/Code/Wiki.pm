@@ -99,6 +99,7 @@ sub parse {
     my @comments = ();
     my @comments_element = $tree->look_down( class => 'artifactcomment' );
     for my $element (@comments_element) {
+        next unless $element->look_down( class => 'commentcontent' );
         require Net::Google::Code::Wiki::Comment;
         my $comment = Net::Google::Code::Wiki::Comment->new;
         $comment->parse($element);
