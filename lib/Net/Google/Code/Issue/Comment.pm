@@ -15,7 +15,19 @@ has attachments => (
 
 sub parse {
     my $self    = shift;
-    my $element = shift;
+    my $html = shift;
+
+    my $element;
+    if ( blessed $html ) {
+        $element = $html;
+    }
+    else {
+        require HTML::TreeBuilder;
+        my $element = HTML::TreeBuilder->new;
+        $element->parse_content( $html );
+        $element->elementify;
+    }
+
     my $author  = $element->look_down( class => 'author' );
     my @a       = $author->find_by_tag_name('a');
     $self->sequence( $a[0]->content_array_ref->[0] );
@@ -89,7 +101,7 @@ sub parse {
               Net::Google::Code::Issue::Attachment->new(
                 project => $self->project );
 
-            if ( $a->parse( $tr1, $tr2 ) ) {
+            if ( $a->parse( [ $tr1, $tr2 ] ) ) {
                 push @{ $self->attachments }, $a;
             }
         }
@@ -114,7 +126,7 @@ Net::Google::Code::Issue::Comment -
 
 =over 4
 
-=item parse( element )
+=item parse( HTML::Element or html segment string )
 
 parse format like the following:
 

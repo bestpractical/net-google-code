@@ -79,7 +79,7 @@ sub parse {
               Net::Google::Code::Issue::Attachment->new(
                 project => $self->project );
 
-            if ( $a->parse( $tr1, $tr2 ) ) {
+            if ( $a->parse( [$tr1, $tr2] ) ) {
                 push @{ $self->attachments }, $a;
             }
         }

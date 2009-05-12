@@ -1,6 +1,7 @@
 package Net::Google::Code::Issue::Attachment;
 use Moose;
 with 'Net::Google::Code::Role';
+use Scalar::Util qw/blessed/;
 
 has name    => ( isa => 'Str', is => 'rw' );
 has url     => ( isa => 'Str', is => 'rw' );
@@ -8,8 +9,23 @@ has size    => ( isa => 'Str', is => 'rw' );
 
 sub parse {
     my $self = shift;
-    my $tr1  = shift;
-    my $tr2  = shift;
+    my $html = shift;
+
+    my ( $tr1, $tr2 );
+
+    if ( blessed $html ) {
+        ( $tr1, $tr2 ) = $html->find_by_tag_name( 'tr' );
+    }
+    elsif ( ref $html eq 'ARRAY' ) {
+        ( $tr1, $tr2 ) = @$html;
+    }
+    else {
+        require HTML::TreeBuilder;
+        my $tree = HTML::TreeBuilder->new;
+        $tree->parse_content( $html );
+        $tree->elementify;
+        ( $tr1, $tr2 ) = $tree->find_by_tag_name( 'tr' );
+    }
 
     my $b    = $tr1->find_by_tag_name('b');    # name lives here
     if ($b) {
@@ -56,7 +72,7 @@ This class represents a single attachment for an issue.
 
 =over 4
 
-=item parse( tr1, tr2 )
+=item parse( HTML::Element or [ HTML::Element, HTML::Element ] or html segment string )
 
 there're 2 trs that represent an attachment like the following:
 

@@ -20,7 +20,18 @@ has 'date' => (
 
 sub parse {
     my $self = shift;
-    my $element = shift;
+    my $html = shift;
+
+    my $element;
+    if ( blessed $html ) {
+        $element = $html;
+    }
+    else {
+        require HTML::TreeBuilder;
+        my $element = HTML::TreeBuilder->new;
+        $element->parse_content( $html );
+        $element->elementify;
+    }
 
     my $author =
       $element->look_down( class => 'author' )->find_by_tag_name('a')->as_text;
@@ -31,6 +42,7 @@ sub parse {
     $self->author( $author ) if $author;
     $self->date( $date ) if $date;
     $self->content( $content ) if $content;
+    return 1;
 }
 
 
@@ -48,7 +60,7 @@ Net::Google::Code::Wiki::Comment - Google Code Wiki Comment
 
 =over 4
 
-=item parse( element )
+=item parse( HTML::Element or html segment string )
 
 =back
 
