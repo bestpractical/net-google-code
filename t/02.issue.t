@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 17;
+use Test::More tests => 15;
 use Test::MockModule;
 
 # $content is a real page: http://code.google.com/p/chromium/issues/detail?id=14
@@ -54,8 +54,6 @@ my @labels = (
     'intext',   'Mstone-X', 'Foo-Bar-Baz',
 );
 
-my @labels_array = map { $_ . '-' . ( $labels{$_} || '' ) } sort keys %labels;
-
 for my $item ( qw/id summary description owner cc reporter status closed/ ) {
     if ( defined $info{$item} ) {
         is ( $ticket->$item, $info{$item}, "$item is extracted" );
@@ -66,16 +64,6 @@ for my $item ( qw/id summary description owner cc reporter status closed/ ) {
 }
 
 is_deeply( $ticket->labels, \@labels, 'labels is extracted' );
-is_deeply(
-    [ $ticket->labels_array ],
-    \@labels_array,
-    'labels_array without labels arg'
-);
-is_deeply(
-    [ $ticket->labels_array( labels => { Type => 'foo', Label => 'bar' } ) ],
-    [ 'Label-bar', 'Type-foo' ],
-    'labels_array with labels arg'
-);
 
 is( scalar @{$ticket->comments}, 50, 'comments are extracted' );
 is( $ticket->comments->[0]->sequence, 1, 'sequence of 1st comments is 1' );

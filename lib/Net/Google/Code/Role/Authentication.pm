@@ -1,7 +1,7 @@
 package Net::Google::Code::Role::Authentication;
 use Moose::Role;
 
-with 'Net::Google::Code::Role::Connectable';
+with 'Net::Google::Code::Role::Fetchable';
 
 has 'email' => (
     isa => 'Str',

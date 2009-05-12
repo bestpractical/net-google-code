@@ -1,6 +1,6 @@
 package Net::Google::Code::Role::HTMLTree;
 use Moose::Role;
-with 'Net::Google::Code::Role::Connectable';
+with 'Net::Google::Code::Role::Fetchable';
 
 use HTML::TreeBuilder;
 use Params::Validate qw(:all);
