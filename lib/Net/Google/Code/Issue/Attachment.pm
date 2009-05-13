@@ -1,6 +1,6 @@
 package Net::Google::Code::Issue::Attachment;
 use Moose;
-with 'Net::Google::Code::Role';
+with 'Net::Google::Code::Role::Fetchable';
 use Scalar::Util qw/blessed/;
 
 has 'name'    => ( isa => 'Str', is => 'rw' );
@@ -48,6 +48,34 @@ sub parse {
     return 1;
 }
 
+sub parse_attachments {
+    my $html = $_[-1]; # in case object call ->
+    my $element;
+    if ( blessed $html ) {
+        $element = $html;
+    }
+    else {
+        require HTML::TreeBuilder;
+        $element = HTML::TreeBuilder->new;
+        $element->parse_content( $html );
+        $element->elementify;
+    }
+
+    my @attachments;
+
+    my @items = $element->find_by_tag_name('tr');
+    while ( scalar @items ) {
+        my $tr1 = shift @items;
+        my $tr2 = shift @items;
+        my $a   = Net::Google::Code::Issue::Attachment->new;
+
+        if ( $a->parse( [ $tr1, $tr2 ] ) ) {
+            push @attachments, $a;
+        }
+    }
+    return @attachments;
+}
+
 sub content {
     my $self = shift;
     return $self->fetch( $self->url );
@@ -66,7 +94,7 @@ Net::Google::Code::Issue::Attachment
 
 =head1 DESCRIPTION
 
-This class represents a single attachment for an issue.
+This class represents a single attachment for an issue or an issue's comment.
 
 =head1 INTERFACE
 
@@ -83,6 +111,11 @@ there're 2 trs that represent an attachment like the following:
  <a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png">Download</a></td></tr>
 
 =cut
+
+=item parse_attachments( HTML::Element or html segment string )
+
+given the <div class="attachments">...</div> or its equivalent HTML::Element
+object, return a list of Net::Google::Code::Attachment objects.
 
 =item name
 

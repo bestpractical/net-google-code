@@ -1,6 +1,6 @@
 package Net::Google::Code::Issue::Comment;
 use Moose;
-with 'Net::Google::Code::Role';
+use Net::Google::Code::Issue::Attachment;
 
 has 'updates' => ( isa => 'HashRef', is => 'rw', default => sub { {} } );
 has 'author'  => ( isa => 'Str',     is => 'rw' );
@@ -67,23 +67,10 @@ sub parse {
         }
 
     }
-    my @att_tags = $element->look_down( class => 'attachments' );
-    my @attachments;
-    for my $tag (@att_tags) {
-        my @items = $tag->find_by_tag_name('tr');
-        require Net::Google::Code::Issue::Attachment;
-        while ( scalar @items ) {
-            my $tr1 = shift @items;
-            my $tr2 = shift @items;
-            my $a =
-              Net::Google::Code::Issue::Attachment->new(
-                project => $self->project );
 
-            if ( $a->parse( [ $tr1, $tr2 ] ) ) {
-                push @attachments, $a;
-            }
-        }
-    }
+    my $att_tag = $element->look_down( class => 'attachments' );
+    my @attachments =
+      Net::Google::Code::Issue::Attachment::parse_attachments($att_tag);
     $self->attachments( \@attachments );
 
     return 1;
