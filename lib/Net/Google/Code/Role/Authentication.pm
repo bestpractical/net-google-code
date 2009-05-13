@@ -18,18 +18,7 @@ sub sign_in {
     return 1 if $self->signed_in;
     $self->ask_password unless $self->password && length $self->password;
 
-    my $already_in_google;
-    if (
-        $self->mech->follow_link(
-            url_regex => qr!^https?://www\.google\.com/accounts/Login!
-        )
-      )
-    {
-        $already_in_google = 1;
-    }
-    else {
-        $self->mech->get('https://www.google.com/accounts/Login');
-    }
+    $self->mech->get('https://www.google.com/accounts/Login');
 
     $self->mech->submit_form(
         with_fields => {
@@ -39,23 +28,17 @@ sub sign_in {
     );
 
     die 'sign in failed to google code'
-      unless ( $already_in_google && $self->mech->uri =~ /CheckCookie/ )
-      || !$already_in_google && $self->html_contains(
-        as_text   => qr/Sign out/i,
-      );
+      unless $self->signed_in;
 
     return 1;
 }
 
 sub sign_out {
     my $self = shift;
-    $self->mech->follow_link(
-        url_regex => qr!^https?://www\.google\.com/accounts/Logout! )
-      || $self->mech->get('https://www.google.com/accounts/Logout');
+    $self->mech->get('https://www.google.com/accounts/Logout');
+
     die 'sign out failed to google code'
-      unless $self->html_contains(
-        as_text   => qr/Sign in/i,
-      );
+      unless $self->signed_in;
 
     return 1;
 }
@@ -71,12 +54,25 @@ sub ask_password {
 
 sub signed_in {
     my $self = shift;
-    return 1
-      if $self->mech->content
-          && $self->html_contains(
-              as_text   => qr/Sign out/,
-          );
-    return;
+
+    my $html = $self->mech->content;
+    # remove lines of head, style and script
+    $html =~ s!<head>.*?</head>!!sg;
+    $html =~ s!<style.*?</style>!!sg;
+    $html =~ s!<script.*?</script>!!sg;
+
+    my @lines = split /\n/, $html;
+    my $signed_in;
+    my $line = 0;
+
+    # only check the first 30 lines or so in case user input of 'sign out'
+    # exists below
+    for ( @lines ) {
+        $signed_in = 1 if /sign out/i;
+        $line++;
+        last if $line == 30;
+    }
+    return $signed_in;
 }
 
 no Moose::Role;
