@@ -48,6 +48,8 @@ has 'uploaded' => (
 sub load {
 	my $self = shift;
     my $name = shift || $self->name;
+    die "current object doesn't have name and load() is not passed a name either"
+      unless $name;
 	
 	# http://code.google.com/p/net-google-code/downloads/detail?name=Net-Google-Code-0.01.tar.gz
 	

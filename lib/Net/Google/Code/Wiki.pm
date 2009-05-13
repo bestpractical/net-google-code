@@ -46,6 +46,7 @@ has 'comments' => (
 
 sub load_source {
     my $self = shift;
+    die "current object doesn't have name" unless $self->name;
     my $source =
       $self->fetch( $self->base_svn_url . 'wiki/' . $self->name . '.wiki' );
     $self->source($source);
@@ -70,6 +71,8 @@ sub parse_source {
 sub load {
     my $self = shift;
     my $name = shift || $self->name;
+    die "current object doesn't have name and load() is not passed a name either"
+      unless $name;
 
     # http://code.google.com/p/net-google-code/wiki/TestPage
     my $content = $self->fetch( $self->base_url . 'wiki/' . $name );
