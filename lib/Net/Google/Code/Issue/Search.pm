@@ -2,7 +2,7 @@ package Net::Google::Code::Issue::Search;
 use Moose;
 use Params::Validate qw(:all);
 use Moose::Util::TypeConstraints;
-with 'Net::Google::Code::Role';
+with 'Net::Google::Code::Role', 'Net::Google::Code::Role::Pageable';
 
 our %CAN = (
     'all'    => 1,
@@ -41,10 +41,10 @@ sub search {
     if ( scalar @_ ) {
         my %args = @_;
         $self->_can( $args{_can} ) if defined $args{_can};
-        $self->_q( $args{_q} ) if defined $args{_q};
+        $self->_q( $args{_q} )     if defined $args{_q};
     }
 
-    $self->fetch( $self->base_url . 'issues/list');
+    $self->fetch( $self->base_url . 'issues/list' );
     my $mech = $self->mech;
     $mech->submit_form(
         form_number => 2,
@@ -53,65 +53,24 @@ sub search {
             'q'   => $self->_q,
         }
     );
-    die "Server threw an error "
-      . $mech->response->status_line
-      . 'when search'
+    die "Server threw an error " . $mech->response->status_line . 'when search'
       unless $mech->response->is_success;
 
     my $content = $mech->response->content;
 
     if ( $mech->title =~ /Issue\s+(\d+)/ ) {
-# only get one ticket
-        @{$self->ids} = $1;
-        return 1;
+        # get only one ticket
+        $self->ids( [$1] );
     }
     elsif ( $mech->title =~ /Issues/ ) {
-# get a ticket list
-        $self->ids([]); # clean previous ids
 
-        require HTML::TreeBuilder;
-        my $tree = HTML::TreeBuilder->new;
-        $tree->parse_content($content);
-        my $pagination = $tree->look_down( class => 'pagination' );
-        if ( my ( $start, $end, $total ) =
-            $pagination->content_array_ref->[0] =~
-            /(\d+)\s+-\s+(\d+)\s+of\s+(\d+)/ )
-        {
-
-            my @ids = $tree->look_down( class => 'vt id col_0' );
-            @ids =
-              map { $_->content_array_ref->[0]->content_array_ref->[0] } @ids;
-            $self->ids( [ @{$self->ids}, @ids ] );
-
-            while ( scalar @{$self->ids} < $total ) {
-                if ($mech->follow_link( text_regex => qr/Next\s+/ ) ) {
-                    if ( $mech->response->is_success ) {
-                        my $content = $mech->content;
-                        my $tree    = HTML::TreeBuilder->new;
-                        $tree->parse_content($content);
-                        my @ids = $tree->look_down( class => 'vt id col_0' );
-                        @ids =
-                          map {
-                            $_->content_array_ref->[0]->content_array_ref->[0]
-                          } @ids;
-                        $self->ids( [ @{$self->ids}, @ids ] );
-                    }
-                    else {
-                        die "failed to follow link: Next";
-                    }
-                }
-                else {
-                # XXX sometimes google's result number is wrong. google--
-                    warn "didn't find enough tickets, sometimes it's google's fault instead of ours ;)";
-                    last;
-                }
-            }
-        }
-        return 1;
+        # get a ticket list
+        my @ids = $self->first_columns($content);
+        $self->ids( \@ids );
     }
     else {
         warn "no idea what the content like";
-        return
+        return;
     }
 }
 
