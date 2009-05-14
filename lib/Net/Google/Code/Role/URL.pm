@@ -34,7 +34,7 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::Role::URL - 
+Net::Google::Code::Role::URL - URL Role 
 
 
 =head1 DESCRIPTION

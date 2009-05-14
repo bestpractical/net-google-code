@@ -3,6 +3,7 @@ use Moose;
 use Params::Validate qw(:all);
 with 'Net::Google::Code::Role';
 use Net::Google::Code::Issue::Comment;
+use Net::Google::Code::Issue::Attachment;
 
 has 'state' => (
     isa     => 'HashRef',
@@ -37,11 +38,12 @@ for my $prop (@PROPS) {
 
 sub load {
     my $self = shift;
-    my ($id) = validate_pos( @_, { type => SCALAR } );
-    $self->state->{id} = $id;
+    my $id = shift || $self->id;
+    die "current object doesn't have id and load() is not passed an id either"
+      unless $id;
     my $content = $self->fetch( $self->base_url . "issues/detail?id=" . $id );
-    $self->parse( $content );
-    return $id;
+    $self->state->{id} = $id;
+    return $self->parse($content);
 }
 
 sub parse {
@@ -65,23 +67,9 @@ sub parse {
     $text =~ s/\r\n/\n/g;
     $self->state->{description} = $text;
 
-    my $att_tags = $tree->look_down( class => 'attachments' );
-    my @attachments;
-    for my $tag ($att_tags) {
-        my @items = $att_tags->find_by_tag_name('tr');
-        require Net::Google::Code::Issue::Attachment;
-        while ( scalar @items ) {
-            my $tr1 = shift @items;
-            my $tr2 = shift @items;
-            my $a =
-              Net::Google::Code::Issue::Attachment->new(
-                project => $self->project );
-
-            if ( $a->parse( [ $tr1, $tr2 ] ) ) {
-                push @attachments, $a;
-            }
-        }
-    }
+    my $att_tag = $tree->look_down( class => 'attachments' );
+    my @attachments =
+      Net::Google::Code::Issue::Attachment::parse_attachments($att_tag);
     $self->attachments( \@attachments );
 
     my ($meta) = $tree->look_down( id => 'issuemeta' );

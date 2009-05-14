@@ -41,7 +41,7 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::Role::Fetchable - 
+Net::Google::Code::Role::Fetchable - Fetchable Role
 
 
 =head1 DESCRIPTION
