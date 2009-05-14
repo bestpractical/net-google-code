@@ -12,7 +12,6 @@ requires 'Moose';
 requires 'WWW::Mechanize';
 requires 'HTML::TreeBuilder';
 requires 'Params::Validate';
-requires 'XML::Atom';
 
 recursive_author_tests('xt/');
 

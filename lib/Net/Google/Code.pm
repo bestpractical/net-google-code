@@ -111,26 +111,64 @@ sub issue {
 
 
 sub load_downloads {
-	my $self = shift;
-	
-    require XML::Atom::Feed;
-	my $content = $self->fetch( $self->base_feeds_url . 'downloads/basic' );
-	my $feed = XML::Atom::Feed->new( \$content );
-	my @fentries = $feed->entries;
-	
+    my $self = shift;
+
+    my $content = $self->fetch( $self->base_feeds_url . 'downloads/list' );
+    require HTML::TreeBuilder;
+    my $tree = HTML::TreeBuilder->new;
+    $tree->parse_content($content);
+    $tree->elementify;
     my @downloads;
-	foreach my $entry (@fentries) {
+    my $pagination = $tree->look_down( class => 'pagination' );
+    if ( my ( $start, $end, $total ) =
+        $pagination->as_text =~ /(\d+)\s+-\s+(\d+)\s+of\s+(\d+)/ )
+    {
+
         require Net::Google::Code::Download;
-		my $title  = $entry->title;
-        # title is like: Net-Google-Code-0.01.tar.gz (37.4 KB)
-		my ($filename) = ( $title =~ /^\s*(.+)\s+\(.+\)\s*$/ );
-        my $download = Net::Google::Code::Download->new(
-            project => $self->project,
-            name    => $filename
-        );
+        my @name_tags = $tree->look_down( class => 'vt id col_0' );
+        my @names;
+        for my $tag (@name_tags) {
+            my $name = $tag->as_text;
+            $name =~ s/^\s+//;
+            $name =~ s/\s+$//;
+            my $download = Net::Google::Code::Download->new(
+                name    => $name,
+                project => $self->project,
+            );
+            push @downloads, $download;
+        }
+
+        while ( scalar @downloads < $total ) {
+            if ( $self->mech->follow_link( text_regex => qr/Next\s+/ ) ) {
+                if ( $self->mech->response->is_success ) {
+                    my $content = $self->mech->content;
+                    my $tree    = HTML::TreeBuilder->new;
+                    $tree->parse_content($content);
+                    my @name_tags = $tree->look_down( class => 'vt id col_0' );
+                    my @names;
+                    for my $tag (@name_tags) {
+                        my $name = $tag->as_text;
+                        $name =~ s/^\s+//;
+                        $name =~ s/\s+$//;
+                        my $download =
+                          Net::Google::Code::Download->new( name => $name );
+                        push @downloads, $download;
+                    }
+                }
+                else {
+                    die "failed to follow 'Next' link";
+                }
+            }
+            else {
+                warn "didn't find enough downloads";
+                last;
+            }
+        }
+    }
+
+    for my $download (@downloads) {
         $download->load;
-        push @downloads, $download;
-	}
+    }
     $self->downloads( \@downloads );
 }
 
