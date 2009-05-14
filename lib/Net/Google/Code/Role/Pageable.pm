@@ -85,7 +85,11 @@ Net::Google::Code::Role::Pageable - Pageable Role
 
 =head1 INTERFACE
 
-=head2 first_columns
+=over 4
+
+=item first_columns
+
+=back
 
 =head1 AUTHOR
 

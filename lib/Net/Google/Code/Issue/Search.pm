@@ -95,7 +95,9 @@ Net::Google::Code::Issue::Search - Issues Search API
 
 =head1 INTERFACE
 
-=head2 search ( _can => 'all', _q = 'foo' )
+=over 4
+
+=item search ( _can => 'all', _q = 'foo' )
 
 search with values $self->_can and $self->_q if without arguments.
 if there're arguments for _can or _q, this call will set $self->_can or
@@ -103,10 +105,13 @@ $self_q, then do the search.
 
 return true if search is successful, false on the other hand.
 
+=item project
 
-=head2 ids
+=item ids
 this should be called after a successful search.
 returns issue ids as a arrayref.
+
+=back
 
 =head1 AUTHOR
 
