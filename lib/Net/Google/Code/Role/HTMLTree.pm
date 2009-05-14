@@ -77,7 +77,7 @@ Net::Google::Code::Role::HTMLTree -
 
 return a new HTML::TreeBuilder object, with current content parsed
 
-=head2 html_contains
+=head2 html_tree_contains
 
 a help method to help test if the current content contains some stuff, args are:
 look_down => [ look_down's args ]
