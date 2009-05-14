@@ -19,8 +19,8 @@ lib/Net/Google/Code/Issue/Attachment.pm
 lib/Net/Google/Code/Issue/Comment.pm
 lib/Net/Google/Code/Issue/PropChange.pm
 lib/Net/Google/Code/Issue/Search.pm
-lib/Net/Google/Code/Role.pm
 lib/Net/Google/Code/Role/Fetchable.pm
+lib/Net/Google/Code/Role/Pageable.pm
 lib/Net/Google/Code/Role/URL.pm
 lib/Net/Google/Code/Wiki.pm
 lib/Net/Google/Code/Wiki/Comment.pm
@@ -37,10 +37,10 @@ t/11.wiki.t
 t/20.code.t
 t/sample/02.issue.html
 t/sample/10.download.html
-t/sample/10.downloads.xml
 t/sample/11.TestPage.html
 t/sample/11.TestPage.wiki
 t/sample/11.wikis.html
+t/sample/20.code.downloads.html
 t/sample/20.code.html
 xt/kwalitee.t
 xt/perlcritic.t

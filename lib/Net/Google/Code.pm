@@ -4,7 +4,7 @@ use Moose;
 with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::URL',
   'Net::Google::Code::Role::Pageable';
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 has 'project' => (
     isa      => 'Str',
