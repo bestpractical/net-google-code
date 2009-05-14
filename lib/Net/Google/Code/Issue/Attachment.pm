@@ -90,7 +90,7 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::Issue::Attachment
+Net::Google::Code::Issue::Attachment - Issue's Attachment
 
 =head1 DESCRIPTION
 

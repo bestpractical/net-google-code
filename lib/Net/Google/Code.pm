@@ -1,9 +1,15 @@
 package Net::Google::Code;
 
 use Moose;
-with 'Net::Google::Code::Role', 'Net::Google::Code::Role::Pageable';
+with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::URL',
+  'Net::Google::Code::Role::Pageable';
 
 our $VERSION = '0.04';
+
+has 'project' => (
+    isa      => 'Str',
+    is       => 'rw',
+);
 
 has 'labels' => (
     isa => 'ArrayRef',

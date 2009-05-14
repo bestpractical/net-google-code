@@ -2,7 +2,12 @@ package Net::Google::Code::Wiki;
 
 use Moose;
 use Params::Validate qw(:all);
-with 'Net::Google::Code::Role';
+with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::URL';
+
+has 'project' => (
+    isa      => 'Str',
+    is       => 'rw',
+);
 
 has 'name' => (
     isa => 'Str',
@@ -143,6 +148,8 @@ Net::Google::Code::Wiki - Google Code Wiki
 =item load_source
 
 =item parse_source
+
+=item project
 
 =item name
 

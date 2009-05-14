@@ -2,7 +2,13 @@ package Net::Google::Code::Issue::Search;
 use Moose;
 use Params::Validate qw(:all);
 use Moose::Util::TypeConstraints;
-with 'Net::Google::Code::Role', 'Net::Google::Code::Role::Pageable';
+with 'Net::Google::Code::Role::URL',
+  'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::Pageable';
+
+has 'project' => (
+    isa      => 'Str',
+    is       => 'rw',
+);
 
 our %CAN = (
     'all'    => 1,
@@ -82,7 +88,7 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::Issue::Search - 
+Net::Google::Code::Issue::Search - Issues Search API 
 
 
 =head1 DESCRIPTION
