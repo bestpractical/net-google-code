@@ -1,29 +1,25 @@
 package Net::Google::Code::Role::HTMLTree;
 use Moose::Role;
-with 'Net::Google::Code::Role::Fetchable';
 
 use HTML::TreeBuilder;
 use Params::Validate qw(:all);
-
-has 'html' => (
-    isa => 'Str',
-    is  => 'rw',
-);
+use Scalar::Util qw/blessed/;
 
 sub html_tree {
     my $self = shift;
-    my %args = validate( @_, { content => { type => SCALAR, optional => 1 } } );
+    my %args = validate( @_, { content => { type => SCALAR } } );
     my $tree = HTML::TreeBuilder->new;
-    $tree->parse_content($args{content} || $self->mech->content);
+    $tree->parse_content($args{content});
     $tree->elementify;
     return $tree;
 }
 
-sub html_contains {
+sub html_tree_contains {
     my $self = shift;
     my %args = validate(
         @_,
         {
+            html => { type => SCALAR },
             look_down => { type => ARRAYREF, optional => 1 },
 
             # SCALARREF is for the regex
@@ -31,7 +27,17 @@ sub html_contains {
         }
     );
 
-    my $tree = $self->html_tree;
+    my $tree;
+
+    if ( blessed $args{html} ) {
+        $tree = $args{html};
+    }
+    else {
+        $tree = HTML::TreeBuilder->new;
+        $tree->parse_content( $args{html} );
+        $tree->elementify;
+    }
+
     my $part = $tree;
     if ( $args{look_down} ) {
         ($part) = $tree->look_down( @{ $args{look_down} } );

@@ -39,15 +39,16 @@ sub load {
     my $self = shift;
     my ($id) = validate_pos( @_, { type => SCALAR } );
     $self->state->{id} = $id;
-    $self->html( $self->fetch( $self->base_url . "issues/detail?id=" . $id ) );
-    $self->parse;
+    my $content = $self->fetch( $self->base_url . "issues/detail?id=" . $id );
+    $self->parse( $content );
     return $id;
 }
 
 sub parse {
     my $self    = shift;
+    my $content = shift;
 
-    my $tree = $self->html_tree( content => $self->html );
+    my $tree = $self->html_tree( content => $content );
 
     # extract summary
     my ($summary) = $tree->look_down( class => 'h3' );
@@ -173,7 +174,8 @@ s{(?<=id="attachmentareadeventry"></div>)}{<input name="file$_" type="file">};
         }
     );
 
-    my ( $contains, $id ) = $self->html_contains(
+    my ( $contains, $id ) = $self->html_tree_contains(
+        html      => $self->mech->content,
         look_down => [ class => 'notice' ],
         as_text   => qr/Issue\s+(\d+)/i,
     );
@@ -232,7 +234,8 @@ s{(?<=id="attachmentarea"></div>)}{<input name="file$_" type="file">};
     );
 
     if (
-        $self->html_contains(
+        $self->html_tree_contains(
+            html      => $self->mech->content,
             look_down => [ class => 'notice' ],
             as_text   => qr/has been updated/,
         )
