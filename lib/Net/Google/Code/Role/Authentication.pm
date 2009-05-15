@@ -56,6 +56,7 @@ sub signed_in {
     my $self = shift;
 
     my $html = $self->mech->content;
+    return unless $html;
     # remove lines of head, style and script
     $html =~ s!<head>.*?</head>!!sg;
     $html =~ s!<style.*?</style>!!sg;
