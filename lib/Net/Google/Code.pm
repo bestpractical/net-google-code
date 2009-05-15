@@ -2,7 +2,7 @@ package Net::Google::Code;
 
 use Moose;
 with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::URL',
-  'Net::Google::Code::Role::Pageable';
+  'Net::Google::Code::Role::Pageable', 'Net::Google::Code::Role::HTMLTree';
 
 our $VERSION = '0.05';
 

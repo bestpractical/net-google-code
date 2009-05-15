@@ -1,6 +1,6 @@
 package Net::Google::Code::Issue::Attachment;
 use Moose;
-with 'Net::Google::Code::Role::Fetchable';
+with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::HTMLTree';
 use Scalar::Util qw/blessed/;
 
 has 'name'    => ( isa => 'Str', is => 'rw' );

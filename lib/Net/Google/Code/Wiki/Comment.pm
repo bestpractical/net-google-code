@@ -2,6 +2,7 @@ package Net::Google::Code::Wiki::Comment;
 
 use Moose;
 use Params::Validate qw(:all);
+with 'Net::Google::Code::Role::HTMLTree';
 
 has 'content' => (
     isa => 'Str',
