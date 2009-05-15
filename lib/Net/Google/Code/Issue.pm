@@ -18,10 +18,44 @@ has 'id' => (
     is       => 'rw',
 );
 
-has 'state' => (
-    isa     => 'HashRef',
-    is      => 'rw',
-    default => sub { {} },
+has 'status' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
+has 'owner' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
+has 'cc' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
+has 'summary' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
+has 'reporter' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
+has 'reported' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
+has 'closed' => (
+    isa => 'Str',
+    is  => 'rw',
+);
+
+has 'description' => (
+    isa => 'Str',
+    is  => 'rw',
 );
 
 has 'labels' => (
@@ -42,13 +76,6 @@ has 'attachments' => (
     default => sub { [] },
 );
 
-our @PROPS = qw(status owner closed cc summary reporter reported description);
-
-for my $prop (@PROPS) {
-    no strict 'refs';    ## no critic
-    *{ "Net::Google::Code::Issue::" . $prop } = sub { shift->state->{$prop} };
-}
-
 sub load {
     my $self = shift;
     my $id = shift || $self->id;
@@ -67,19 +94,18 @@ sub parse {
 
     # extract summary
     my ($summary) = $tree->look_down( class => 'h3' );
-    $self->state->{summary} = $summary->content_array_ref->[0];
+    $self->summary( $summary->as_text );
 
     # extract reporter, reported and description
     my $description = $tree->look_down( class => 'vt issuedescription' );
     my $author_tag = $description->look_down( class => "author" );
-    $self->state->{reporter} = $author_tag->content_array_ref->[1]->as_text;
-    $self->state->{reported} =
-      $author_tag->look_down( class => 'date' )->attr('title');
+    $self->reporter( $author_tag->content_array_ref->[1]->as_text );
+    $self->reported( $author_tag->look_down( class => 'date' )->attr('title') );
     my $text = $description->find_by_tag_name('pre')->as_text;
     $text =~ s/^\s+//;
     $text =~ s/\s+$/\n/;
     $text =~ s/\r\n/\n/g;
-    $self->state->{description} = $text;
+    $self->description( $text );
 
     my $att_tag = $tree->look_down( class => 'attachments' );
     my @attachments;
@@ -102,6 +128,7 @@ sub parse {
             }
             $key = $k_content;    # $key is like 'Status:#'
             $key =~ s/:.$//;      # s/:#$// doesn't work, no idea why
+            $key = lc $key;
 
             if ($v) {
                 my $v_content = $v->content_array_ref->[0];
@@ -112,7 +139,12 @@ sub parse {
                 $value =~ s/^\s+//;
                 $value =~ s/\s+$//;
             }
-            $self->state->{ lc $key } = $value;
+            if ( $self->can( $key ) ) {
+                $self->$key( $value );
+            }
+            else {
+                warn "no idea where to keep $key";
+            }
         }
         else {
             my $href = $meta->look_down( class => 'label' )->attr('href');
@@ -306,13 +338,13 @@ Net::Google::Code::Issue - Google Code Issue
 
 =item summary
 
+=item description
+
 =item create
 comment, summary, status, owner, cc, labels, files.
 
 =item update
 comment, summary, status, owner, merge_into, cc, labels, blocked_on, files.
-
-=item description
 
 =item labels
 
