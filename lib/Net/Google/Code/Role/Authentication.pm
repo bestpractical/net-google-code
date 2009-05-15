@@ -84,7 +84,7 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::Role::Authentication - 
+Net::Google::Code::Role::Authentication - Authentication Role 
 
 =head1 DESCRIPTION
 

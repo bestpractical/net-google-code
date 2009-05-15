@@ -65,7 +65,7 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::Role::HTMLTree - 
+Net::Google::Code::Role::HTMLTree - HTMLTree Role
 
 =head1 DESCRIPTION
 
