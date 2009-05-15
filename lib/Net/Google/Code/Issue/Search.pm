@@ -5,6 +5,7 @@ use Moose::Util::TypeConstraints;
 with 'Net::Google::Code::Role::URL',
   'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::Pageable',
   'Net::Google::Code::Role::HTMLTree';
+use Net::Google::Code::Issue;
 
 has 'project' => (
     isa      => 'Str',
@@ -37,8 +38,8 @@ has '_q' => (
     default => '',
 );
 
-has 'ids' => (
-    isa     => 'ArrayRef[Int]',
+has 'results' => (
+    isa     => 'ArrayRef[Net::Google::Code::Issue]',
     is      => 'rw',
     default => sub { [] },
 );
@@ -67,13 +68,19 @@ sub search {
 
     if ( $mech->title =~ /Issue\s+(\d+)/ ) {
         # get only one ticket
-        $self->ids( [$1] );
+        my $issue = Net::Google::Code::Issue->new( id => $1 );
+        $self->results( [ $issue ] );
     }
     elsif ( $mech->title =~ /Issues/ ) {
 
         # get a ticket list
         my @ids = $self->first_columns($content);
-        $self->ids( \@ids );
+        my @issues;
+        for my $id ( @ids ) {
+            my $issue = Net::Google::Code::Issue->new( id => $id );
+            push @issues, $issue;
+        }
+        $self->results( \@issues );
     }
     else {
         warn "no idea what the content like";
@@ -108,9 +115,10 @@ return true if search is successful, false on the other hand.
 
 =item project
 
-=item ids
+=item results
+
 this should be called after a successful search.
-returns issue ids as a arrayref.
+returns issues as a arrayref.
 
 =back
 
