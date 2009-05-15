@@ -2,7 +2,8 @@ package Net::Google::Code;
 
 use Moose;
 with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::URL',
-  'Net::Google::Code::Role::Pageable', 'Net::Google::Code::Role::HTMLTree';
+  'Net::Google::Code::Role::Pageable', 'Net::Google::Code::Role::HTMLTree',
+  'Net::Google::Code::Role::Authentication';
 use Scalar::Util qw/blessed/;
 
 our $VERSION = '0.05';
@@ -99,7 +100,9 @@ sub download {
     my $self = shift;
     require Net::Google::Code::Download;
     return Net::Google::Code::Download->new(
-        project => $self->project,
+        project  => $self->project,
+        email    => $self->email,
+        password => $self->password,
         @_
     );
 }
@@ -108,7 +111,9 @@ sub issue {
     my $self = shift;
     require Net::Google::Code::Issue;
     return Net::Google::Code::Issue->new(
-        project => $self->project,
+        project  => $self->project,
+        email    => $self->email,
+        password => $self->password,
         @_
     );
 }
@@ -138,6 +143,9 @@ sub wiki {
     require Net::Google::Code::Wiki;
     return Net::Google::Code::Wiki->new(
         project => $self->project,
+        project  => $self->project,
+        email    => $self->email,
+        password => $self->password,
         @_
     );
 }

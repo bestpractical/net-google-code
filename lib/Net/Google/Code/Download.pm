@@ -5,7 +5,7 @@ use Params::Validate qw(:all);
 use Scalar::Util qw/blessed/;
 
 with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::URL',
-  'Net::Google::Code::Role::HTMLTree';
+  'Net::Google::Code::Role::HTMLTree', 'Net::Google::Code::Role::Authentication';
 
 has 'project' => (
     isa      => 'Str',

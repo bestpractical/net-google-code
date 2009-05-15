@@ -3,7 +3,7 @@ package Net::Google::Code::Wiki;
 use Moose;
 use Params::Validate qw(:all);
 with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::URL',
-  'Net::Google::Code::Role::HTMLTree';
+  'Net::Google::Code::Role::HTMLTree', 'Net::Google::Code::Role::Authentication';
 
 has 'project' => (
     isa      => 'Str',

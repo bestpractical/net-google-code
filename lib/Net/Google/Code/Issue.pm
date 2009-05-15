@@ -2,7 +2,8 @@ package Net::Google::Code::Issue;
 use Moose;
 use Params::Validate qw(:all);
 with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::URL',
-     'Net::Google::Code::Role::HTMLTree';
+     'Net::Google::Code::Role::HTMLTree',
+     'Net::Google::Code::Role::Authentication';
 use Net::Google::Code::Issue::Comment;
 use Net::Google::Code::Issue::Attachment;
 use Scalar::Util qw/blessed/;
