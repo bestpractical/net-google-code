@@ -2,6 +2,7 @@ package Net::Google::Code::Role::Fetchable;
 use Moose::Role;
 use Params::Validate ':all';
 use WWW::Mechanize;
+use Encode;
 
 has 'mech' => (
     isa     => 'WWW::Mechanize',
@@ -29,7 +30,10 @@ sub fetch {
           . $url;
     }
     else {
-        return $self->mech->content;
+        my $content = $self->mech->content;
+# auto decode the content to erase HTML::Parser's utf8 warning like this:
+# Parsing of undecoded UTF-8 will give garbage when decoding entities
+        return decode( 'utf8', $content );
     }
 }
 

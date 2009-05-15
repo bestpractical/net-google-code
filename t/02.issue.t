@@ -10,7 +10,8 @@ use Test::MockModule;
 use FindBin qw/$Bin/;
 use File::Slurp;
 
-my $content = read_file( "$Bin/sample/02.issue.html" );
+use Encode;
+my $content = decode( 'utf8', read_file( "$Bin/sample/02.issue.html" ));
 
 my $mock = Test::MockModule->new('Net::Google::Code::Issue');
 $mock->mock(
