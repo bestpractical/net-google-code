@@ -20,10 +20,7 @@ sub parse {
         ( $tr1, $tr2 ) = @$html;
     }
     else {
-        require HTML::TreeBuilder;
-        my $tree = HTML::TreeBuilder->new;
-        $tree->parse_content( $html );
-        $tree->elementify;
+        my $tree = $self->html_tree( html => $html );
         ( $tr1, $tr2 ) = $tree->find_by_tag_name( 'tr' );
     }
 
@@ -49,17 +46,9 @@ sub parse {
 }
 
 sub parse_attachments {
-    my $html = $_[-1]; # in case object call ->
-    my $element;
-    if ( blessed $html ) {
-        $element = $html;
-    }
-    else {
-        require HTML::TreeBuilder;
-        $element = HTML::TreeBuilder->new;
-        $element->parse_content( $html );
-        $element->elementify;
-    }
+    my $self    = shift;
+    my $element = shift;
+    $element = $self->html_tree( html => $element ) unless blessed $element;
 
     my @attachments;
 

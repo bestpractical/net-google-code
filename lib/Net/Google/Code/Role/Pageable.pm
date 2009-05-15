@@ -2,23 +2,14 @@ package Net::Google::Code::Role::Pageable;
 use Moose::Role;
 use Params::Validate ':all';
 use WWW::Mechanize;
-with 'Net::Google::Code::Role::Fetchable';
+with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::HTMLTree';
 use Scalar::Util qw/blessed/;
 no Moose::Role;
 
 sub first_columns {
     my $self = shift;
-    my $html = shift;
-    my $tree;
-    if ( blessed $html ) {
-        $tree = $html;
-    }
-    else {
-        require HTML::TreeBuilder;
-        $tree = HTML::TreeBuilder->new;
-        $tree->parse_content($html);
-        $tree->elementify;
-    }
+    my $tree = shift;
+    $tree = $self->html_tree( html => $tree ) unless blessed $tree;
 
     my @columns;
 
@@ -49,17 +40,8 @@ sub first_columns {
 
 sub _first_columns {
     my $self = shift;
-    my $html = shift;
-    my $tree;
-    if ( blessed $html ) {
-        $tree = $html;
-    }
-    else {
-        require HTML::TreeBuilder;
-        $tree = HTML::TreeBuilder->new;
-        $tree->parse_content($html);
-        $tree->elementify;
-    }
+    my $tree = shift;
+    $tree = $self->html_tree( html => $tree ) unless blessed $tree;
 
     my @columns;
     my @tags = $tree->look_down( class => 'vt id col_0' );

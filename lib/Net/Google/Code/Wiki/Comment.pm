@@ -20,19 +20,10 @@ has 'date' => (
 );
 
 sub parse {
-    my $self = shift;
-    my $html = shift;
+    my $self    = shift;
+    my $element = shift;
 
-    my $element;
-    if ( blessed $html ) {
-        $element = $html;
-    }
-    else {
-        require HTML::TreeBuilder;
-        my $element = HTML::TreeBuilder->new;
-        $element->parse_content( $html );
-        $element->elementify;
-    }
+    $element = $self->html_tree( html => $element ) unless blessed $element;
 
     my $author =
       $element->look_down( class => 'author' )->find_by_tag_name('a')->as_text;

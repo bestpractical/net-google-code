@@ -5,6 +5,7 @@ with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::URL',
      'Net::Google::Code::Role::HTMLTree';
 use Net::Google::Code::Issue::Comment;
 use Net::Google::Code::Issue::Attachment;
+use Scalar::Util qw/blessed/;
 
 has 'project' => (
     isa      => 'Str',
@@ -54,9 +55,9 @@ sub load {
 
 sub parse {
     my $self    = shift;
-    my $content = shift;
+    my $tree    = shift;
 
-    my $tree = $self->html_tree( content => $content );
+    $tree = $self->html_tree( html => $tree ) unless blessed $tree;
 
     # extract summary
     my ($summary) = $tree->look_down( class => 'h3' );
@@ -74,8 +75,10 @@ sub parse {
     $self->state->{description} = $text;
 
     my $att_tag = $tree->look_down( class => 'attachments' );
-    my @attachments =
-      Net::Google::Code::Issue::Attachment::parse_attachments($att_tag);
+    my @attachments;
+    @attachments =
+      Net::Google::Code::Issue::Attachment->parse_attachments($att_tag)
+      if $att_tag;
     $self->attachments( \@attachments );
 
     my ($meta) = $tree->look_down( id => 'issuemeta' );

@@ -3,6 +3,7 @@ package Net::Google::Code;
 use Moose;
 with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::URL',
   'Net::Google::Code::Role::Pageable', 'Net::Google::Code::Role::HTMLTree';
+use Scalar::Util qw/blessed/;
 
 our $VERSION = '0.05';
 
@@ -59,11 +60,8 @@ sub load {
 
 sub parse {
     my $self    = shift;
-    my $content = shift;
-    require HTML::TreeBuilder;
-    my $tree = HTML::TreeBuilder->new;
-    $tree->parse_content($content);
-    $tree->elementify;
+    my $tree    = shift;
+    $tree = $self->html_tree( html => $tree ) unless blessed $tree;
 
     my $summary =
       $tree->look_down( id => 'psum' )->find_by_tag_name('a')->content_array_ref->[0];
@@ -148,13 +146,9 @@ sub load_wikis {
 	my $self = shift;
 	
 	my $wiki_svn = $self->base_svn_url . 'wiki/';
-	my $content = $self->fetch( $wiki_svn );
+    my $content  = $self->fetch( $wiki_svn );
+    my $tree = $self->html_tree( html => $content );
 
-    require HTML::TreeBuilder;
-    my $tree = HTML::TreeBuilder->new;
-    $tree->parse_content($content);
-    $tree->elementify;
-	
     my @wikis;
     my @li = $tree->find_by_tag_name('li');
     for my $li ( @li ) {

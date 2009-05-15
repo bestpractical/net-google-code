@@ -16,18 +16,8 @@ has 'attachments' => (
 
 sub parse {
     my $self    = shift;
-    my $html = shift;
-
-    my $element;
-    if ( blessed $html ) {
-        $element = $html;
-    }
-    else {
-        require HTML::TreeBuilder;
-        my $element = HTML::TreeBuilder->new;
-        $element->parse_content( $html );
-        $element->elementify;
-    }
+    my $element = shift;
+    $element = $self->html_tree( html => $element ) unless blessed $element;
 
     my $author  = $element->look_down( class => 'author' );
     my @a       = $author->find_by_tag_name('a');
@@ -70,8 +60,11 @@ sub parse {
     }
 
     my $att_tag = $element->look_down( class => 'attachments' );
-    my @attachments =
-      Net::Google::Code::Issue::Attachment::parse_attachments($att_tag);
+    my @attachments;
+
+    @attachments =
+      Net::Google::Code::Issue::Attachment->parse_attachments($att_tag)
+      if $att_tag;
     $self->attachments( \@attachments );
 
     return 1;

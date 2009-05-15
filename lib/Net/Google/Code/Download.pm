@@ -2,6 +2,7 @@ package Net::Google::Code::Download;
 
 use Moose;
 use Params::Validate qw(:all);
+use Scalar::Util qw/blessed/;
 
 with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::URL',
   'Net::Google::Code::Role::HTMLTree';
@@ -68,12 +69,9 @@ sub load {
 
 sub parse {
     my $self = shift;
-    my $content = shift;
-	require HTML::TreeBuilder;
-    my $tree = HTML::TreeBuilder->new;
-    $tree->parse_content($content);
-    $tree->elementify;
-    
+    my $tree = shift;
+    $tree = $self->html_tree( html => $tree ) unless blessed $tree;
+
     my $entry;
     my $uploaded = $tree->look_down(class => 'date')->attr('title');
     $self->uploaded( $uploaded ) if $uploaded;

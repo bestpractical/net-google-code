@@ -7,9 +7,9 @@ use Scalar::Util qw/blessed/;
 
 sub html_tree {
     my $self = shift;
-    my %args = validate( @_, { content => { type => SCALAR } } );
+    my %args = validate( @_, { html => { type => SCALAR } } );
     my $tree = HTML::TreeBuilder->new;
-    $tree->parse_content($args{content});
+    $tree->parse_content($args{html});
     $tree->elementify;
     return $tree;
 }
@@ -19,7 +19,7 @@ sub html_tree_contains {
     my %args = validate(
         @_,
         {
-            html => { type => SCALAR },
+            html      => { type => SCALAR },
             look_down => { type => ARRAYREF, optional => 1 },
 
             # SCALARREF is for the regex
@@ -33,9 +33,7 @@ sub html_tree_contains {
         $tree = $args{html};
     }
     else {
-        $tree = HTML::TreeBuilder->new;
-        $tree->parse_content( $args{html} );
-        $tree->elementify;
+        $tree = $self->html_tree( html => $args{html} );
     }
 
     my $part = $tree;

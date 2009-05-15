@@ -90,11 +90,9 @@ sub load {
 
 sub parse {
     my $self    = shift;
-    my $content = shift;
-    require HTML::TreeBuilder;
-    my $tree = HTML::TreeBuilder->new;
-    $tree->parse_content($content);
-    $tree->elementify;
+    my $tree    = shift;
+    $tree = $self->html_tree( html => $tree ) unless blessed $tree;
+
     my $wiki = $tree->look_down( id => 'wikimaincol' );
     my $updated =
       $wiki->find_by_tag_name('td')->find_by_tag_name('span')->attr('title');
