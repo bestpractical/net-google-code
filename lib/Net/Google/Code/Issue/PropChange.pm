@@ -13,7 +13,7 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::Issue::PropChange - 
+Net::Google::Code::Issue::PropChange - Issue's PropChange
 
 =head1 DESCRIPTION
 

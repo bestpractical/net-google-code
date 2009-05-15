@@ -1,5 +1,12 @@
 Revision history for Net-Google-Code
 
+0.05 Thu May 14 16:00:07 CST 2009
+
+* load_downloads doesn't parse feed any more, instead, it parses the 
+    downloads list page now.
+* added Role/Pageable.pm
+* removed Role.pm
+
 0.04 Tue May 12 16:07:09 CST 2009
 
 refactor version.

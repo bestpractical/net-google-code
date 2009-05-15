@@ -1,9 +1,14 @@
 package Net::Google::Code::Issue;
 use Moose;
 use Params::Validate qw(:all);
-with 'Net::Google::Code::Role';
+with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::URL';
 use Net::Google::Code::Issue::Comment;
 use Net::Google::Code::Issue::Attachment;
+
+has 'project' => (
+    isa      => 'Str',
+    is       => 'rw',
+);
 
 has 'state' => (
     isa     => 'HashRef',
@@ -266,6 +271,8 @@ Net::Google::Code::Issue - Google Code Issue
 =item load
 
 =item parse
+
+=item project
 
 =item id
 

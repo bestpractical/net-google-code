@@ -84,7 +84,7 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::Issue::Comment - 
+Net::Google::Code::Issue::Comment - Issue's Comment
 
 =head1 DESCRIPTION
 

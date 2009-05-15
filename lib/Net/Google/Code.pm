@@ -1,9 +1,15 @@
 package Net::Google::Code;
 
 use Moose;
-with 'Net::Google::Code::Role';
+with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::URL',
+  'Net::Google::Code::Role::Pageable';
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
+
+has 'project' => (
+    isa      => 'Str',
+    is       => 'rw',
+);
 
 has 'labels' => (
     isa => 'ArrayRef',
@@ -111,26 +117,19 @@ sub issue {
 
 
 sub load_downloads {
-	my $self = shift;
-	
-    require XML::Atom::Feed;
-	my $content = $self->fetch( $self->base_feeds_url . 'downloads/basic' );
-	my $feed = XML::Atom::Feed->new( \$content );
-	my @fentries = $feed->entries;
-	
+    my $self = shift;
+    my $content = $self->fetch( $self->base_feeds_url . 'downloads/list' );
+    my @names = $self->first_columns( $content );
     my @downloads;
-	foreach my $entry (@fentries) {
-        require Net::Google::Code::Download;
-		my $title  = $entry->title;
-        # title is like: Net-Google-Code-0.01.tar.gz (37.4 KB)
-		my ($filename) = ( $title =~ /^\s*(.+)\s+\(.+\)\s*$/ );
+    require Net::Google::Code::Download;
+    for my $name ( @names ) {
         my $download = Net::Google::Code::Download->new(
             project => $self->project,
-            name    => $filename
+            name    => $name,
         );
         $download->load;
         push @downloads, $download;
-	}
+    }
     $self->downloads( \@downloads );
 }
 

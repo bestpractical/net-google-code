@@ -10,11 +10,11 @@ use File::Slurp;
 use_ok('Net::Google::Code');
 
 my $homepage_file     = "$Bin/sample/20.code.html";
-my $downloads_file    = "$Bin/sample/10.downloads.xml";
+my $downloads_file    = "$Bin/sample/20.code.downloads.html";
 my $download_file     = "$Bin/sample/10.download.html";
 
 my $wikis_file    = "$Bin/sample/11.wikis.html";
-my $svn_file = "$Bin/sample/11.TestPage.wiki";
+my $wiki_svn_file = "$Bin/sample/11.TestPage.wiki";
 my $wiki_file = "$Bin/sample/11.TestPage.html";
 
 my $mock = Test::MockModule->new('Net::Google::Code');
@@ -59,8 +59,8 @@ isa_ok( $project->wiki,     'Net::Google::Code::Wiki' );
 
 # test downloads
 $project->load_downloads;
-is( scalar @{ $project->downloads }, 1, 'have 1 download' );
-my $download = $project->downloads->[0];
+is( scalar @{ $project->downloads }, 2, 'have 2 downloads' );
+my $download = $project->downloads->[1];
 isa_ok( $download, 'Net::Google::Code::Download' );
 is( $download->name, 'Net-Google-Code-0.01.tar.gz', 'download name' );
 is( $download->size, '37.4 KB', 'download size' );
@@ -74,7 +74,7 @@ $mock_wiki->mock(
         shift;
         my $url = shift;
         if ( $url =~ /svn/ ) {
-            read_file($svn_file);
+            read_file($wiki_svn_file);
         }
         else {
             read_file($wiki_file);

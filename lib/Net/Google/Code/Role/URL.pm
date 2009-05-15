@@ -1,7 +1,8 @@
 package Net::Google::Code::Role::URL;
 use Moose::Role;
 
-requires 'project'; 
+# requires don't support attribute yet :/
+# requires 'project'; 
 
 has 'base_url' => (
     isa     => 'Str',

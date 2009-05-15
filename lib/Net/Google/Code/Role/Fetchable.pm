@@ -48,7 +48,11 @@ Net::Google::Code::Role::Fetchable - Fetchable Role
 
 =head1 INTERFACE
 
-=head2 fetch
+=over 4
+
+=item fetch
+
+=back
 
 =head1 AUTHOR
 
