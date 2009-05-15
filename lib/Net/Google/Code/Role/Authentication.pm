@@ -16,7 +16,7 @@ has 'password' => (
 sub sign_in {
     my $self = shift;
     return 1 if $self->signed_in;
-    $self->ask_password unless $self->password && length $self->password;
+    die "need password" unless $self->password;
 
     $self->mech->get('https://www.google.com/accounts/Login');
 
@@ -41,15 +41,6 @@ sub sign_out {
       unless $self->signed_in;
 
     return 1;
-}
-
-sub ask_password {
-    my $self = shift;
-    while ( !defined $self->password or $self->password eq '' ) {
-        require Term::ReadPassword;
-        my $pass = Term::ReadPassword::read_password("password: ");
-        $self->password($pass);
-    }
 }
 
 sub signed_in {
@@ -102,10 +93,6 @@ sign out
 =head2 signed_in
 
 return 1 if already signed in, return undef elsewise.
-
-=head2 ask_password
-
-ask user to input password
 
 =head1 AUTHOR
 
