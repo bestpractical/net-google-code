@@ -49,6 +49,12 @@ has 'limit' => (
     is  => 'rw',
 );
 
+has 'load_after_search' => (
+    isa     => 'Bool',
+    is      => 'rw',
+    default => 1,
+);
+
 sub search {
     my $self = shift;
     if ( scalar @_ ) {
@@ -56,6 +62,8 @@ sub search {
         $self->_can( $args{_can} ) if defined $args{_can};
         $self->_q( $args{_q} )     if defined $args{_q};
         $self->limit( $args{limit} ) if defined $args{limit};
+        $self->load_after_search( $args{load_after_search} )
+          if defined $args{load_after_search};
     }
 
     $self->fetch( $self->base_url . 'issues/list' );
@@ -76,6 +84,7 @@ sub search {
         # get only one ticket
         my $issue =
           Net::Google::Code::Issue->new( project => $self->project, id => $1, );
+        $issue->load if $self->load_after_search;
         $self->results( [ $issue ] );
     }
     elsif ( $mech->title =~ /Issues/ ) {
@@ -88,6 +97,7 @@ sub search {
                 project => $self->project,
                 id      => $id,
             );
+            $issue->load if $self->load_after_search;
             push @issues, $issue;
         }
         $self->results( \@issues );
