@@ -162,7 +162,9 @@ s{(?<=id="attachmentareadeventry"></div>)}{<input name="file$_" type="file">};
     }
 
     $self->mech->form_with_fields( 'comment', 'summary' );
-    $self->mech->field( 'label', $args{labels} );
+    # leave labels alone unless there're labels.
+    $self->mech->field( 'label', $args{labels} ) if $args{labels};
+
     if ( $args{files} ) {
         for ( my $i = 0; $i < scalar @{ $args{files} }; $i++ ) {
             $self->mech->field( 'file' . ($i + 1), $args{files}[$i] );
@@ -221,7 +223,9 @@ s{(?<=id="attachmentarea"></div>)}{<input name="file$_" type="file">};
     }
 
     $self->mech->form_with_fields( 'comment', 'summary' );
-    $self->mech->field( 'label', $args{labels} );
+
+    # leave labels alone unless there're labels.
+    $self->mech->field( 'label', $args{labels} ) if $args{labels};
     if ( $args{files} ) {
         for ( my $i = 0; $i < scalar @{ $args{files} }; $i++ ) {
             $self->mech->field( 'file' . ($i + 1), $args{files}[$i] );
