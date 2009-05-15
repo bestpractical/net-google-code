@@ -13,6 +13,11 @@ has 'project' => (
     is       => 'rw',
 );
 
+has 'id' => (
+    isa      => 'Int',
+    is       => 'rw',
+);
+
 has 'state' => (
     isa     => 'HashRef',
     is      => 'rw',
@@ -37,7 +42,7 @@ has 'attachments' => (
     default => sub { [] },
 );
 
-our @PROPS = qw(id status owner closed cc summary reporter description);
+our @PROPS = qw(status owner closed cc summary reporter description);
 
 for my $prop (@PROPS) {
     no strict 'refs';    ## no critic
