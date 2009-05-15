@@ -20,9 +20,9 @@ $mock->mock(
 );
 
 use Net::Google::Code::Issue;
-my $ticket = Net::Google::Code::Issue->new( project => 'test' );
-isa_ok( $ticket, 'Net::Google::Code::Issue', '$ticket' );
-$ticket->load(14);
+my $issue = Net::Google::Code::Issue->new( project => 'test' );
+isa_ok( $issue, 'Net::Google::Code::Issue', '$issue' );
+$issue->load(14);
 
 my $description = <<"EOF";
 What steps will reproduce the problem?
@@ -57,21 +57,21 @@ my @labels = (
 
 for my $item ( qw/id summary description owner cc reporter status closed/ ) {
     if ( defined $info{$item} ) {
-        is ( $ticket->$item, $info{$item}, "$item is extracted" );
+        is ( $issue->$item, $info{$item}, "$item is extracted" );
     }
     else {
-        ok( !defined $ticket->$item, "$item is not defined" );
+        ok( !defined $issue->$item, "$item is not defined" );
     }
 }
 
-is_deeply( $ticket->labels, \@labels, 'labels is extracted' );
+is_deeply( $issue->labels, \@labels, 'labels is extracted' );
 
-is( scalar @{$ticket->comments}, 50, 'comments are extracted' );
-is( $ticket->comments->[0]->sequence, 1, 'sequence of 1st comments is 1' );
+is( scalar @{$issue->comments}, 50, 'comments are extracted' );
+is( $issue->comments->[0]->sequence, 1, 'sequence of 1st comments is 1' );
 # seems comments 2 and 3 are deleted
-is( $ticket->comments->[1]->sequence, 4, 'sequence of 2nd comments is 4' ); 
+is( $issue->comments->[1]->sequence, 4, 'sequence of 2nd comments is 4' ); 
 
 # attachments part are faked from 
 # http://code.google.com/p/chromium/issues/detail?id=683
-is( scalar @{ $ticket->attachments }, 3, 'attachments are extracted' );
-is( $ticket->attachments->[0]->size, '11.7 KB', 'size of the 1st attachment' );
+is( scalar @{ $issue->attachments }, 3, 'attachments are extracted' );
+is( $issue->attachments->[0]->size, '11.7 KB', 'size of the 1st attachment' );
