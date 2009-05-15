@@ -134,7 +134,7 @@ sub parse {
 sub load_downloads {
     my $self = shift;
     my $content = $self->fetch( $self->base_feeds_url . 'downloads/list' );
-    my @names = $self->first_columns( $content );
+    my @names = $self->first_columns( html => $content );
     my @downloads;
     require Net::Google::Code::Download;
     for my $name ( @names ) {

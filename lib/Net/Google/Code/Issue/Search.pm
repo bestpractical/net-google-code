@@ -44,12 +44,18 @@ has 'results' => (
     default => sub { [] },
 );
 
+has 'limit' => (
+    isa => 'Int',
+    is  => 'rw',
+);
+
 sub search {
     my $self = shift;
     if ( scalar @_ ) {
         my %args = @_;
         $self->_can( $args{_can} ) if defined $args{_can};
         $self->_q( $args{_q} )     if defined $args{_q};
+        $self->limit( $args{limit} ) if defined $args{limit};
     }
 
     $self->fetch( $self->base_url . 'issues/list' );
@@ -68,16 +74,20 @@ sub search {
 
     if ( $mech->title =~ /Issue\s+(\d+)/ ) {
         # get only one ticket
-        my $issue = Net::Google::Code::Issue->new( id => $1 );
+        my $issue =
+          Net::Google::Code::Issue->new( project => $self->project, id => $1, );
         $self->results( [ $issue ] );
     }
     elsif ( $mech->title =~ /Issues/ ) {
 
         # get a ticket list
-        my @ids = $self->first_columns($content);
+        my @ids = $self->first_columns(html => $content, limit => $self->limit);
         my @issues;
         for my $id ( @ids ) {
-            my $issue = Net::Google::Code::Issue->new( id => $id );
+            my $issue = Net::Google::Code::Issue->new(
+                project => $self->project,
+                id      => $id,
+            );
             push @issues, $issue;
         }
         $self->results( \@issues );

@@ -8,7 +8,18 @@ no Moose::Role;
 
 sub first_columns {
     my $self = shift;
-    my $tree = shift;
+    my %args = validate(
+        @_,
+        {
+            html  => { type => SCALAR },
+            limit => {
+                type     => SCALAR,
+                optional => 1,
+            },
+        }
+    );
+    $args{limit} ||= 999_999_999; # the impossible huge limit
+    my $tree = $args{html};
     $tree = $self->html_tree( html => $tree ) unless blessed $tree;
 
     my @columns;
@@ -19,6 +30,7 @@ sub first_columns {
     {
         push @columns, $self->_first_columns($tree);
 
+        $total = $args{limit} if $args{limit} < $total;
         while ( scalar @columns < $total ) {
             if ( $self->mech->follow_link( text_regex => qr/Next\s+/ ) ) {
                 if ( $self->mech->response->is_success ) {
@@ -35,7 +47,13 @@ sub first_columns {
             }
         }
     }
-    return @columns;
+    if ( scalar @columns > $args{limit} ) {
+        # this happens when limit is less than the 1st page's number 
+        return @columns[0 .. $args{limit}-1];
+    }
+    else {
+        return @columns;
+    }
 }
 
 sub _first_columns {
