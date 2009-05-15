@@ -53,6 +53,40 @@ has 'wikis' => (
     is  => 'rw',
 );
 
+sub download {
+    my $self = shift;
+    require Net::Google::Code::Download;
+    return Net::Google::Code::Download->new(
+        project => $self->project,
+        $self->email    ? ( email    => $self->email )    : (),
+        $self->password ? ( password => $self->password ) : (),
+        @_
+    );
+}
+
+sub issue {
+    my $self = shift;
+    require Net::Google::Code::Issue;
+    return Net::Google::Code::Issue->new(
+        project => $self->project,
+        $self->email    ? ( email    => $self->email )    : (),
+        $self->password ? ( password => $self->password ) : (),
+        @_
+    );
+}
+
+sub wiki {
+    my $self = shift;
+    require Net::Google::Code::Wiki;
+    return Net::Google::Code::Wiki->new(
+        project => $self->project,
+        $self->email    ? ( email    => $self->email )    : (),
+        $self->password ? ( password => $self->password ) : (),
+        @_
+    );
+}
+
+
 sub load {
     my $self = shift;
     my $content = $self->fetch( $self->base_url );
@@ -93,29 +127,7 @@ sub parse {
         push @labels, $tag->content_array_ref->[0];
     }
     $self->labels( \@labels ) if @labels;
-
-}
-
-sub download {
-    my $self = shift;
-    require Net::Google::Code::Download;
-    return Net::Google::Code::Download->new(
-        project  => $self->project,
-        email    => $self->email,
-        password => $self->password,
-        @_
-    );
-}
-
-sub issue {
-    my $self = shift;
-    require Net::Google::Code::Issue;
-    return Net::Google::Code::Issue->new(
-        project  => $self->project,
-        email    => $self->email,
-        password => $self->password,
-        @_
-    );
+    return 1;
 }
 
 
@@ -136,19 +148,6 @@ sub load_downloads {
     $self->downloads( \@downloads );
 }
 
-
-sub wiki {
-
-    my $self = shift;
-    require Net::Google::Code::Wiki;
-    return Net::Google::Code::Wiki->new(
-        project => $self->project,
-        project  => $self->project,
-        email    => $self->email,
-        password => $self->password,
-        @_
-    );
-}
 
 sub load_wikis {
 	my $self = shift;
@@ -179,6 +178,7 @@ no Moose;
 __PACKAGE__->meta->make_immutable;
 
 1;
+
 __END__
 
 =head1 NAME
