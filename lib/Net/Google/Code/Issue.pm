@@ -42,7 +42,7 @@ has 'attachments' => (
     default => sub { [] },
 );
 
-our @PROPS = qw(status owner closed cc summary reporter description);
+our @PROPS = qw(status owner closed cc summary reporter reported description);
 
 for my $prop (@PROPS) {
     no strict 'refs';    ## no critic
@@ -69,11 +69,12 @@ sub parse {
     my ($summary) = $tree->look_down( class => 'h3' );
     $self->state->{summary} = $summary->content_array_ref->[0];
 
-    # extract reporter and description
+    # extract reporter, reported and description
     my $description = $tree->look_down( class => 'vt issuedescription' );
-    $self->state->{reporter} =
-      $description->look_down( class => "author" )->content_array_ref->[1]
-      ->content_array_ref->[0];
+    my $author_tag = $description->look_down( class => "author" );
+    $self->state->{reporter} = $author_tag->content_array_ref->[1]->as_text;
+    $self->state->{reported} =
+      $author_tag->look_down( class => 'date' )->attr_get_i('title');
     my $text = $description->find_by_tag_name('pre')->as_text;
     $text =~ s/^\s+//;
     $text =~ s/\s+$/\n/;
@@ -295,6 +296,8 @@ Net::Google::Code::Issue - Google Code Issue
 =item owner 
 
 =item reporter
+
+=item reported
 
 =item closed
 
