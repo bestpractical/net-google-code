@@ -55,7 +55,7 @@ sub load {
     die "current object doesn't have id and load() is not passed an id either"
       unless $id;
     my $content = $self->fetch( $self->base_url . "issues/detail?id=" . $id );
-    $self->state->{id} = $id;
+    $self->id( $id );
     return $self->parse($content);
 }
 
