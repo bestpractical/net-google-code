@@ -29,7 +29,6 @@ sub fetch {
           . $url;
     }
     else {
-        die 'ok';
         return $self->mech->content;
     }
 }
