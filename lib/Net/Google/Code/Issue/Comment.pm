@@ -23,7 +23,7 @@ sub parse {
     my @a       = $author->find_by_tag_name('a');
     $self->sequence( $a[0]->content_array_ref->[0] );
     $self->author( $a[1]->content_array_ref->[0] );
-    $self->date( $element->look_down( class => 'date' )->attr_get_i('title') );
+    $self->date( $element->look_down( class => 'date' )->attr('title') );
     my $content = $element->find_by_tag_name('pre')->as_text;
     $content =~ s/^\s+//;
     $content =~ s/\s+$/\n/;

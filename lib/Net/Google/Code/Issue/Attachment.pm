@@ -39,7 +39,7 @@ sub parse {
         $size =~ s/\s+$//;
         $self->size($size);
 
-        $self->url( $td->find_by_tag_name('a')->attr_get_i('href') );
+        $self->url( $td->find_by_tag_name('a')->attr('href') );
     }
 
     return 1;

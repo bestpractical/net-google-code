@@ -74,7 +74,7 @@ sub parse {
     my $author_tag = $description->look_down( class => "author" );
     $self->state->{reporter} = $author_tag->content_array_ref->[1]->as_text;
     $self->state->{reported} =
-      $author_tag->look_down( class => 'date' )->attr_get_i('title');
+      $author_tag->look_down( class => 'date' )->attr('title');
     my $text = $description->find_by_tag_name('pre')->as_text;
     $text =~ s/^\s+//;
     $text =~ s/\s+$/\n/;
@@ -90,6 +90,7 @@ sub parse {
 
     my ($meta) = $tree->look_down( id => 'issuemeta' );
     my @meta = $meta->find_by_tag_name('tr');
+    my @labels;
     for my $meta (@meta) {
 
         my ( $key, $value );
@@ -114,13 +115,13 @@ sub parse {
             $self->state->{ lc $key } = $value;
         }
         else {
-            my $href = $meta->find_by_tag_name('a')->attr_get_i('href');
-
+            my $href = $meta->look_down( class => 'label' )->attr('href');
             if ( $href =~ /list\?q=label:(.+)/ ) {
-                $self->labels( [ @{$self->labels}, $1 ] );
+                push @labels, $1;
             }
         }
     }
+    $self->labels( \@labels );
 
     # extract comments
     my @comments_tag = $tree->look_down( class => 'vt issuecomment' );
