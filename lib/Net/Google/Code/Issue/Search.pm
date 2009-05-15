@@ -3,7 +3,8 @@ use Moose;
 use Params::Validate qw(:all);
 use Moose::Util::TypeConstraints;
 with 'Net::Google::Code::Role::URL',
-  'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::Pageable';
+  'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::Pageable',
+  'Net::Google::Code::Role::HTMLTree';
 
 has 'project' => (
     isa      => 'Str',

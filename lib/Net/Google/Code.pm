@@ -2,7 +2,7 @@ package Net::Google::Code;
 
 use Moose;
 with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::URL',
-  'Net::Google::Code::Role::Pageable';
+  'Net::Google::Code::Role::Pageable', 'Net::Google::Code::Role::HTMLTree';
 
 our $VERSION = '0.05';
 
@@ -213,8 +213,6 @@ Net::Google::Code - a simple client library for google code
 =head1 DESCRIPTION
 
 Net::Google::Code is a simple client library for projects hosted in Google Code.
-
-Currently, it focuses on the basic read functionality for that is provided.
 
 =head1 INTERFACE
 

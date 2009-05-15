@@ -1,7 +1,8 @@
 package Net::Google::Code::Issue;
 use Moose;
 use Params::Validate qw(:all);
-with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::URL';
+with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::URL',
+     'Net::Google::Code::Role::HTMLTree';
 use Net::Google::Code::Issue::Comment;
 use Net::Google::Code::Issue::Attachment;
 
@@ -55,10 +56,7 @@ sub parse {
     my $self    = shift;
     my $content = shift;
 
-    require HTML::TreeBuilder;
-    my $tree = HTML::TreeBuilder->new;
-    $tree->parse_content($content);
-    $tree->elementify;
+    my $tree = $self->html_tree( content => $content );
 
     # extract summary
     my ($summary) = $tree->look_down( class => 'h3' );
@@ -128,6 +126,125 @@ sub parse {
 
 }
 
+sub create {
+    my $self = shift;
+    my %args = validate(
+        @_,
+        {
+            labels => { type => ARRAYREF, optional => 1 },
+            files  => { type => ARRAYREF, optional => 1 },
+            map { $_ => { type => SCALAR, optional => 1 } }
+              qw/comment summary status owner cc/,
+        }
+    );
+
+    $self->sign_in;
+    $self->fetch( $self->base_url . 'issues/entry' );
+
+    if ( $args{files} ) {
+# hack hack hack
+# manually add file fields since we don't have them in page.
+        my $html = $self->mech->content;
+        for ( 1 .. @{$args{files}} ) {
+            $html =~
+s{(?<=id="attachmentareadeventry"></div>)}{<input name="file$_" type="file">};
+        }
+        $self->mech->update_html( $html );
+    }
+
+    $self->mech->form_with_fields( 'comment', 'summary' );
+    $self->mech->field( 'label', $args{labels} );
+    if ( $args{files} ) {
+        for ( my $i = 0; $i < scalar @{ $args{files} }; $i++ ) {
+            $self->mech->field( 'file' . ($i + 1), $args{files}[$i] );
+        }
+    }
+
+    $self->mech->submit_form(
+        fields => {
+            map { $_ => $args{$_} }
+              grep { exists $args{$_} }
+              qw/comment summary status owner cc/
+        }
+    );
+
+    my ( $contains, $id ) = $self->html_tree_contains(
+        html      => $self->mech->content,
+        look_down => [ class => 'notice' ],
+        as_text   => qr/Issue\s+(\d+)/i,
+    );
+
+    if ( $contains )
+    {
+        $self->load( $id );
+        return $id;
+    }
+    else {
+        warn 'create issue failed';
+        return;
+    }
+}
+
+sub update {
+    my $self = shift;
+    my %args = validate(
+        @_,
+        {
+            labels => { type => ARRAYREF, optional => 1 },
+            files  => { type => ARRAYREF, optional => 1 },
+            map { $_ => { type => SCALAR, optional => 1 } }
+              qw/comment summary status owner merge_into cc blocked_on/,
+        }
+    );
+
+    $self->sign_in;
+    $self->fetch( $self->base_url . 'issues/detail?id=' . $self->id );
+
+    if ( $args{files} ) {
+# hack hack hack
+# manually add file fields since we don't have them in page.
+        my $html = $self->mech->content;
+        for ( 1 .. @{$args{files}} ) {
+            $html =~
+s{(?<=id="attachmentarea"></div>)}{<input name="file$_" type="file">};
+        }
+        $self->mech->update_html( $html );
+    }
+
+    $self->mech->form_with_fields( 'comment', 'summary' );
+    $self->mech->field( 'label', $args{labels} );
+    if ( $args{files} ) {
+        for ( my $i = 0; $i < scalar @{ $args{files} }; $i++ ) {
+            $self->mech->field( 'file' . ($i + 1), $args{files}[$i] );
+        }
+    }
+
+    $self->mech->submit_form(
+        fields => {
+            map { $_ => $args{$_} }
+              grep { exists $args{$_} }
+              qw/comment summary status owner merge_into cc blocked_on/
+        }
+    );
+
+    if (
+        $self->html_tree_contains(
+            html      => $self->mech->content,
+            look_down => [ class => 'notice' ],
+            as_text   => qr/has been updated/,
+        )
+      )
+    {
+        $self->load( $self->id ); # maybe this is too much?
+        return 1;
+    }
+    else {
+        warn 'update failed';
+        return;
+    }
+}
+
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
@@ -171,6 +288,12 @@ Net::Google::Code::Issue - Google Code Issue
 =item cc
 
 =item summary
+
+=item create
+comment, summary, status, owner, cc, labels, files.
+
+=item update
+comment, summary, status, owner, merge_into, cc, labels, blocked_on, files.
 
 =item description
 

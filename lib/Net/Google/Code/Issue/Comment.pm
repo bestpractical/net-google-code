@@ -1,6 +1,7 @@
 package Net::Google::Code::Issue::Comment;
 use Moose;
 use Net::Google::Code::Issue::Attachment;
+with 'Net::Google::Code::Role::HTMLTree';
 
 has 'updates' => ( isa => 'HashRef', is => 'rw', default => sub { {} } );
 has 'author'  => ( isa => 'Str',     is => 'rw' );
