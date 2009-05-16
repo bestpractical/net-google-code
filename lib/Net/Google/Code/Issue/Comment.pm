@@ -5,7 +5,7 @@ with 'Net::Google::Code::Role::HTMLTree';
 
 has 'updates' => ( isa => 'HashRef', is => 'rw', default => sub { {} } );
 has 'author'  => ( isa => 'Str',     is => 'rw' );
-has 'date'    => ( isa => 'Str',     is => 'rw' );
+has 'date'    => ( isa => 'DateTime',     is => 'rw' );
 has 'content' => ( isa => 'Str',     is => 'rw' );
 has 'sequence' => ( isa => 'Int', is => 'rw' );
 has 'attachments' => (
@@ -23,7 +23,7 @@ sub parse {
     my @a       = $author->find_by_tag_name('a');
     $self->sequence( $a[0]->content_array_ref->[0] );
     $self->author( $a[1]->content_array_ref->[0] );
-    $self->date( $element->look_down( class => 'date' )->attr('title') );
+    $self->date(Net::Google::Code->parse_datetime( $element->look_down( class => 'date' )->attr('title') ));
     my $content = $element->find_by_tag_name('pre')->as_text;
     $content =~ s/^\s+//;
     $content =~ s/\s+$/\n/;

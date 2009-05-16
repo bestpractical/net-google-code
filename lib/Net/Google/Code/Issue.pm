@@ -44,7 +44,7 @@ has 'reporter' => (
 );
 
 has 'reported' => (
-    isa => 'Str',
+    isa => 'DateTime',
     is  => 'rw',
 );
 
@@ -100,7 +100,9 @@ sub parse {
     my $description = $tree->look_down( class => 'vt issuedescription' );
     my $author_tag = $description->look_down( class => "author" );
     $self->reporter( $author_tag->content_array_ref->[1]->as_text );
-    $self->reported( $author_tag->look_down( class => 'date' )->attr('title') );
+    $self->reported(Net::Google::Code->parse_datetime($author_tag->look_down( class => 'date' )->attr('title') ));
+
+
     my $text = $description->find_by_tag_name('pre')->as_text;
     $text =~ s/^\s+//;
     $text =~ s/\s+$/\n/;
@@ -290,7 +292,6 @@ s{(?<=id="attachmentarea"></div>)}{<input name="file$_" type="file">};
         return;
     }
 }
-
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
