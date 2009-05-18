@@ -3,7 +3,8 @@ use Moose;
 use Params::Validate qw(:all);
 with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::URL',
      'Net::Google::Code::Role::HTMLTree',
-     'Net::Google::Code::Role::Authentication';
+     'Net::Google::Code::Role::Authentication',
+     'Net::Google::Code::Role::DateTime';
 use Net::Google::Code::Issue::Comment;
 use Net::Google::Code::Issue::Attachment;
 use Scalar::Util qw/blessed/;
@@ -100,7 +101,7 @@ sub parse {
     my $description = $tree->look_down( class => 'vt issuedescription' );
     my $author_tag = $description->look_down( class => "author" );
     $self->reporter( $author_tag->content_array_ref->[1]->as_text );
-    $self->reported(Net::Google::Code->parse_datetime($author_tag->look_down( class => 'date' )->attr('title') ));
+    $self->reported( $self->parse_datetime($author_tag->look_down( class => 'date' )->attr('title') ));
 
 
     my $text = $description->find_by_tag_name('pre')->as_text;

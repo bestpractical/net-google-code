@@ -12,6 +12,7 @@ requires 'Moose';
 requires 'WWW::Mechanize';
 requires 'HTML::TreeBuilder';
 requires 'Params::Validate';
+requires 'DateTime';
 
 recursive_author_tests('xt/');
 
