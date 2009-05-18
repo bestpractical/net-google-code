@@ -167,13 +167,13 @@ sub parse_datetime {
 sub load_downloads {
     my $self = shift;
     my $content = $self->fetch( $self->base_feeds_url . 'downloads/list' );
-    my @names = $self->first_columns( html => $content );
+    my @rows = $self->rows( html => $content );
     my @downloads;
     require Net::Google::Code::Download;
-    for my $name ( @names ) {
+    for my $row ( @rows ) {
         my $download = Net::Google::Code::Download->new(
             project => $self->project,
-            name    => $name,
+            %$row,
         );
         $download->load;
         push @downloads, $download;

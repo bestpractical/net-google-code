@@ -45,8 +45,9 @@ has 'results' => (
 );
 
 has 'limit' => (
-    isa => 'Int',
-    is  => 'rw',
+    isa     => 'Int',
+    is      => 'rw',
+    default => 999_999_999,
 );
 
 has 'load_after_search' => (
@@ -80,22 +81,24 @@ sub search {
 
     my $content = $mech->response->content;
 
-    if ( $mech->title =~ /Issue\s+(\d+)/ ) {
-        # get only one ticket
+    if ( $mech->title =~ /issue\s+(\d+)/i ) {
+
+         get only one ticket
         my $issue =
           Net::Google::Code::Issue->new( project => $self->project, id => $1, );
         $issue->load if $self->load_after_search;
-        $self->results( [ $issue ] );
+        $self->results( [$issue] );
     }
-    elsif ( $mech->title =~ /Issues/ ) {
+    elsif ( $mech->title =~ /issues/i ) {
 
         # get a ticket list
-        my @ids = $self->first_columns(html => $content, limit => $self->limit);
+        my @rows =
+          $self->rows( html => $content, limit => $self->limit );
         my @issues;
-        for my $id ( @ids ) {
+        for my $row (@rows) {
             my $issue = Net::Google::Code::Issue->new(
                 project => $self->project,
-                id      => $id,
+                %$row,
             );
             $issue->load if $self->load_after_search;
             push @issues, $issue;

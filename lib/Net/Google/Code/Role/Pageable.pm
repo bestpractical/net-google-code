@@ -6,12 +6,12 @@ with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::HTMLTree';
 use Scalar::Util qw/blessed/;
 no Moose::Role;
 
-sub first_columns {
+sub rows {
     my $self = shift;
     my %args = validate(
         @_,
         {
-            html  => { type => SCALAR },
+            html  => { type => SCALAR | OBJECT },
             limit => {
                 type     => SCALAR,
                 optional => 1,
@@ -22,20 +22,57 @@ sub first_columns {
     my $tree = $args{html};
     $tree = $self->html_tree( html => $tree ) unless blessed $tree;
 
-    my @columns;
+    # assuming there's at most 20 columns
+    my @titles;
+    my $label_column;
+    for my $num ( 0 .. 20 ) {
+        my $title_tag = $tree->look_down( class => "col_$num" );
+        if ( $title_tag ) {
+            my $title = $title_tag->as_text;
+            if ( $title eq "\x{a0}" ) {
+                $title_tag = ($tree->look_down( class => "col_$num" ))[1];
+                $title = $title_tag->as_text;
+            }
+
+            if ( $title =~ /(\w+)/ ) {
+                push @titles, lc $1;
+
+                if ( $title =~ /label/i ) {
+                    $label_column = $num;
+                }
+            }
+        }
+        else {
+            last;
+        }
+    }
+
+    die "no idea what the column spec is" unless @titles;
+
+    my @rows;
 
     my $pagination = $tree->look_down( class => 'pagination' );
     if ( my ( $start, $end, $total ) =
         $pagination->as_text =~ /(\d+)\s+-\s+(\d+)\s+of\s+(\d+)/ )
     {
-        push @columns, $self->_first_columns($tree);
+        push @rows,
+          $self->_rows(
+            html         => $tree,
+            titles       => \@titles,
+            label_column => $label_column,
+          );
 
         $total = $args{limit} if $args{limit} < $total;
-        while ( scalar @columns < $total ) {
+        while ( scalar @rows < $total ) {
+
             if ( $self->mech->follow_link( text_regex => qr/Next\s+/ ) ) {
                 if ( $self->mech->response->is_success ) {
-                    push @columns,
-                      $self->_first_columns( $self->mech->content );
+                    push @rows,
+                      $self->_rows(
+                        html         => $self->mech->content,
+                        titles       => \@titles,
+                        label_column => $label_column,
+                      );
                 }
                 else {
                     die "failed to follow 'Next' link";
@@ -47,29 +84,66 @@ sub first_columns {
             }
         }
     }
-    if ( scalar @columns > $args{limit} ) {
+    if ( scalar @rows > $args{limit} ) {
         # this happens when limit is less than the 1st page's number 
-        return @columns[0 .. $args{limit}-1];
+        return @rows[0 .. $args{limit}-1];
     }
     else {
-        return @columns;
+        return @rows;
     }
 }
 
-sub _first_columns {
+sub _rows {
     my $self = shift;
-    my $tree = shift;
+    my %args = validate(
+        @_,
+        {
+            html         => { type => SCALAR | OBJECT },
+            titles       => { type => ARRAYREF, },
+            label_column => { optional => 1 },
+        }
+    );
+    my $tree = $args{html};
     $tree = $self->html_tree( html => $tree ) unless blessed $tree;
+    my @titles = @{$args{titles}};
+    my $label_column = $args{label_column};
 
     my @columns;
-    my @tags = $tree->look_down( class => 'vt id col_0' );
-    for my $tag (@tags) {
-        my $column = $tag->as_text;
-        $column =~ s/^\s+//;
-        $column =~ s/\s+$//;
-        push @columns, $column;
+    my @rows;
+
+    for ( my $i = 0 ; $i < @titles ; $i++ ) {
+        my @tags = $tree->look_down( class => qr/^vt (id )?col_$i/ );
+        my $k = 0;
+        for ( my $j = 0 ; $j < @tags ; $j++ ) {
+            my $column = $tags[$j]->as_text;
+            next if $column eq "\x{203a}"; # skip the '›' thing
+
+            my @elements  = split /\x{a0}/, $column;
+            for ( @elements ) {
+                s/^\s+//;
+                s/\s+$//;
+            }
+            $column = shift @elements;
+            $column = '' if $column eq '----';
+
+            if ( $i == 0 ) {
+                push @rows, { $titles[0] => $column };
+            }
+            else {
+                $rows[$k]{ $titles[$i] } = $column;
+            }
+
+            if ( $label_column && $i == $label_column ) {
+                my @labels;
+                if (@elements) {
+                    @labels = split /\s+/, shift @elements;
+                }
+                $rows[$k]{labels} = \@labels if @labels;
+            }
+            $k++;
+        }
     }
-    return @columns;
+    return @rows;
 }
 
 1;
@@ -87,7 +161,7 @@ Net::Google::Code::Role::Pageable - Pageable Role
 
 =over 4
 
-=item first_columns
+=item rows
 
 =back
 
