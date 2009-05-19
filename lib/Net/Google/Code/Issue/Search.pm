@@ -27,14 +27,15 @@ subtype 'CanStr' => as 'Str' => where { $CAN{$_} };
 coerce 'Can' => from 'CanStr' => via { $CAN{$_} };
 
 has '_can' => (
-    is  => 'rw',
-    isa => 'Can',
+    is      => 'rw',
+    isa     => 'Can',
+    coerce  => 1,
     default => 2,
 );
 
-has '_q' => ( 
-    isa => 'Str',
-    is => 'rw',
+has '_q' => (
+    isa     => 'Str',
+    is      => 'rw',
     default => '',
 );
 
