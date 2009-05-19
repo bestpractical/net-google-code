@@ -86,7 +86,7 @@ __DATA__
  <div class="round2"></div>
  <div class="round1"></div>
  <div class="box-inner">
- <b>Cc:</b> thatan...@google.com<br><b>Status:</b> Available<br><b>Labels:</b>-Pri-2 Mstone-X Pri-3<br>
+ <b>Status:</b><br><b>Cc:</b> thatan...@google.com<br><b>Status:</b> Available<br><b>Labels:</b>-Pri-2 Mstone-X Pri-3<br>
  </div>
  <div class="round1"></div>
  <div class="round2"></div>
