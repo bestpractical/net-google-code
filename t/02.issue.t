@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 15;
+use Test::More tests => 17;
 use Test::MockModule;
 
 # $content is a real page: http://code.google.com/p/chromium/issues/detail?id=14
@@ -66,10 +66,13 @@ for my $item ( qw/id summary description owner cc reporter status closed/ ) {
 
 is_deeply( $issue->labels, \@labels, 'labels is extracted' );
 
-is( scalar @{$issue->comments}, 50, 'comments are extracted' );
-is( $issue->comments->[0]->sequence, 1, 'sequence of 1st comments is 1' );
+is( scalar @{$issue->comments}, 51, 'comments are extracted' );
+is( $issue->comments->[0]->sequence, 0, 'comment 0 is for the actual create' );
+is( scalar @{ $issue->comments->[0]->attachments },
+    3, 'comment 0 has 3 attachments' );
+is( $issue->comments->[1]->sequence, 1, 'sequence of comment 1 is 1' );
 # seems comments 2 and 3 are deleted
-is( $issue->comments->[1]->sequence, 4, 'sequence of 2nd comments is 4' ); 
+is( $issue->comments->[2]->sequence, 4, 'sequence of comment 2 is 4' ); 
 
 # attachments part are faked from 
 # http://code.google.com/p/chromium/issues/detail?id=683
