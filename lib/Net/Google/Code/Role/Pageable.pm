@@ -116,7 +116,7 @@ sub _rows {
         my $k = 0;
         for ( my $j = 0 ; $j < @tags ; $j++ ) {
             my $column = $tags[$j]->as_text;
-            next if $column eq "\x{203a}"; # skip the '›' thing
+            next unless $column =~ /[-\w]/; # skip the '›' thing or alike
 
             my @elements  = split /\x{a0}/, $column;
             for ( @elements ) {
