@@ -37,7 +37,13 @@ sub parse {
         while (@$content) {
             my $tag   = shift @$content;
             my $value = shift @$content;
+            if ( ref $value && $value->as_HTML =~ m!<br />! ) {
+                # this happens when there's no value for $tag
+                $value = '';
+            }
+            else {
             shift @$content;    # this is for the <br>
+            }
 
             my $key = $tag->content_array_ref->[0];
             $key   =~ s/:$//;
