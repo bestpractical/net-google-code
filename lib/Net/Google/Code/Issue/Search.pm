@@ -6,6 +6,7 @@ with 'Net::Google::Code::Role::URL',
   'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::Pageable',
   'Net::Google::Code::Role::HTMLTree';
 use Net::Google::Code::Issue;
+use Encode;
 
 has 'project' => (
     isa      => 'Str',
@@ -80,7 +81,7 @@ sub search {
     die "Server threw an error " . $mech->response->status_line . 'when search'
       unless $mech->response->is_success;
 
-    my $content = $mech->response->content;
+    my $content = decode( 'utf8', $mech->response->content );
 
     if ( $mech->title =~ /issue\s+(\d+)/i ) {
 
