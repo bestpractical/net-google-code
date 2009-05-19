@@ -160,7 +160,14 @@ sub parse {
 
     # extract comments
     my @comments_tag = $tree->look_down( class => 'vt issuecomment' );
-    my @comments;
+    my @comments = Net::Google::Code::Issue::Comment->new(
+        project     => $self->project,
+        sequence    => 0,
+        date        => $self->reported,
+        author      => $self->reporter,
+        content     => $self->description,
+        attachments => $self->attachments,
+    );
     for my $tag (@comments_tag) {
         next unless $tag->look_down( class => 'author' );
         my $comment =
