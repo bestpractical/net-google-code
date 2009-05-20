@@ -218,6 +218,12 @@ sub parse {
 
 }
 
+# the issue's last modified date, return a DateTime object
+sub updated {
+    my $self = shift;
+    return $self->comments->[-1]->date;
+}
+
 sub create {
     my $self = shift;
     my %args = validate(
@@ -379,6 +385,8 @@ Net::Google::Code::Issue - Google Code Issue
 =item reporter
 
 =item reported
+
+=item updated
 
 =item merged
 

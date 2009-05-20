@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 18;
+use Test::More tests => 19;
 use Test::MockModule;
 
 # $content is a real page: http://code.google.com/p/chromium/issues/detail?id=14
@@ -89,3 +89,5 @@ is( $issue->comments->[2]->sequence, 4, 'sequence of comment 2 is 4' );
 # http://code.google.com/p/chromium/issues/detail?id=683
 is( scalar @{ $issue->attachments }, 3, 'attachments are extracted' );
 is( $issue->attachments->[0]->size, '11.7 KB', 'size of the 1st attachment' );
+
+is( $issue->updated, '2008-12-19T17:59:29', 'updated' );
