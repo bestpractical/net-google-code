@@ -168,14 +168,7 @@ sub parse {
 
     # extract comments
     my @comments_tag = $tree->look_down( class => 'vt issuecomment' );
-    my @comments = Net::Google::Code::Issue::Comment->new(
-        project     => $self->project,
-        sequence    => 0,
-        date        => $self->reported,
-        author      => $self->reporter,
-        content     => $self->description,
-        attachments => $self->attachments,
-    );
+    my @comments;
     for my $tag (@comments_tag) {
         next unless $tag->look_down( class => 'author' );
         my $comment =
@@ -183,6 +176,44 @@ sub parse {
         $comment->parse($tag);
         push @comments, $comment;
     }
+
+    my $initial_comment = Net::Google::Code::Issue::Comment->new(
+        project     => $self->project,
+        sequence    => 0,
+        date        => $self->reported,
+        author      => $self->reporter,
+        content     => $self->description,
+        attachments => $self->attachments,
+    );
+
+    my @initial_labels = @{$self->labels};
+    my %meta = map { $_ => 1 } qw/summary status cc owner/;
+    for my $c ( reverse @comments ) {
+        my $updates = $c->updates;
+        for ( keys %meta ) {
+            # once these changes, we can't know the inital value
+            delete $meta{$_} if exists $updates->{$_};
+        }
+        if ( $updates->{labels} ) {
+            my @labels = @{$updates->{labels}};
+            for my $label (@labels) {
+                if ( $label =~ /^-(.*)$/ ) {
+                    unshift @initial_labels, $1;
+                }
+                else {
+                    @initial_labels = grep { $_ ne $label } @initial_labels;
+                }
+            }
+        }
+    }
+
+    $initial_comment->updates->{labels} = \@initial_labels;
+    for ( keys %meta ) {
+        $initial_comment->updates->{$_} = $self->$_;
+    }
+
+    unshift @comments, $initial_comment;
+
     $self->comments( \@comments );
 
 }

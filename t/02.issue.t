@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 17;
+use Test::More tests => 18;
 use Test::MockModule;
 
 # $content is a real page: http://code.google.com/p/chromium/issues/detail?id=14
@@ -70,6 +70,17 @@ is( scalar @{$issue->comments}, 51, 'comments are extracted' );
 is( $issue->comments->[0]->sequence, 0, 'comment 0 is for the actual create' );
 is( scalar @{ $issue->comments->[0]->attachments },
     3, 'comment 0 has 3 attachments' );
+is_deeply(
+    $issue->comments->[0]->updates,
+    {
+        'owner'   => 'all-bugs-test@chromium.org',
+        'summary' => 'Proxy settings for installer',
+        'labels' =>
+          [ 'Area-Unknown', 'Type-Bug', 'Pri-2', 'OS-All', 'Foo-Bar-Baz' ]
+    },
+    'comment 0 updates'
+);
+
 is( $issue->comments->[1]->sequence, 1, 'sequence of comment 1 is 1' );
 # seems comments 2 and 3 are deleted
 is( $issue->comments->[2]->sequence, 4, 'sequence of comment 2 is 4' ); 
