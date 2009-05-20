@@ -49,6 +49,11 @@ has 'reported' => (
     is  => 'rw',
 );
 
+has 'merged' => (
+    isa => 'Int',
+    is  => 'rw',
+);
+
 has 'closed' => (
     isa => 'Str',
     is  => 'rw',
@@ -143,6 +148,9 @@ sub parse {
                 $value =~ s/\s+$//;
             }
             if ( $self->can( $key ) ) {
+                if ( $key eq 'merged' && $value =~ /issue\s+(\d+)/ ) {
+                    $value = $1;
+                }
                 $self->$key( $value );
             }
             else {
@@ -340,6 +348,8 @@ Net::Google::Code::Issue - Google Code Issue
 =item reporter
 
 =item reported
+
+=item merged
 
 =item closed
 
