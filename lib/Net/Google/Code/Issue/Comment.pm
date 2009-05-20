@@ -42,7 +42,7 @@ sub parse {
                 $value = '';
             }
             else {
-            shift @$content;    # this is for the <br>
+                shift @$content;    # this is for the <br>
             }
 
             my $key = $tag->content_array_ref->[0];
