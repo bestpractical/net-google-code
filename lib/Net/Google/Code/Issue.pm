@@ -221,7 +221,8 @@ sub parse {
 # the issue's last modified date, return a DateTime object
 sub updated {
     my $self = shift;
-    return $self->comments->[-1]->date;
+    my $last_comment = $self->comments->[-1];
+    return $last_comment ? $last_comment->date : undef;
 }
 
 sub create {
