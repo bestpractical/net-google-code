@@ -3,9 +3,10 @@ use Moose;
 with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::HTMLTree';
 use Scalar::Util qw/blessed/;
 
-has 'name'    => ( isa => 'Str', is => 'rw' );
-has 'url'     => ( isa => 'Str', is => 'rw' );
-has 'size'    => ( isa => 'Str', is => 'rw' );
+has 'name' => ( isa => 'Str', is => 'rw' );
+has 'url'  => ( isa => 'Str', is => 'rw' );
+has 'size' => ( isa => 'Str', is => 'rw' );
+has 'id'   => ( isa => 'Int', is => 'rw' );
 
 sub parse {
     my $self = shift;
@@ -40,6 +41,9 @@ sub parse {
         $self->size($size);
 
         $self->url( $td->find_by_tag_name('a')->attr('href') );
+        if ( $self->url =~ /aid=([-\d]+)/ ) {
+            $self->id( $1 );
+        }
     }
 
     return 1;
@@ -113,6 +117,8 @@ object, return a list of Net::Google::Code::Attachment objects.
 =item size
 
 =item url
+
+=item id
 
 =back
 
