@@ -3,10 +3,12 @@ use Moose;
 with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::HTMLTree';
 use Scalar::Util qw/blessed/;
 
-has 'name' => ( isa => 'Str', is => 'rw' );
-has 'url'  => ( isa => 'Str', is => 'rw' );
-has 'size' => ( isa => 'Str', is => 'rw' );
-has 'id'   => ( isa => 'Int', is => 'rw' );
+has 'name'         => ( isa => 'Str', is => 'rw' );
+has 'url'          => ( isa => 'Str', is => 'rw' );
+has 'size'         => ( isa => 'Str', is => 'rw' );
+has 'id'           => ( isa => 'Int', is => 'rw' );
+has 'content'      => ( isa => 'Str', is => 'rw' );
+has 'content_type' => ( isa => 'Str', is => 'rw' );
 
 sub parse {
     my $self = shift;
@@ -69,9 +71,11 @@ sub parse_attachments {
     return @attachments;
 }
 
-sub content {
+sub load {
     my $self = shift;
-    return $self->fetch( $self->url );
+    my $content = $self->fetch( $self->url );
+    $self->content( $content );
+    $self->content_type( $self->mech->response->header( 'Content-Type' ) );
 }
 
 no Moose;
@@ -119,6 +123,10 @@ object, return a list of Net::Google::Code::Attachment objects.
 =item url
 
 =item id
+
+=item content
+
+=item content_type
 
 =back
 
