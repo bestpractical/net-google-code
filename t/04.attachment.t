@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 5;
+use Test::More tests => 6;
 
 use Net::Google::Code::Issue::Attachment;
 my $attachment = Net::Google::Code::Issue::Attachment->new( project => 'test' );
@@ -27,7 +27,8 @@ my %info = (
     url =>
 'http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&name=proxy_settings.png',
     name => 'proxy_settings.png',
-    size     => '14.3 KB',
+    size => '14.3 KB',
+    id   => '-1323983749556004507',
 );
 
 for my $item ( keys %info ) {
