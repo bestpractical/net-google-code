@@ -2,6 +2,8 @@ package Net::Google::Code::Issue::Attachment;
 use Moose;
 with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::HTMLTree';
 use Scalar::Util qw/blessed/;
+use MIME::Types;
+use File::MMagic;
 
 has 'name'         => ( isa => 'Str', is => 'rw' );
 has 'url'          => ( isa => 'Str', is => 'rw' );
@@ -72,10 +74,22 @@ sub parse_attachments {
 }
 
 sub load {
-    my $self = shift;
+    my $self    = shift;
     my $content = $self->fetch( $self->url );
-    $self->content( $content );
-    $self->content_type( $self->mech->response->header( 'Content-Type' ) );
+    $self->content($content);
+    my $content_type;
+
+    # google code doesn't parse download's content type at all, we need to
+    # figure it out by ourselves
+    my $mime_type = MIME::Types->new->mimeTypeOf( $self->name );
+    if ($mime_type) {
+        $content_type = $mime_type->type;
+    }
+    else {
+        $content_type = File::MMagic->new->checktype_contents($content);
+    }
+
+    $self->content_type( $content_type || 'application/octet-stream' );
 }
 
 no Moose;
@@ -124,9 +138,12 @@ object, return a list of Net::Google::Code::Attachment objects.
 
 =item id
 
+=item load
+
 =item content
 
 =item content_type
+
 
 =back
 

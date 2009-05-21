@@ -13,6 +13,8 @@ requires 'WWW::Mechanize';
 requires 'HTML::TreeBuilder';
 requires 'Params::Validate';
 requires 'DateTime';
+requires 'MIME::Types';
+requires 'File::MMagic';
 
 recursive_author_tests('xt/');
 
