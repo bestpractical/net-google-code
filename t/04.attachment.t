@@ -1,8 +1,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 6;
+use Test::More tests => 8;
 
+use Test::MockModule;
 use Net::Google::Code::Issue::Attachment;
 my $attachment = Net::Google::Code::Issue::Attachment->new( project => 'test' );
 isa_ok( $attachment, 'Net::Google::Code::Issue::Attachment', '$attachment' );
@@ -14,6 +15,12 @@ my $content;
         $content = <DATA>;
 }
 
+my $mock = Test::MockModule->new('Net::Google::Code::Issue::Attachment');
+$mock->mock(
+    'fetch',
+    sub { 'png' }
+);
+
 use HTML::TreeBuilder;
 my $tree = HTML::TreeBuilder->new;
 $tree->parse_content($content);
@@ -22,6 +29,7 @@ $tree->elementify;
 my @tr = $tree->find_by_tag_name('tr');
 is( scalar @tr, 2, '@tr has 2 elements' );
 $attachment->parse( $content );
+$attachment->load;
 
 my %info = (
     url =>
@@ -29,6 +37,8 @@ my %info = (
     name => 'proxy_settings.png',
     size => '14.3 KB',
     id   => '-1323983749556004507',
+    content_type => 'image/png',
+    content => 'png',
 );
 
 for my $item ( keys %info ) {

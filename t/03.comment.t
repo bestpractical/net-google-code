@@ -4,9 +4,16 @@ use warnings;
 use Test::More tests => 9;
 
 use Net::Google::Code::Issue::Comment;
+use Test::MockModule;
 my $comment =
   Net::Google::Code::Issue::Comment->new( project => 'test' );
 isa_ok( $comment, 'Net::Google::Code::Issue::Comment', '$comment' );
+
+my $mock = Test::MockModule->new('Net::Google::Code::Issue::Attachment');
+$mock->mock(
+    'fetch',
+    sub { '' }
+);
 
 my $content;
 {

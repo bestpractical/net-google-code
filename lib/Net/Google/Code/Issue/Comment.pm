@@ -71,6 +71,7 @@ sub parse {
     @attachments =
       Net::Google::Code::Issue::Attachment->parse_attachments($att_tag)
       if $att_tag;
+    $_->load() for @attachments;
     $self->attachments( \@attachments );
 
     return 1;

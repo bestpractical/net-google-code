@@ -19,6 +19,9 @@ $mock->mock(
     sub { $content }
 );
 
+my $mock_att = Test::MockModule->new('Net::Google::Code::Issue::Attachment');
+$mock_att->mock( 'fetch', sub { '' } );
+
 use Net::Google::Code::Issue;
 my $issue = Net::Google::Code::Issue->new( project => 'test' );
 isa_ok( $issue, 'Net::Google::Code::Issue', '$issue' );
