@@ -35,6 +35,13 @@ sub parse {
         $name =~ s/^\s+//;
         $name =~ s/\s+$//;
         $self->name($name);
+
+        # google code doesn't parse download's content type at all, we need to
+        # figure it out by ourselves
+        my $mime_type = MIME::Types->new->mimeTypeOf( $self->name );
+        if ($mime_type) {
+            $self->content_type( $mime_type->type );
+        }
     }
 
     my $td = $tr2->find_by_tag_name('td');
@@ -77,18 +84,11 @@ sub load {
     my $self    = shift;
     my $content = $self->fetch( $self->url );
     $self->content($content);
-    my $content_type;
 
-    # google code doesn't parse download's content type at all, we need to
-    # figure it out by ourselves
-    my $mime_type = MIME::Types->new->mimeTypeOf( $self->name );
-    if ($mime_type) {
-        $content_type = $mime_type->type;
-    }
-    else {
-        $content_type = File::MMagic->new->checktype_contents($content);
-    }
+    return 1 if $self->content_type;
 
+    # in case MIME::Types failed to get, let File::MMagic rescue!
+    my $content_type = File::MMagic->new->checktype_contents($content);
     $self->content_type( $content_type || 'application/octet-stream' );
 }
 
