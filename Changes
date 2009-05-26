@@ -1,5 +1,12 @@
 Revision history for Net-Google-Code
 
+0.10 Tue May 26 15:05:22 CST 2009
+
+* simple write support for Issue
+* added reported, merged and updated attributes for Issue
+* added id and content_type attributes for Issue/Attachment
+* date attribute is changed from string to DateTime object
+
 0.05 Thu May 14 16:00:07 CST 2009
 
 * load_downloads doesn't parse feed any more, instead, it parses the 
