@@ -2,7 +2,7 @@ package Net::Google::Code::Wiki;
 
 use Moose;
 use Params::Validate qw(:all);
-with 'Net::Google::Code::Role';
+with 'Net::Google::Code::TypicalRoles';
 
 has 'project' => (
     isa      => 'Str',

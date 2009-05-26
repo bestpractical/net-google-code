@@ -19,7 +19,7 @@ lib/Net/Google/Code/Issue/Attachment.pm
 lib/Net/Google/Code/Issue/Comment.pm
 lib/Net/Google/Code/Issue/PropChange.pm
 lib/Net/Google/Code/Issue/Search.pm
-lib/Net/Google/Code/Role.pm
+lib/Net/Google/Code/TypicalRoles.pm
 lib/Net/Google/Code/Role/Authentication.pm
 lib/Net/Google/Code/Role/DateTime.pm
 lib/Net/Google/Code/Role/Fetchable.pm

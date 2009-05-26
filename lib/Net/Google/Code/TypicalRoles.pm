@@ -1,4 +1,4 @@
-package Net::Google::Code::Role;
+package Net::Google::Code::TypicalRoles;
 use Moose::Role;
 
 with 'Net::Google::Code::Role::Fetchable';
@@ -16,11 +16,12 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::Role - Role
+Net::Google::Code::TypicalRoles - TypicalRoles
 
 =head1 DESCRIPTION
 
-this is an aggregation role that includes all the roles.
+this is an aggregation of roles that includes the typical roles
+for Code.pm, Code/Issue.pm, Code/Download.pm and Code/Wiki.pm
 
 =head1 AUTHOR
 

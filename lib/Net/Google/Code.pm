@@ -1,7 +1,7 @@
 package Net::Google::Code;
 
 use Moose;
-with 'Net::Google::Code::Role';
+with 'Net::Google::Code::TypicalRoles';
 use Scalar::Util qw/blessed/;
 
 our $VERSION = '0.10';

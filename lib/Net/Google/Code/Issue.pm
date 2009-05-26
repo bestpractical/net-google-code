@@ -1,7 +1,7 @@
 package Net::Google::Code::Issue;
 use Moose;
 use Params::Validate qw(:all);
-with 'Net::Google::Code::Role';
+with 'Net::Google::Code::TypicalRoles';
 use Net::Google::Code::Issue::Comment;
 use Net::Google::Code::Issue::Attachment;
 use Scalar::Util qw/blessed/;

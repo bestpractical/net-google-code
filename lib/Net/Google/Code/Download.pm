@@ -4,7 +4,7 @@ use Moose;
 use Params::Validate qw(:all);
 use Scalar::Util qw/blessed/;
 
-with 'Net::Google::Code::Role';
+with 'Net::Google::Code::TypicalRoles';
 
 has 'project' => (
     isa      => 'Str',
