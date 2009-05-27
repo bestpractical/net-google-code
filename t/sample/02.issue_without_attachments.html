@@ -1,0 +1,426 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+ 
+ <title>Issue 14 - 
+ chromium -
+ 
+ Google Code</title>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" >
+ 
+ <link type="text/css" rel="stylesheet" href="http://www.gstatic.com/codesite/ph/3596478537346627501/css/d_20081117.css">
+</head>
+<body class="t3">
+ <div id="gaia">
+  <font size="-1">
+ 
+ <a href="/p/support/wiki/WhatsNew" style="color:#a03">What's new?</a>
+ | <a href="/p/support/">Help</a>
+ | <a href="/more/">Directory</a>
+ | <a href="http://www.google.com/accounts/Login?continue=http%3A%2F%2Fcode.google.com%2Fp%2Fchromium%2Fissues%2Fdetail%3Fid%3D14&amp;followup=http%3A%2F%2Fcode.google.com%2Fp%2Fchromium%2Fissues%2Fdetail%3Fid%3D14">Sign in</a>
+ 
+ </font> 
+
+ </div>
+ <div class="gbh" style="left: 0pt;"></div>
+ <div class="gbh" style="right: 0pt;"></div>
+ 
+ 
+ <div style="height: 1px"></div>
+ <table style="padding:0px; margin: 20px 0px 0px 0px; width:100%" cellpadding="0" cellspacing="0">
+ <tr>
+ <td style="width:153px"><a href="/"><img src="http://www.gstatic.com/codesite/ph/images/code_sm.png" width="153" height="55" alt="Google"></a></td>
+ <td style="padding-left: 0.8em">
+ 
+ <div id="pname" style="margin: 0px 0px -3px 0px">
+ <a href="/p/chromium/" style="text-decoration:none; color:#000">chromium</a>
+ </div>
+ <div id="psum">
+ <i><a href="/p/chromium/" style="text-decoration:none; color:#000">An open-source browser project to help move the web forward.</a></i>
+ </div>
+ 
+ </td>
+ <td style="white-space:nowrap; text-align:right">
+ 
+ <form action="/hosting/search">
+ <input size="30" name="q" value="">
+ <input type="submit" name="projectsearch" value="Search Projects" >
+ </form>
+ 
+ </tr>
+ </table>
+
+
+<table id="mt" cellspacing="0" cellpadding="0" width="100%" border="0">
+ <tr>
+ <th onclick="if (!cancelBubble) _go('/p/chromium/');">
+ <div class="tab inactive">
+ <div class="round4"></div>
+ <div class="round2"></div>
+ <div class="round1"></div>
+ <div class="box-inner">
+ <a onclick="cancelBubble=true;" href="/p/chromium/">Project&nbsp;Home</a>
+ </div>
+ </div>
+ </th><td>&nbsp;&nbsp;</td>
+ 
+ 
+ 
+ 
+ 
+ 
+ <th onclick="if (!cancelBubble) _go('/p/chromium/w/list');">
+ <div class="tab inactive">
+ <div class="round4"></div>
+ <div class="round2"></div>
+ <div class="round1"></div>
+ <div class="box-inner">
+ <a onclick="cancelBubble=true;" href="/p/chromium/w/list">Wiki</a>
+ </div>
+ </div>
+ </th><td>&nbsp;&nbsp;</td>
+ 
+ 
+ 
+ 
+ 
+ <th onclick="if (!cancelBubble) _go('/p/chromium/issues/list');">
+ <div class="tab active">
+ <div class="round4"></div>
+ <div class="round2"></div>
+ <div class="round1"></div>
+ <div class="box-inner">
+ <a onclick="cancelBubble=true;" href="/p/chromium/issues/list">Issues</a>
+ </div>
+ </div>
+ </th><td>&nbsp;&nbsp;</td>
+ 
+ 
+ 
+ 
+ <td width="100%">&nbsp;</td>
+ </tr>
+</table>
+<table cellspacing="0" cellpadding="0" width="100%" align="center" border="0" class="st">
+ <tr>
+ 
+ 
+ 
+ 
+ 
+ <td>
+ <div class="issueDetail">
+<div class="isf">
+ 
+ 
+ <span class="inIssueEntry">
+ <a href="entry">New Issue</a>
+ </span> |
+ 
+ <span class="inIssueList">
+ <span>Search</span>
+ <form action="list" method="GET" style="display:inline">
+ <select id="can" name="can" style="font-size:92%">
+ 
+<option disabled="disabled">Search Within:</option>
+<option value="1" >&nbsp;All Issues</option>
+<option value="2" selected=selected>&nbsp;Open Issues</option>
+
+<option value="6" >&nbsp;New Issues</option>
+<option value="7" >&nbsp;Issues to Verify</option>
+
+ </select>
+ <span>for</span>
+ <input type="text" size="32" id="q" name="q" value="" style="font-size:92%" >
+ 
+ <input type="hidden" name="colspec" id="search_colspec" value="ID Stars Pri Area Type Status Summary Modified Owner" >
+ 
+ 
+ 
+ <input type="hidden" name="cells" value="tiles" >
+ <input type="submit" value="Search" style="font-size:92%" >
+ </form>
+ </span> |
+ <span class="inIssueAdvSearch">
+ <a href="advsearch">Advanced Search</a>
+ </span> |
+ <span class="inIssueSearchTips">
+ <a href="searchtips">Search Tips</a>
+ </span>
+</div>
+</div>
+
+ </td>
+ 
+ 
+ 
+ 
+ 
+ 
+ <td height="4" align="right" valign="top" class="bevel-right">
+ <div class="round4"></div>
+ <div class="round2"></div>
+ <div class="round1"></div>
+ </td>
+ </tr>
+</table>
+<div id="maincol">
+<style type="text/css">
+ .attachments { width:33%; border-top:2px solid #999; padding-top: 3px}
+ .attachments table { margin-bottom: 0.75em; }
+ .attachments table tr td { padding: 0; margin: 0; font-size: 95%; }
+ .label { white-space: nowrap; }
+ .derived { font-style:italic }
+</style>
+<div id="issueheader">
+<table cellpadding="0" cellspacing="0" width="100%"><tbody>
+ <tr>
+ <td class="vt h3" nowrap="nowrap" style="padding:0 5px">
+ 
+ Issue <a href="detail?id=14">14</a>:
+ </td>
+ <td width="90%" class="vt">
+ <span class="h3" >Proxy settings for installer</span>
+ </td>
+ <td>
+ 
+ <div class="pagination">
+ 
+ 1 of 2665
+ <a href="detail?id=17" title="Next">Next &rsaquo;</a>
+ </div>
+ </td>
+ </tr>
+ <tr>
+ <td></td>
+ <td nowrap="nowrap">
+ 
+ 
+ 34 people starred this issue and may be notified of changes.
+ 
+ 
+ </td>
+ <td align="center" nowrap="nowrap">
+ 
+ <a href="http://code.google.com/p/chromium/issues/list">Back to list</a>
+ 
+ </td>
+ </tr>
+</tbody></table>
+</div><table width="100%" cellpadding="0" cellspacing="0" border="0" class="issuepage">
+<tbody class="collapse"> 
+ <tr>
+ <td id="issuemeta" rowspan="1000"> 
+ <table cellspacing="0" cellpadding="0">
+ <tr><th align="left">Status:&nbsp;</th>
+ <td width="100%">
+ 
+ Available
+ 
+ </td>
+ </tr>
+ 
+ 
+ 
+ <tr><th align="left">Owner:&nbsp;</th><td>
+ 
+ <a href="/u/all-bugs-test@chromium.org/">all-bugs-test@chromium.org</a>
+ 
+ </td>
+ </tr>
+ 
+ 
+ <tr><th class="vt" align="left">Cc:&nbsp;</th><td>
+ 
+ 
+  <a href="/u/@VxJfQ1RWABBAXQE%3D/">thatan...@google.com</a> 
+ 
+ </td></tr>
+ 
+ 
+ 
+ <tr><td colspan="2">
+ <a href="list?q=label:Type-Bug"
+ title=""
+ class="label"><b>Type-</b>Bug</a>
+ </td></tr>
+ 
+ 
+ 
+ <tr><td colspan="2">
+ <a href="list?q=label:Pri-2"
+ title=""
+ class="label"><b>Pri-</b>2</a>
+ </td></tr>
+ 
+ 
+ 
+ <tr><td colspan="2">
+ <a href="list?q=label:OS-All"
+ title=""
+ class="label"><b>OS-</b>All</a>
+ </td></tr>
+ 
+ 
+ 
+ <tr><td colspan="2">
+ <a href="list?q=label:Area-Installer"
+ title=""
+ class="label"><b>Area-</b>Installer</a>
+ </td></tr>
+ 
+ 
+ 
+ <tr><td colspan="2"><a href="list?q=label:intext"
+ title=""
+ class="label">intext</a></td></tr>
+ 
+ 
+ 
+ <tr><td colspan="2">
+ <a href="list?q=label:Mstone-X"
+ title=""
+ class="label"><b>Mstone-</b>X</a>
+ </td></tr>
+ 
+ <tr><td colspan="2">
+ <a href="list?q=label:Foo-Bar-Baz"
+ title=""
+ class="label"><b>Foo-</b>Bar-Bug</a>
+ </td></tr>
+ 
+ 
+ </table>
+ <br><br>
+ 
+ 
+ 
+ <div style="white-space:nowrap"><a href="http://www.google.com/accounts/Login?continue=http%3A%2F%2Fcode.google.com%2Fp%2Fchromium%2Fissues%2Fdetail%3Fid%3D14&amp;followup=http%3A%2F%2Fcode.google.com%2Fp%2Fchromium%2Fissues%2Fdetail%3Fid%3D14"
+ >Sign in</a> to add a comment</div>
+ 
+ 
+ 
+ 
+ <br>
+ 
+ 
+ 
+  
+ 
+ 
+ </td>
+ <td class="vt issuedescription" width="100%">
+ <div class="author">
+ Reported by <a href="/u/seanamonroe/">seanamonroe</a>,
+ <span class="date" title="Tue Sep  2 12:19:25 2008">Sep 02, 2008</span>
+ </div>
+<pre>
+<b>What steps will reproduce the problem?</b>
+
+Attempt to install chrome behind a firewall blocking HTTP/HTTPS traffic.
+
+<b>What is the expected result?</b>
+
+Options for proxy settings to allow the installer to retrieve the necessary
+data via a proxy.
+
+<b>What happens instead?</b>
+
+Installer simply fails, notifying the user to adjust their firewall settings.
+</pre>
+
+ </td>
+ </tr>
+ 
+ 
+ <tr>
+ <td class="vt issuecomment">
+ 
+ 
+ 
+ <span class="author">Comment <a name="c1"
+ href="#c1">1</a>
+ by
+ <a href="/u/jakendall/">jakendall</a></span>,
+ <span class="date" title="Tue Sep  2 12:20:16 2008">Sep 02, 2008</span>
+<pre>
+Firewall settings are taken from IE settings
+</pre>
+ 
+ 
+ </td>
+ </tr>
+ 
+ 
+ 
+ 
+ 
+ <tr>
+ <td class="vt issuecomment">
+ 
+ 
+ 
+ <span class="author">Comment <a name="c18"
+ href="#c18">18</a>
+ by
+ <a href="/u/jsykari/">jsykari</a></span>,
+ <span class="date" title="Fri Dec 19 17:59:29 2008">Dec 19, 2008</span>
+<pre>
+</pre>
+ 
+ <div class="attachments">
+ 
+ <table cellspacing="0" cellpadding="2" border="0">
+ <tr><td rowspan="2" width="24"><a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png" target="new"><img width="16" height="16" src="/hosting/images/generic.gif" border="0" ></a></td>
+ <td><b>proxy_settings.png</b></td></tr>
+ <tr><td>14.3 KB
+  
+ <a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png">Download</a></td></tr>
+ </table>
+ 
+ </div>
+
+ 
+ </td>
+ </tr>
+ <tr>
+ <td class="vt issuecomment">
+ <img width="10" height="12" src="http://www.gstatic.com/codesite/ph/images/triangle.gif"><a href="http://www.google.com/accounts/Login?continue=http%3A%2F%2Fcode.google.com%2Fp%2Fchromium%2Fissues%2Fdetail%3Fid%3D14&amp;followup=http%3A%2F%2Fcode.google.com%2Fp%2Fchromium%2Fissues%2Fdetail%3Fid%3D14"
+ >Sign in</a> to add a comment
+ </td>
+ </tr>
+ 
+
+
+</tbody>
+</table>
+<br>
+
+
+
+
+ 
+
+
+<form name="delcom" action="delComment.do?q=&amp;can=2&amp;sort=&amp;colspec=ID+Stars+Pri+Area+Type+Status+Summary+Modified+Owner" method="POST">
+ <input type="hidden" name="sequence_num" value="">
+ <input type="hidden" name="mode" value="">
+ <input type="hidden" name="id" value="14">
+ <input type="hidden" name="token" value="">
+</form>
+ </div>
+<div id="footer" dir="ltr">
+ 
+ <div class="text">
+ 
+ &copy;2008 Google -
+ <a href="/">Code Home</a> -
+ <a href="/tos.html">Terms of Service</a> -
+ <a href="http://www.google.com/privacy.html">Privacy Policy</a> -
+ <a href="/more/">Site Directory</a>
+ 
+ </div>
+</div>
+ </body>
+</html>
+
