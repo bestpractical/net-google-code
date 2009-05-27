@@ -19,13 +19,13 @@ lib/Net/Google/Code/Issue/Attachment.pm
 lib/Net/Google/Code/Issue/Comment.pm
 lib/Net/Google/Code/Issue/PropChange.pm
 lib/Net/Google/Code/Issue/Search.pm
-lib/Net/Google/Code/TypicalRoles.pm
 lib/Net/Google/Code/Role/Authentication.pm
 lib/Net/Google/Code/Role/DateTime.pm
 lib/Net/Google/Code/Role/Fetchable.pm
 lib/Net/Google/Code/Role/HTMLTree.pm
 lib/Net/Google/Code/Role/Pageable.pm
 lib/Net/Google/Code/Role/URL.pm
+lib/Net/Google/Code/TypicalRoles.pm
 lib/Net/Google/Code/Wiki.pm
 lib/Net/Google/Code/Wiki/Comment.pm
 Makefile.PL
@@ -41,6 +41,7 @@ t/10.downloads.t
 t/11.wiki.t
 t/20.code.t
 t/sample/02.issue.html
+t/sample/02.issue_without_attachments.html
 t/sample/05.issues_list.html
 t/sample/10.download.html
 t/sample/11.TestPage.html
