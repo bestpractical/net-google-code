@@ -15,6 +15,7 @@ requires 'Params::Validate';
 requires 'DateTime';
 requires 'MIME::Types';
 requires 'File::MMagic';
+requires 'JSON';
 
 recursive_author_tests('xt/');
 
