@@ -48,13 +48,11 @@ has 'sort' => (
     default => ''
 );
 
-has 'columns' => (
-    isa     => 'ArrayRef[Str]',
+has 'colspec' => (
+    isa     => 'Str',
     is      => 'rw',
     lazy    => 1,
-    default => sub {
-        [qw/ID Type Status Priority Milestone Owner Summary/];
-    },
+    default => 'ID+Type+Status+Priority+Milestone+Owner+Summary+Modified',
 );
 
 has 'results' => (
@@ -79,7 +77,7 @@ sub search {
     my $self = shift;
     if ( scalar @_ ) {
         my %args = @_;
-        for my $attr (qw/can q limit sort columns/) {
+        for my $attr (qw/can q limit sort colspec/) {
             $self->$attr( $args{$attr} )       if defined $args{$attr};
         }
         $self->load_after_search( $args{load_after_search} )
@@ -87,13 +85,13 @@ sub search {
     }
 
     my $mech = $self->mech;
-    $self->fetch( $self->base_url
-            . 'issues/list'
-            . '?can=' . $self->can
-            . ';sort=' .$self->sort 
-            . ';q=' .   $self->q 
-            . ';colspec=' . join( '+', @{$self->columns} )
-            );
+    my $url = $self->base_url . 'issues/list?';
+    for my $attr ( qw/can q sort colspec/ ) {
+        next unless defined $self->$attr;
+        $url .= $attr . '=' . $self->$attr . ';';
+    }
+    $self->fetch( $url );
+
     die "Server threw an error " . $mech->response->status_line . 'when search'
       unless $mech->response->is_success;
 
