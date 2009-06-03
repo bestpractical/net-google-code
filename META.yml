@@ -22,7 +22,7 @@ requires:
   File::MMagic: 0
   HTML::TreeBuilder: 0
   MIME::Types: 0
-  Moose: 0
+  Any::Moose: 0
   Params::Validate: 0
   WWW::Mechanize: 0
 resources:

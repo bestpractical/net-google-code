@@ -1,6 +1,6 @@
 package Net::Google::Code::Wiki;
 
-use Moose;
+use Any::Moose;
 use Params::Validate qw(:all);
 with 'Net::Google::Code::TypicalRoles';
 
@@ -114,7 +114,7 @@ sub parse {
     $self->comments( \@comments );
 }
 
-no Moose;
+no Any::Moose;
 __PACKAGE__->meta->make_immutable;
 
 1;

@@ -1,5 +1,5 @@
 package Net::Google::Code::Role::Fetchable;
-use Moose::Role;
+use Any::Moose 'Role';
 use Params::Validate ':all';
 use WWW::Mechanize;
 use Encode;
@@ -37,7 +37,7 @@ sub fetch {
     }
 }
 
-no Moose::Role;
+no Any::Moose;
 
 1;
 

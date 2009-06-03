@@ -1,10 +1,10 @@
 package Net::Google::Code::Role::Pageable;
-use Moose::Role;
+use Any::Moose 'Role';
 use Params::Validate ':all';
 use WWW::Mechanize;
-with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::HTMLTree';
+with 'Net::Google::Code::Role::Fetchable';
+with 'Net::Google::Code::Role::HTMLTree';
 use Scalar::Util qw/blessed/;
-no Moose::Role;
 
 sub rows {
     my $self = shift;
@@ -146,6 +146,7 @@ sub _rows {
     return @rows;
 }
 
+no Any::Moose;
 1;
 
 __END__

@@ -1,5 +1,5 @@
 package Net::Google::Code::Role::URL;
-use Moose::Role;
+use Any::Moose 'Role';
 
 # requires don't support attribute yet :/
 # requires 'project'; 
@@ -27,7 +27,7 @@ has 'base_feeds_url' => (
     },
 );
 
-no Moose::Role;
+no Any::Moose;
 
 1;
 

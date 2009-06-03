@@ -1,6 +1,6 @@
 package Net::Google::Code;
 
-use Moose;
+use Any::Moose;
 with 'Net::Google::Code::TypicalRoles';
 use Scalar::Util qw/blessed/;
 
@@ -172,7 +172,7 @@ sub load_wikis {
     $self->wikis( \@wikis );
 }
 
-no Moose;
+no Any::Moose;
 __PACKAGE__->meta->make_immutable;
 
 1;
@@ -279,7 +279,7 @@ L<Net::Google::Code::Wiki>'s new method.
 
 =head1 DEPENDENCIES
 
-L<Moose>, L<HTML::TreeBuilder>, L<WWW::Mechanize>, L<Params::Validate>
+L<Any::Moose>, L<HTML::TreeBuilder>, L<WWW::Mechanize>, L<Params::Validate>
 
 =head1 INCOMPATIBILITIES
 

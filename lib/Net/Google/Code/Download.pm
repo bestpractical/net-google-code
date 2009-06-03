@@ -1,6 +1,6 @@
 package Net::Google::Code::Download;
 
-use Moose;
+use Any::Moose;
 use Params::Validate qw(:all);
 use Scalar::Util qw/blessed/;
 
@@ -141,7 +141,7 @@ sub BUILDARGS {
     return $class->SUPER::BUILDARGS(%args);
 }
 
-no Moose;
+no Any::Moose;
 __PACKAGE__->meta->make_immutable;
 
 1;

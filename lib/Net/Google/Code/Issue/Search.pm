@@ -1,10 +1,11 @@
 package Net::Google::Code::Issue::Search;
-use Moose;
+use Any::Moose;
 use Params::Validate qw(:all);
-use Moose::Util::TypeConstraints;
-with 'Net::Google::Code::Role::URL',
-  'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::Pageable',
-  'Net::Google::Code::Role::HTMLTree';
+use Any::Moose 'Util::TypeConstraints';
+with 'Net::Google::Code::Role::URL';
+with 'Net::Google::Code::Role::Fetchable';
+with 'Net::Google::Code::Role::Pageable';
+with  'Net::Google::Code::Role::HTMLTree';
 use Net::Google::Code::Issue;
 use Encode;
 
@@ -118,7 +119,7 @@ sub search {
     }
 }
 
-no Moose;
+no Any::Moose;
 __PACKAGE__->meta->make_immutable;
 1;
 

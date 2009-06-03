@@ -1,5 +1,5 @@
 package Net::Google::Code::Role::Predefined;
-use Moose::Role;
+use Any::Moose 'Role';
 use Params::Validate ':all';
 use JSON;
 with 'Net::Google::Code::Role::Fetchable';
@@ -14,7 +14,7 @@ has 'predefined_labels' => (
     is  => 'rw',
 );
 
-no Moose::Role;
+no Any::Moose;
 
 sub load_predefined {
     my $self = shift;

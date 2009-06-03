@@ -1,5 +1,5 @@
 package Net::Google::Code::Role::HTMLTree;
-use Moose::Role;
+use Any::Moose 'Role';
 
 use HTML::TreeBuilder;
 use Params::Validate qw(:all);
@@ -57,7 +57,7 @@ sub html_tree_contains {
     return;
 }
 
-no Moose::Role;
+no Any::Moose;
 
 1;
 

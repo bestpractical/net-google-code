@@ -1,5 +1,5 @@
 package Net::Google::Code::Role::Authentication;
-use Moose::Role;
+use Any::Moose 'Role';
 
 with 'Net::Google::Code::Role::Fetchable';
 
@@ -67,7 +67,7 @@ sub signed_in {
     return $signed_in;
 }
 
-no Moose::Role;
+no Any::Moose;
 
 1;
 

@@ -1,7 +1,8 @@
 package Net::Google::Code::Issue;
-use Moose;
+use Any::Moose;
 use Params::Validate qw(:all);
 with 'Net::Google::Code::TypicalRoles';
+use Net::Google::Code::DateTime;
 use Net::Google::Code::Issue::Comment;
 use Net::Google::Code::Issue::Attachment;
 use Scalar::Util qw/blessed/;
@@ -103,7 +104,7 @@ sub parse {
     my $description = $tree->look_down( class => 'vt issuedescription' );
     my $author_tag = $description->look_down( class => "author" );
     $self->reporter( $author_tag->content_array_ref->[1]->as_text );
-    $self->reported( $self->parse_datetime($author_tag->look_down( class => 'date' )->attr('title') ));
+    $self->reported( Net::Google::Code::DateTime->new_from_string($author_tag->look_down( class => 'date' )->attr('title') ));
 
 
     my $text = $description->find_by_tag_name('pre')->as_text;
@@ -345,7 +346,7 @@ s{(?<=id="attachmentarea"></div>)}{<input name="file$_" type="file">};
     }
 }
 
-no Moose;
+no Any::Moose;
 __PACKAGE__->meta->make_immutable;
 
 1;

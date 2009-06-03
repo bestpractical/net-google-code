@@ -1,6 +1,6 @@
-package Net::Google::Code::Role::DateTime;
-use Moose::Role;
-use DateTime;
+package Net::Google::Code::DateTime;
+use Any::Moose;
+extends 'DateTime';
 
 our %MONMAP = (
     Jan => 1,
@@ -17,8 +17,8 @@ our %MONMAP = (
     Dec => 12,
 );
 
-sub parse_datetime {
-    my $self      = shift;
+sub new_from_string {
+    my $class     = shift;
     my $base_date = shift;
     if (
         $base_date =~ /\w{3}\s+(\w+)\s+(\d+)\s+(\d\d):(\d\d):(\d\d)\s+(\d{4})/ )
@@ -29,7 +29,7 @@ sub parse_datetime {
         my $m   = $4;
         my $s   = $5;
         my $y   = $6;
-        my $dt  = DateTime->new(
+        return   $class->new(
             year   => $y,
             month  => $MONMAP{$mon},
             day    => $dom,
@@ -37,11 +37,10 @@ sub parse_datetime {
             minute => $m,
             second => $s
         );
-        return $dt;
     }
 }
 
-no Moose::Role;
+no Any::Moose;
 
 1;
 
@@ -49,13 +48,13 @@ __END__
 
 =head1 NAME
 
-Net::Google::Code::Role::DateTime - DateTime Role
+Net::Google::Code::DateTime - DateTime with a parsing method for gcode
 
 =head1 DESCRIPTION
 
 =head1 INTERFACE
 
-=head2 parse_datetime
+=head2 new_from_string
 
 =head1 AUTHOR
 

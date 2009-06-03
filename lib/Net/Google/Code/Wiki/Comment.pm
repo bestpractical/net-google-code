@@ -1,6 +1,6 @@
 package Net::Google::Code::Wiki::Comment;
 
-use Moose;
+use Any::Moose;
 use Params::Validate qw(:all);
 with 'Net::Google::Code::Role::HTMLTree';
 
@@ -38,7 +38,7 @@ sub parse {
 }
 
 
-no Moose;
+no Any::Moose;
 __PACKAGE__->meta->make_immutable;
 
 1;

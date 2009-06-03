@@ -1,5 +1,5 @@
 package Net::Google::Code::Issue::Attachment;
-use Moose;
+use Any::Moose;
 with 'Net::Google::Code::Role::Fetchable', 'Net::Google::Code::Role::HTMLTree';
 use Scalar::Util qw/blessed/;
 use MIME::Types;
@@ -92,7 +92,7 @@ sub load {
     $self->content_type( $content_type || 'application/octet-stream' );
 }
 
-no Moose;
+no Any::Moose;
 __PACKAGE__->meta->make_immutable;
 
 1;

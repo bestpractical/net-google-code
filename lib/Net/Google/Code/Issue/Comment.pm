@@ -1,7 +1,8 @@
 package Net::Google::Code::Issue::Comment;
-use Moose;
+use Any::Moose;
 use Net::Google::Code::Issue::Attachment;
-with 'Net::Google::Code::Role::HTMLTree', 'Net::Google::Code::Role::DateTime';
+use Net::Google::Code::DateTime;
+with 'Net::Google::Code::Role::HTMLTree';
 
 has 'updates' => ( isa => 'HashRef', is => 'rw', default => sub { {} } );
 has 'author'  => ( isa => 'Str',     is => 'rw' );
@@ -23,7 +24,7 @@ sub parse {
     my @a       = $author->find_by_tag_name('a');
     $self->sequence( $a[0]->content_array_ref->[0] );
     $self->author( $a[1]->content_array_ref->[0] );
-    $self->date($self->parse_datetime( $element->look_down( class => 'date' )->attr('title') ));
+    $self->date(Net::Google::Code::DateTime->new_from_string( $element->look_down( class => 'date' )->attr('title') ));
     my $content = $element->find_by_tag_name('pre')->as_text;
     $content =~ s/^\s+//;
     $content =~ s/\s+$/\n/;
@@ -77,7 +78,7 @@ sub parse {
     return 1;
 }
 
-no Moose;
+no Any::Moose;
 __PACKAGE__->meta->make_immutable;
 1;
 

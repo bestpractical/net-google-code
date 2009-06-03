@@ -1,5 +1,5 @@
 package Net::Google::Code::TypicalRoles;
-use Moose::Role;
+use Any::Moose 'Role';
 
 with 'Net::Google::Code::Role::Fetchable';
 with 'Net::Google::Code::Role::URL';
@@ -9,7 +9,7 @@ with 'Net::Google::Code::Role::DateTime';
 with 'Net::Google::Code::Role::Pageable';
 with 'Net::Google::Code::Role::Predefined';
 
-no Moose::Role;
+no Any::Moose;
 
 1;
 
