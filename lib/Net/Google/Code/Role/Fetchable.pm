@@ -54,6 +54,8 @@ Net::Google::Code::Role::Fetchable - Fetchable Role
 
 =over 4
 
+=item mech
+
 =item fetch
 
 =back
