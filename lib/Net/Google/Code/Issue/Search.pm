@@ -8,6 +8,8 @@ with 'Net::Google::Code::Role::Pageable';
 with  'Net::Google::Code::Role::HTMLTree';
 use Net::Google::Code::Issue;
 use Encode;
+use Date::Manip;
+local $ENV{TZ} = 'GMT';
 
 our %CAN_MAP = (
     'all'    => 1,
@@ -34,6 +36,8 @@ sub search {
         limit             => 999_999_999,
         load_after_search => 1,
         can               => 2,
+        colspec           => 'ID+Type+Status+Priority+Milestone+Owner+Summary',
+        updated_after     => undef,
         @_
     );
 
@@ -41,11 +45,24 @@ sub search {
         $args{can} = $CAN_MAP{ $args{can} };
     }
 
+    if ( $args{updated_after} ) {
+        $args{colspec} .= '+Modified' unless $args{colspec} =~ /Modified/;
+
+        # convert updated_after to epoch
+        if ( ref $args{updated_after} ) {
+            $args{updated_after} = $args{updated_after}->epoch;
+        }
+        else {
+            $args{updated_after} = UnixDate( $args{updated_after}, '%o' );
+        }
+    }
+
+
     my $mech = $self->mech;
     my $url = $self->base_url . 'issues/list?';
     for my $type (qw/can q sort colspec/) {
         next unless defined $args{$type};
-        $url .= $type . '=' . $args{$type} . ';';
+        $url .= $type . '=' . $args{$type} . '&';
     }
     $self->fetch( $url );
 
@@ -59,22 +76,33 @@ sub search {
          get only one ticket
         my $issue =
           Net::Google::Code::Issue->new( project => $self->project, id => $1, );
-        $issue->load if $args{load_after_search};
-        $self->results( [$issue] );
+        $issue->load if $args{load_after_search} || $args{updated_after};
+        if ( !$args{updated_after} || $issue->updated->epoch > $args{updated_after} ) {
+            $self->results( [$issue] );
+        }
+        else {
+            $self->results( [] );
+        }
     }
     elsif ( $mech->title =~ /issues/i ) {
 
         # get a ticket list
-        my @rows =
-          $self->rows( html => $content, limit => $args{limit} );
+        my @rows = $self->rows(
+            html          => $content,
+            limit         => $args{limit},
+            updated_after => $args{updated_after},
+        );
+
         my @issues;
         for my $row (@rows) {
             my $issue = Net::Google::Code::Issue->new(
                 project => $self->project,
                 %$row,
             );
-            $issue->load if $args{load_after_search};
-            push @issues, $issue;
+            $issue->load if $args{load_after_search} || $args{updated_after};
+            if ( !$args{updated_after} || $issue->updated->epoch >= $args{updated_after} ) {
+                push @issues, $issue;
+            }
         }
         $self->results( \@issues );
     }

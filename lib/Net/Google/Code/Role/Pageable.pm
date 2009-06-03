@@ -5,6 +5,10 @@ use WWW::Mechanize;
 with 'Net::Google::Code::Role::Fetchable';
 with 'Net::Google::Code::Role::HTMLTree';
 use Scalar::Util qw/blessed/;
+use Date::Manip;
+use DateTime;
+local $ENV{TZ} = 'GMT';
+
 
 sub rows {
     my $self = shift;
@@ -13,14 +17,21 @@ sub rows {
         {
             html  => { type => SCALAR | OBJECT },
             limit => {
-                type     => SCALAR,
+                type     => SCALAR | UNDEF,
+                optional => 1,
+            },
+            updated_after => {
+                type => SCALAR | OBJECT | UNDEF,
                 optional => 1,
             },
         }
     );
+
     $args{limit} ||= 999_999_999; # the impossible huge limit
     my $tree = $args{html};
     $tree = $self->html_tree( html => $tree ) unless blessed $tree;
+
+    my $updated_after = $args{updated_after};
 
     # assuming there's at most 20 columns
     my @titles;
@@ -53,27 +64,41 @@ sub rows {
 
     my $pagination = $tree->look_down( class => 'pagination' );
     return unless $pagination;
+
     if ( my ( $start, $end, $total ) =
         $pagination->as_text =~ /(\d+)\s+-\s+(\d+)\s+of\s+(\d+)/ )
     {
-        push @rows,
-          $self->_rows(
+        # all the rows in a page
+        my @all_rows = $self->_rows(
             html         => $tree,
             titles       => \@titles,
             label_column => $label_column,
           );
+        my $found_number = scalar @all_rows;
+
+        push @rows, grep {
+            my $epoch = UnixDate( $_->{modified}, '%o' );
+            ( $epoch && $args{updated_after} && $epoch < $args{updated_after} ) ? 0 : 1;
+          } @all_rows;
 
         $total = $args{limit} if $args{limit} < $total;
-        while ( scalar @rows < $total ) {
+        while ( $found_number < $total ) {
 
             if ( $self->mech->follow_link( text_regex => qr/Next\s+/ ) ) {
                 if ( $self->mech->response->is_success ) {
-                    push @rows,
-                      $self->_rows(
+                    my @all_rows = $self->_rows(
                         html         => $self->mech->content,
                         titles       => \@titles,
                         label_column => $label_column,
-                      );
+                    );
+                    $found_number += @all_rows;
+
+                    push @rows, grep {
+                        my $epoch = UnixDate( $_->{modified}, '%o' );
+                        (        $epoch
+                              && $args{updated_after}
+                              && $epoch < $args{updated_after} ) ? 0 : 1;
+                    } @all_rows;
                 }
                 else {
                     die "failed to follow 'Next' link";
@@ -85,6 +110,7 @@ sub rows {
             }
         }
     }
+
     if ( scalar @rows > $args{limit} ) {
         # this happens when limit is less than the 1st page's number 
         return @rows[0 .. $args{limit}-1];
