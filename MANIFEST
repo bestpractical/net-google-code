@@ -13,17 +13,17 @@ inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/Net/Google/Code.pm
+lib/Net/Google/Code/DateTime.pm
 lib/Net/Google/Code/Download.pm
 lib/Net/Google/Code/Issue.pm
 lib/Net/Google/Code/Issue/Attachment.pm
 lib/Net/Google/Code/Issue/Comment.pm
-lib/Net/Google/Code/Issue/PropChange.pm
 lib/Net/Google/Code/Issue/Search.pm
 lib/Net/Google/Code/Role/Authentication.pm
-lib/Net/Google/Code/Role/DateTime.pm
 lib/Net/Google/Code/Role/Fetchable.pm
 lib/Net/Google/Code/Role/HTMLTree.pm
 lib/Net/Google/Code/Role/Pageable.pm
+lib/Net/Google/Code/Role/Predefined.pm
 lib/Net/Google/Code/Role/URL.pm
 lib/Net/Google/Code/TypicalRoles.pm
 lib/Net/Google/Code/Wiki.pm
@@ -40,6 +40,7 @@ t/05.issues_list.t
 t/10.downloads.t
 t/11.wiki.t
 t/20.code.t
+t/30.role_predefined.t
 t/sample/02.issue.html
 t/sample/02.issue_without_attachments.html
 t/sample/05.issues_list.html
@@ -49,6 +50,7 @@ t/sample/11.TestPage.wiki
 t/sample/11.wikis.html
 t/sample/20.code.downloads.html
 t/sample/20.code.html
+t/sample/30.role_predefined.js
 xt/kwalitee.t
 xt/perlcritic.t
 xt/pod-coverage.t
