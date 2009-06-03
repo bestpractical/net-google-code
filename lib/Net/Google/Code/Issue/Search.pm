@@ -40,6 +40,13 @@ has '_q' => (
     default => '',
 );
 
+
+has 'sort' => (
+    isa => 'Str',
+    is => 'rw',
+    default => ''
+);
+
 has 'results' => (
     isa     => 'ArrayRef[Net::Google::Code::Issue]',
     is      => 'rw',
@@ -65,19 +72,17 @@ sub search {
         $self->_can( $args{_can} ) if defined $args{_can};
         $self->_q( $args{_q} )     if defined $args{_q};
         $self->limit( $args{limit} ) if defined $args{limit};
+        $self->sort( $args{sort} ) if defined $args{sort};
         $self->load_after_search( $args{load_after_search} )
           if defined $args{load_after_search};
     }
 
-    $self->fetch( $self->base_url . 'issues/list' );
     my $mech = $self->mech;
-    $mech->submit_form(
-        form_number => 2,
-        fields      => {
-            'can' => $self->_can,
-            'q'   => $self->_q,
-        }
-    );
+    $self->fetch( $self->base_url
+            . 'issues/list'
+            . '?can=' . $self->_can
+            . ';sort=' .$self->sort 
+            . ';q=' .   $self->_q );
     die "Server threw an error " . $mech->response->status_line . 'when search'
       unless $mech->response->is_success;
 
@@ -130,11 +135,13 @@ Net::Google::Code::Issue::Search - Issues Search API
 
 =over 4
 
-=item search ( _can => 'all', _q = 'foo' )
+=item search ( _can => 'all', _q = 'foo', sort => '-modified' )
 
 search with values $self->_can and $self->_q if without arguments.
 if there're arguments for _can or _q, this call will set $self->_can or
 $self_q, then do the search.
+
+If a "sort" argument is specified, that will be passed to google code's issue list. Generally, these are composed of "+" or "-" followed by a column name.
 
 return true if search is successful, false on the other hand.
 
