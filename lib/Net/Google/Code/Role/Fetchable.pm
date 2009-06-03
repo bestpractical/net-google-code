@@ -2,23 +2,24 @@ package Net::Google::Code::Role::Fetchable;
 use Moose::Role;
 use Params::Validate ':all';
 use WWW::Mechanize;
+use LWP::ConnCache;
 use Encode;
 
-has 'mech' => (
-    isa     => 'WWW::Mechanize',
-    is      => 'ro',
-    lazy    => 1,
-    default => sub {
-        my $self = shift;
-        my $m    = WWW::Mechanize->new(
+our $MECH;
+
+sub mech { 
+    
+    if (!$MECH) { 
+        $MECH = WWW::Mechanize->new(
             agent       => 'Net-Google-Code',
+            conn_cache  => LWP::ConnCache->new(),
             cookie_jar  => {},
             stack_depth => 1,
             timeout     => 60,
         );
-        return $m;
     }
-);
+    return $MECH ;
+}
 
 sub fetch {
     my $self = shift;
