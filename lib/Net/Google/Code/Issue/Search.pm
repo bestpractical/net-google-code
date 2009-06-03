@@ -48,6 +48,15 @@ has 'sort' => (
     default => ''
 );
 
+has 'columns' => (
+    isa     => 'ArrayRef[Str]',
+    is      => 'rw',
+    lazy    => 1,
+    default => sub {
+        [qw/ID Type Status Priority Milestone Owner Summary/];
+    },
+);
+
 has 'results' => (
     isa     => 'ArrayRef[Net::Google::Code::Issue]',
     is      => 'rw',
@@ -70,10 +79,9 @@ sub search {
     my $self = shift;
     if ( scalar @_ ) {
         my %args = @_;
-        $self->_can( $args{_can} ) if defined $args{_can};
-        $self->_q( $args{_q} )     if defined $args{_q};
-        $self->limit( $args{limit} ) if defined $args{limit};
-        $self->sort( $args{sort} ) if defined $args{sort};
+        for my $attr (qw/_can _q limit sort columns/) {
+            $self->$attr( $args{$attr} )       if defined $args{$attr};
+        }
         $self->load_after_search( $args{load_after_search} )
           if defined $args{load_after_search};
     }
@@ -83,7 +91,9 @@ sub search {
             . 'issues/list'
             . '?can=' . $self->_can
             . ';sort=' .$self->sort 
-            . ';q=' .   $self->_q );
+            . ';q=' .   $self->_q 
+            . ';colspec=' . join( '+', @{$self->columns} )
+            );
     die "Server threw an error " . $mech->response->status_line . 'when search'
       unless $mech->response->is_success;
 
