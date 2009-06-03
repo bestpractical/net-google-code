@@ -28,23 +28,11 @@ has 'results' => (
     default => sub { [] },
 );
 
-has 'limit' => (
-    isa     => 'Int',
-    is      => 'rw',
-    default => 999_999_999,
-);
-
-has 'load_after_search' => (
-    isa     => 'Bool',
-    is      => 'rw',
-    default => 1,
-);
-
 sub search {
     my $self = shift;
     my %args = (
-        limit             => $self->limit,
-        load_after_search => $self->load_after_search,
+        limit             => 999_999_999,
+        load_after_search => 1,
         can               => 2,
         @_
     );
@@ -71,7 +59,7 @@ sub search {
          get only one ticket
         my $issue =
           Net::Google::Code::Issue->new( project => $self->project, id => $1, );
-        $issue->load if $self->load_after_search;
+        $issue->load if $args{load_after_search};
         $self->results( [$issue] );
     }
     elsif ( $mech->title =~ /issues/i ) {
@@ -85,7 +73,7 @@ sub search {
                 project => $self->project,
                 %$row,
             );
-            $issue->load if $self->load_after_search;
+            $issue->load if $args{load_after_search};
             push @issues, $issue;
         }
         $self->results( \@issues );
