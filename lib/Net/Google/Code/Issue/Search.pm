@@ -37,7 +37,7 @@ sub search {
         load_after_search => 1,
         can               => 2,
         colspec           => 'ID+Type+Status+Priority+Milestone+Owner+Summary',
-        updated_after     => undef,
+        modified_after     => undef,
         @_
     );
 
@@ -45,18 +45,15 @@ sub search {
         $args{can} = $CAN_MAP{ $args{can} };
     }
 
-    my $user_sort;
-    if ( $args{updated_after} ) {
+    if ( $args{modified_after} ) {
         $args{colspec} .= '+Modified' unless $args{colspec} =~ /Modified/;
-        $user_sort = $args{sort};
-        $args{sort} = '-id'; # to sort by id reversely
 
-        # convert updated_after to epoch
-        if ( ref $args{updated_after} ) {
-            $args{updated_after} = $args{updated_after}->epoch;
+        # convert modified_after to epoch
+        if ( ref $args{modified_after} ) {
+            $args{modified_after} = $args{modified_after}->epoch;
         }
         else {
-            $args{updated_after} = UnixDate( $args{updated_after}, '%o' );
+            $args{modified_after} = UnixDate( $args{modified_after}, '%o' );
         }
     }
 
@@ -76,36 +73,20 @@ sub search {
 
     if ( $mech->title =~ /issue\s+(\d+)/i ) {
 
-         get only one ticket
+        # get only one ticket
         my $issue =
           Net::Google::Code::Issue->new( project => $self->project, id => $1, );
-        $issue->load if $args{load_after_search} || $args{updated_after};
-        if ( !$args{updated_after} || $issue->updated->epoch > $args{updated_after} ) {
-            $self->results( [$issue] );
-        }
-        else {
-            $self->results( [] );
-        }
+        $issue->load if $args{load_after_search};
+        $self->results( [$issue] );
     }
     elsif ( $mech->title =~ /issues/i ) {
 
         # get a ticket list
         my @rows = $self->rows(
-            html          => $content,
-            limit         => $args{limit},
-            updated_after => $args{updated_after},
+            html           => $content,
+            limit          => $args{limit},
+            modified_after => $args{modified_after},
         );
-        if ( $user_sort && $user_sort =~ /(-)?(\w+)/ ) {
-            my $reverse = $1 ? 1 : 0;
-            my $col = $2;
-            @rows = sort {
-# if id is not the sort col, we use id as secondary sort col.
-# in this case, no matter the main order, we always sort the id ascendingly
-                $reverse
-                  ? ( $b->{$col} <=> $a->{$col} || $a->{id} <=> $b->{id} )
-                  : ( $a->{$col} <=> $b->{$col} || $a->{id} <=> $b->{id} )
-            } @rows;
-        }
 
         my @issues;
         for my $row (@rows) {
@@ -113,10 +94,8 @@ sub search {
                 project => $self->project,
                 %$row,
             );
-            $issue->load if $args{load_after_search} || $args{updated_after};
-            if ( !$args{updated_after} || $issue->updated->epoch >= $args{updated_after} ) {
-                push @issues, $issue;
-            }
+            $issue->load if $args{load_after_search};
+            push @issues, $issue;
         }
         $self->results( \@issues );
     }
@@ -143,13 +122,25 @@ Net::Google::Code::Issue::Search - Issues Search API
 
 =over 4
 
-=item search ( can => 'all', q = 'foo', sort => '-modified' )
+=item search ( can => 'all', q = 'foo', sort => '-modified', limit => 1000 )
 
 do the search, the results is set to $self->results,
   which is an arrayref with Net::Google::Code::Issue as element.
 
-If a "sort" argument is specified, that will be passed to google code's issue list.
+If a "sort" argument is specified, that will be passed to google code's
+issue list.
 Generally, these are composed of "+" or "-" followed by a column name.
+
+limit => Num is to limit the results number.
+
+load_after_search => Bool is to state if we should call $issue->load after
+search
+
+modified_after => DateTime
+CAVEAT: this usually doesn't do what you want, be careful.
+In fact, it just filter issues by comparing the arg and the Modified column
+value, of which the date is not only rough, but also is just about the
+properity change: new comments without prop changes won't affect this value.
 
 return true if search is successful, false on the other hand.
 

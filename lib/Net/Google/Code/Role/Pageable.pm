@@ -20,7 +20,7 @@ sub rows {
                 type     => SCALAR | UNDEF,
                 optional => 1,
             },
-            updated_after => {
+            modified_after => {
                 type => SCALAR | OBJECT | UNDEF,
                 optional => 1,
             },
@@ -31,7 +31,7 @@ sub rows {
     my $tree = $args{html};
     $tree = $self->html_tree( html => $tree ) unless blessed $tree;
 
-    my $updated_after = $args{updated_after};
+    my $modified_after = $args{modified_after};
 
     # assuming there's at most 20 columns
     my @titles;
@@ -65,72 +65,50 @@ sub rows {
     my $pagination = $tree->look_down( class => 'pagination' );
     return unless $pagination;
 
-    if ( my ( $start, $end, $total ) =
-        $pagination->as_text =~ /(\d+)\s+-\s+(\d+)\s+of\s+(\d+)/ )
-    {
+    if ( $pagination->as_text =~ /\d+\s+-\s+\d+\s+of\s+\d+/ ) {
+        my $filter = sub {
+            return 1 unless $args{modified_after};
+            my $row = shift;
+            if ( $row->{modified} ) {
+                my $epoch = UnixDate( $row->{modified}, '%o' );
+                if ( $epoch >= $args{modified_after} ) {
+                    return 1;
+                }
+            }
+            return;
+        };
+
         # all the rows in a page
-        my @all_rows = $self->_rows(
+        push @rows, grep { $filter->($_) } $self->_rows(
             html         => $tree,
             titles       => \@titles,
             label_column => $label_column,
           );
-        my $found_number = scalar @all_rows;
-        my $max_discarded = 0;
 
-        my $filter = sub {
-            return 1 unless $args{updated_after};
-
-            my $row = shift;
-
-            if ( $row->{modified} ) {
-                my $epoch = UnixDate( $row->{modified}, '%o' );
-                if ( $epoch < $args{updated_after} ) {
-                    $max_discarded = $row->{id} if $max_discarded < $row->{id};
-                    return;
-                }
-                else {
-                    return 1;
-                }
-            }
-            elsif ( $row->{id} < $max_discarded ) {
-   # no modified, means there is no comment, the updated date is the created
-   # since the id is less than the max discarded id, it's safe to discard it too
-                return;
-            }
-            else {
-                return 1;
-            }
-        };
-
-        push @rows, grep { $filter->($_) } @all_rows;
-
-        $total = $args{limit} if $args{limit} < $total;
-        while ( $found_number < $total ) {
-
-            if ( $self->mech->follow_link( text_regex => qr/Next\s+/ ) ) {
+        while ( scalar @rows < $args{limit} ) {
+            my $next_link = $self->mech->find_link( text_regex => qr/Next\s+/ );
+            if ($next_link) {
+                $self->mech->get( $next_link->url );
                 if ( $self->mech->response->is_success ) {
-                    my @all_rows = $self->_rows(
+                    push @rows, grep { $filter->($_) } $self->_rows(
                         html         => $self->mech->content,
                         titles       => \@titles,
                         label_column => $label_column,
                     );
-                    $found_number += @all_rows;
-
-                    push @rows, grep { $filter->($_) } @all_rows;
                 }
                 else {
                     die "failed to follow 'Next' link";
                 }
             }
             else {
-                warn "didn't find enough rows";
                 last;
             }
         }
     }
 
     if ( scalar @rows > $args{limit} ) {
-        # this happens when limit is less than the 1st page's number 
+        # this happens when limit is less than the 1st page's number, so in
+        # some similar situations 
         return @rows[0 .. $args{limit}-1];
     }
     else {
