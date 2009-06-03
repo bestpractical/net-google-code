@@ -22,9 +22,8 @@ $mock_response->mock( 'content',    sub { $content } );
 
 use Net::Google::Code::Issue::Search;
 my $search = Net::Google::Code::Issue::Search->new( project => 'test' );
-$search->load_after_search(0);    # don't load after search
 isa_ok( $search, 'Net::Google::Code::Issue::Search', '$search' );
-$search->search();
+$search->search(load_after_search => 0);
 
 is( scalar @{ $search->results }, 8, 'results number in total' );
 my %first_result = (
