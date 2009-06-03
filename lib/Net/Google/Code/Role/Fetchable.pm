@@ -2,17 +2,15 @@ package Net::Google::Code::Role::Fetchable;
 use Moose::Role;
 use Params::Validate ':all';
 use WWW::Mechanize;
-use LWP::ConnCache;
 use Encode;
 
 our $MECH;
 
 sub mech { 
-    
     if (!$MECH) { 
         $MECH = WWW::Mechanize->new(
             agent       => 'Net-Google-Code',
-            conn_cache  => LWP::ConnCache->new(),
+            keep_alive  => 4,
             cookie_jar  => {},
             stack_depth => 1,
             timeout     => 60,
