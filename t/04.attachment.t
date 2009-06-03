@@ -29,7 +29,6 @@ $tree->elementify;
 my @tr = $tree->find_by_tag_name('tr');
 is( scalar @tr, 2, '@tr has 2 elements' );
 $attachment->parse( $content );
-$attachment->load;
 
 my %info = (
     url =>

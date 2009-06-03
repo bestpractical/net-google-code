@@ -9,8 +9,19 @@ has 'name'         => ( isa => 'Str', is => 'rw' );
 has 'url'          => ( isa => 'Str', is => 'rw' );
 has 'size'         => ( isa => 'Str', is => 'rw' );
 has 'id'           => ( isa => 'Int', is => 'rw' );
-has 'content'      => ( isa => 'Str', is => 'rw' );
-has 'content_type' => ( isa => 'Str', is => 'rw' );
+has content => (
+    isa     => 'Str',
+    is      => 'rw',
+    lazy    => 1,
+    default => sub { ($_[0]->_load)[0] },
+);
+
+has content_type => (
+    isa     => 'Str',
+    is      => 'rw',
+    lazy    => 1,
+    default => sub { ($_[0]->_load)[1] },
+);
 
 sub parse {
     my $self = shift;
@@ -38,9 +49,9 @@ sub parse {
 
         # google code doesn't parse download's content type at all, we need to
         # figure it out by ourselves
-        my $mime_type = MIME::Types->new->mimeTypeOf( $self->name );
-        if ($mime_type) {
-            $self->content_type( $mime_type->type );
+        my $content_type = $self->_mime_type;
+        if ( $content_type ) {
+            $self->content_type( $content_type );
         }
     }
 
@@ -80,16 +91,24 @@ sub parse_attachments {
     return @attachments;
 }
 
-sub load {
+sub _load {
     my $self    = shift;
     my $content = $self->fetch( $self->url );
-    $self->content($content);
-
-    return 1 if $self->content_type;
 
     # in case MIME::Types failed to get, let File::MMagic rescue!
-    my $content_type = File::MMagic->new->checktype_contents($content);
-    $self->content_type( $content_type || 'application/octet-stream' );
+    my $content_type =
+         $self->_mime_type
+      || File::MMagic->new->checktype_contents($content)
+      || 'application/octet-stream';
+    $self->content( $content );
+    $self->content_type( $content_type );
+    return $content, $content_type;
+}
+
+sub _mime_type {
+    my $self      = shift;
+    my $mime_type = MIME::Types->new->mimeTypeOf( $self->name );
+    return $mime_type ? $mime_type->type : undef;
 }
 
 no Any::Moose;
@@ -137,8 +156,6 @@ object, return a list of Net::Google::Code::Attachment objects.
 =item url
 
 =item id
-
-=item load
 
 =item content
 
