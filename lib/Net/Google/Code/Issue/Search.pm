@@ -28,14 +28,14 @@ subtype 'Can' => as 'Int' => where {
 subtype 'CanStr' => as 'Str' => where { $CAN{$_} };
 coerce 'Can' => from 'CanStr' => via { $CAN{$_} };
 
-has '_can' => (
+has 'can' => (
     is      => 'rw',
     isa     => 'Can',
     coerce  => 1,
     default => 2,
 );
 
-has '_q' => (
+has 'q' => (
     isa     => 'Str',
     is      => 'rw',
     default => '',
@@ -79,7 +79,7 @@ sub search {
     my $self = shift;
     if ( scalar @_ ) {
         my %args = @_;
-        for my $attr (qw/_can _q limit sort columns/) {
+        for my $attr (qw/can q limit sort columns/) {
             $self->$attr( $args{$attr} )       if defined $args{$attr};
         }
         $self->load_after_search( $args{load_after_search} )
@@ -89,9 +89,9 @@ sub search {
     my $mech = $self->mech;
     $self->fetch( $self->base_url
             . 'issues/list'
-            . '?can=' . $self->_can
+            . '?can=' . $self->can
             . ';sort=' .$self->sort 
-            . ';q=' .   $self->_q 
+            . ';q=' .   $self->q 
             . ';colspec=' . join( '+', @{$self->columns} )
             );
     die "Server threw an error " . $mech->response->status_line . 'when search'
@@ -146,13 +146,13 @@ Net::Google::Code::Issue::Search - Issues Search API
 
 =over 4
 
-=item search ( _can => 'all', _q = 'foo', sort => '-modified' )
+=item search ( can => 'all', q = 'foo', sort => '-modified' )
 
-search with values $self->_can and $self->_q if without arguments.
-if there're arguments for _can or _q, this call will set $self->_can or
-$self_q, then do the search.
+search with values $self->can and $self->q if without arguments.
+if there're arguments, this call will set correspoding attributes or, then do the search.
 
-If a "sort" argument is specified, that will be passed to google code's issue list. Generally, these are composed of "+" or "-" followed by a column name.
+If a "sort" argument is specified, that will be passed to google code's issue list.
+Generally, these are composed of "+" or "-" followed by a column name.
 
 return true if search is successful, false on the other hand.
 
