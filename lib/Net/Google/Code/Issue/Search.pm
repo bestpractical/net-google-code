@@ -9,50 +9,17 @@ with  'Net::Google::Code::Role::HTMLTree';
 use Net::Google::Code::Issue;
 use Encode;
 
-has 'project' => (
-    isa      => 'Str',
-    is       => 'rw',
-);
-
-our %CAN = (
+our %CAN_MAP = (
     'all'    => 1,
     'open'   => 2,
     'new'    => 6,
     'verify' => 7,
 );
 
-subtype 'Can' => as 'Int' => where {
-    my $v = $_;
-    grep { $_ eq $v } values %CAN;
-};
-subtype 'CanStr' => as 'Str' => where { $CAN{$_} };
-coerce 'Can' => from 'CanStr' => via { $CAN{$_} };
 
-has 'can' => (
-    is      => 'rw',
-    isa     => 'Can',
-    coerce  => 1,
-    default => 2,
-);
-
-has 'q' => (
-    isa     => 'Str',
-    is      => 'rw',
-    default => '',
-);
-
-
-has 'sort' => (
-    isa => 'Str',
-    is => 'rw',
-    default => ''
-);
-
-has 'colspec' => (
-    isa     => 'Str',
-    is      => 'rw',
-    lazy    => 1,
-    default => 'ID+Type+Status+Priority+Milestone+Owner+Summary+Modified',
+has 'project' => (
+    isa      => 'Str',
+    is       => 'rw',
 );
 
 has 'results' => (
@@ -75,20 +42,22 @@ has 'load_after_search' => (
 
 sub search {
     my $self = shift;
-    if ( scalar @_ ) {
-        my %args = @_;
-        for my $attr (qw/can q limit sort colspec/) {
-            $self->$attr( $args{$attr} )       if defined $args{$attr};
-        }
-        $self->load_after_search( $args{load_after_search} )
-          if defined $args{load_after_search};
+    my %args = (
+        limit             => $self->limit,
+        load_after_search => $self->load_after_search,
+        can               => 2,
+        @_
+    );
+
+    if ( $args{can} !~ /^\d$/ ) {
+        $args{can} = $CAN_MAP{ $args{can} };
     }
 
     my $mech = $self->mech;
     my $url = $self->base_url . 'issues/list?';
-    for my $attr ( qw/can q sort colspec/ ) {
-        next unless defined $self->$attr;
-        $url .= $attr . '=' . $self->$attr . ';';
+    for my $type (qw/can q sort colspec/) {
+        next unless defined $args{$type};
+        $url .= $type . '=' . $args{$type} . ';';
     }
     $self->fetch( $url );
 
@@ -109,7 +78,7 @@ sub search {
 
         # get a ticket list
         my @rows =
-          $self->rows( html => $content, limit => $self->limit );
+          $self->rows( html => $content, limit => $args{limit} );
         my @issues;
         for my $row (@rows) {
             my $issue = Net::Google::Code::Issue->new(
@@ -146,8 +115,8 @@ Net::Google::Code::Issue::Search - Issues Search API
 
 =item search ( can => 'all', q = 'foo', sort => '-modified' )
 
-search with values $self->can and $self->q if without arguments.
-if there're arguments, this call will set correspoding attributes or, then do the search.
+do the search, the results is set to $self->results,
+  which is an arrayref with Net::Google::Code::Issue as element.
 
 If a "sort" argument is specified, that will be passed to google code's issue list.
 Generally, these are composed of "+" or "-" followed by a column name.
