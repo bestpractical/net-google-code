@@ -75,11 +75,34 @@ sub rows {
             label_column => $label_column,
           );
         my $found_number = scalar @all_rows;
+        my $max_discarded = 0;
 
-        push @rows, grep {
-            my $epoch = UnixDate( $_->{modified}, '%o' );
-            ( $epoch && $args{updated_after} && $epoch < $args{updated_after} ) ? 0 : 1;
-          } @all_rows;
+        my $filter = sub {
+            return 1 unless $args{updated_after};
+
+            my $row = shift;
+
+            if ( $row->{modified} ) {
+                my $epoch = UnixDate( $row->{modified}, '%o' );
+                if ( $epoch < $args{updated_after} ) {
+                    $max_discarded = $row->{id} if $max_discarded < $row->{id};
+                    return;
+                }
+                else {
+                    return 1;
+                }
+            }
+            elsif ( $row->{id} < $max_discarded ) {
+   # no modified, means there is no comment, the updated date is the created
+   # since the id is less than the max discarded id, it's safe to discard it too
+                return;
+            }
+            else {
+                return 1;
+            }
+        };
+
+        push @rows, grep { $filter->($_) } @all_rows;
 
         $total = $args{limit} if $args{limit} < $total;
         while ( $found_number < $total ) {
@@ -93,12 +116,7 @@ sub rows {
                     );
                     $found_number += @all_rows;
 
-                    push @rows, grep {
-                        my $epoch = UnixDate( $_->{modified}, '%o' );
-                        (        $epoch
-                              && $args{updated_after}
-                              && $epoch < $args{updated_after} ) ? 0 : 1;
-                    } @all_rows;
+                    push @rows, grep { $filter->($_) } @all_rows;
                 }
                 else {
                     die "failed to follow 'Next' link";

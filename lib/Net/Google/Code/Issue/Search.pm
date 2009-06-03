@@ -45,8 +45,11 @@ sub search {
         $args{can} = $CAN_MAP{ $args{can} };
     }
 
+    my $user_sort;
     if ( $args{updated_after} ) {
         $args{colspec} .= '+Modified' unless $args{colspec} =~ /Modified/;
+        $user_sort = $args{sort};
+        $args{sort} = '-id'; # to sort by id reversely
 
         # convert updated_after to epoch
         if ( ref $args{updated_after} ) {
@@ -92,6 +95,17 @@ sub search {
             limit         => $args{limit},
             updated_after => $args{updated_after},
         );
+        if ( $user_sort && $user_sort =~ /(-)?(\w+)/ ) {
+            my $reverse = $1 ? 1 : 0;
+            my $col = $2;
+            @rows = sort {
+# if id is not the sort col, we use id as secondary sort col.
+# in this case, no matter the main order, we always sort the id ascendingly
+                $reverse
+                  ? ( $b->{$col} <=> $a->{$col} || $a->{id} <=> $b->{id} )
+                  : ( $a->{$col} <=> $b->{$col} || $a->{id} <=> $b->{id} )
+            } @rows;
+        }
 
         my @issues;
         for my $row (@rows) {
