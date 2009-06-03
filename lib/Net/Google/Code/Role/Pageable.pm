@@ -52,6 +52,7 @@ sub rows {
     my @rows;
 
     my $pagination = $tree->look_down( class => 'pagination' );
+    return unless $pagination;
     if ( my ( $start, $end, $total ) =
         $pagination->as_text =~ /(\d+)\s+-\s+(\d+)\s+of\s+(\d+)/ )
     {
