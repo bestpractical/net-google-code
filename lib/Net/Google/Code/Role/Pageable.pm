@@ -5,10 +5,6 @@ use WWW::Mechanize;
 with 'Net::Google::Code::Role::Fetchable';
 with 'Net::Google::Code::Role::HTMLTree';
 use Scalar::Util qw/blessed/;
-use Date::Manip;
-use DateTime;
-local $ENV{TZ} = 'GMT';
-
 
 sub rows {
     my $self = shift;
@@ -20,18 +16,12 @@ sub rows {
                 type     => SCALAR | UNDEF,
                 optional => 1,
             },
-            modified_after => {
-                type => SCALAR | OBJECT | UNDEF,
-                optional => 1,
-            },
         }
     );
 
     $args{limit} ||= 999_999_999; # the impossible huge limit
     my $tree = $args{html};
     $tree = $self->html_tree( html => $tree ) unless blessed $tree;
-
-    my $modified_after = $args{modified_after};
 
     # assuming there's at most 20 columns
     my @titles;
@@ -66,20 +56,8 @@ sub rows {
     return unless $pagination;
 
     if ( $pagination->as_text =~ /\d+\s+-\s+\d+\s+of\s+\d+/ ) {
-        my $filter = sub {
-            return 1 unless $args{modified_after};
-            my $row = shift;
-            if ( $row->{modified} ) {
-                my $epoch = UnixDate( $row->{modified}, '%o' );
-                if ( $epoch >= $args{modified_after} ) {
-                    return 1;
-                }
-            }
-            return;
-        };
-
         # all the rows in a page
-        push @rows, grep { $filter->($_) } $self->_rows(
+        push @rows, $self->_rows(
             html         => $tree,
             titles       => \@titles,
             label_column => $label_column,
@@ -90,7 +68,7 @@ sub rows {
             if ($next_link) {
                 $self->mech->get( $next_link->url );
                 if ( $self->mech->response->is_success ) {
-                    push @rows, grep { $filter->($_) } $self->_rows(
+                    push @rows, $self->_rows(
                         html         => $self->mech->content,
                         titles       => \@titles,
                         label_column => $label_column,
