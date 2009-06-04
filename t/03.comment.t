@@ -31,7 +31,7 @@ $comment->parse( $tree );
 my %info = (
     sequence => 18,
     author   => 'jsykari',
-    date     => '2008-09-03T04:44:39',
+    date     => '2008-09-03T11:44:39',
     content  => "haha\n",
 );
 
