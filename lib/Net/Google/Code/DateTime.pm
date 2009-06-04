@@ -23,19 +23,37 @@ sub new_from_string {
     if (
         $base_date =~ /\w{3}\s+(\w+)\s+(\d+)\s+(\d\d):(\d\d):(\d\d)\s+(\d{4})/ )
     {
+        # Tue Jan  6 19:17:39 2009
         my $mon = $1;
         my $dom = $2;
         my $h   = $3;
         my $m   = $4;
         my $s   = $5;
         my $y   = $6;
-        return   $class->new(
+        my $date = $class->new(
             year   => $y,
             month  => $MONMAP{$mon},
             day    => $dom,
             hour   => $h,
             minute => $m,
-            second => $s
+            second => $s,
+            time_zone => '-0700', # google's time zone
+        );
+        $date->set_time_zone( 'UTC' );
+        return $date;
+    }
+    elsif ( $base_date =~ /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z/ )
+    {
+
+        #    2009-06-01T13:00:10Z
+        return $class->new(
+            year      => $1,
+            month     => $2,
+            day       => $3,
+            hour      => $4,
+            minute    => $5,
+            second    => $6,
+            time_zone => 'UTC',
         );
     }
 }
