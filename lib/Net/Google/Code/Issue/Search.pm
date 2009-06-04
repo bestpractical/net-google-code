@@ -35,9 +35,9 @@ sub updated_after {
 
     my @results;
 
-    require XML::Feed;
+    require XML::Atom::Feed;
     my $content = $self->fetch( $self->base_feeds_url . 'issueupdates/basic' );
-    my $feed    = XML::Feed->parse( \$content ) or die XML::Feed->errstr;
+    my $feed    = XML::Atom::Feed->new( \$content ) or die 'parse feeds failed';
     my @entries = $feed->entries;
     if (@entries) {
         my $min_updated =

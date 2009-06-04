@@ -16,7 +16,7 @@ requires 'DateTime';
 requires 'MIME::Types';
 requires 'File::MMagic';
 requires 'JSON';
-requires 'XML::Feed';
+requires 'XML::Atom';
 
 recursive_author_tests('xt/');
 
