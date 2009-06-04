@@ -42,14 +42,14 @@ sub updated_after {
     if (@entries) {
         my $min_updated =
           Net::Google::Code::DateTime->new_from_string( $entries[-1]->updated );
-        if ( $min_updated <= $after ) {
+        if ( $min_updated < $after ) {
 
             # yeah! we can get all the results by parsing the feed
             my %seen;
             for my $entry (@entries) {
                 my $updated = Net::Google::Code::DateTime->new_from_string(
                     $entry->updated );
-                next unless $updated > $after;
+                next unless $updated >= $after;
                 if ( $entry->title =~ /issue\s+(\d+)/i ) {
                     next if $seen{$1}++;
                     push @results,
