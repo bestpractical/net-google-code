@@ -28,6 +28,49 @@ has 'results' => (
     default => sub { [] },
 );
 
+sub updated_after {
+    my $self  = shift;
+    validate_pos(@_, { isa => 'DateTime' } );
+    my $after = shift;
+
+    my @results;
+
+    require XML::Feed;
+    my $content = $self->fetch( $self->base_feeds_url . 'issueupdates/basic' );
+    my $feed    = XML::Feed->parse( \$content ) or die XML::Feed->errstr;
+    my @entries = $feed->entries;
+    if (@entries) {
+        my $min_updated =
+          Net::Google::Code::DateTime->new_from_string( $entries[-1]->updated );
+        if ( $min_updated <= $after ) {
+
+            # yeah! we can get all the results by parsing the feed
+            my %seen;
+            for my $entry (@entries) {
+                my $updated = Net::Google::Code::DateTime->new_from_string(
+                    $entry->updated );
+                next unless $updated > $after;
+                if ( $entry->title =~ /issue\s+(\d+)/i ) {
+                    next if $seen{$1}++;
+                    push @results,
+                      Net::Google::Code::Issue->new(
+                        project => $self->project,
+                        id      => $1,
+                      );
+                }
+            }
+            $_->load for @results;
+            return $self->results( \@results );
+        }
+    }
+
+    # now we have to find issues by search
+    if ( $self->search( load_after_search => 1, can => 'all', q => '' ) ) {
+        my $results = $self->results;
+        @$results = grep { $_->updated >= $after } @$results;
+    }
+}
+
 sub search {
     my $self = shift;
     my %args = (
@@ -125,6 +168,13 @@ load_after_search => Bool is to state if we should call $issue->load after
 search
 
 return true if search is successful, false on the other hand.
+
+=item updated_after( date_string || DateTime object )
+
+find all the issues that have been updated or created after the date.
+the issues are all loaded.
+
+return true if success, false on the other hand
 
 =item project
 
