@@ -30,9 +30,8 @@ has 'results' => (
 
 sub updated_after {
     my $self  = shift;
-    validate_pos(@_, { isa => 'DateTime' } );
-    my $after = shift;
-
+    my ($after) = validate_pos(@_, { isa => 'DateTime' } );
+    
     my @results;
 
     require XML::Atom::Feed;
