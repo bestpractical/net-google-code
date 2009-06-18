@@ -1,5 +1,14 @@
 Revision history for Net-Google-Code
 
+0.12 Thu Jun 18 12:06:52 CST 2009
+
+* refactor Issue::Search, added updated_after method for Issue::Search
+* added Predefined and Atom roles
+* switched from Moose to Any::Moose
+* converted DateTime from a role into a class
+* switched mech to be a single shared global and turn on the connection cache
+* removed the never used PropChange.pm
+
 0.11 Wed May 27 11:38:06 CST 2009
 
 bug fix version
