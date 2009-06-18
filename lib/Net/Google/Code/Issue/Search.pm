@@ -6,6 +6,7 @@ with 'Net::Google::Code::Role::URL';
 with 'Net::Google::Code::Role::Fetchable';
 with 'Net::Google::Code::Role::Pageable';
 with  'Net::Google::Code::Role::HTMLTree';
+with  'Net::Google::Code::Role::Atom';
 use Net::Google::Code::Issue;
 use Encode;
 
@@ -34,22 +35,20 @@ sub updated_after {
     
     my @results;
 
-    require XML::Atom::Feed;
     my $content = $self->fetch( $self->base_feeds_url . 'issueupdates/basic' );
-    my $feed    = XML::Atom::Feed->new( \$content ) or die 'parse feeds failed';
-    my @entries = $feed->entries;
-    if (@entries) {
+    my ( $feed, $entries ) = $self->parse_atom( $content );
+    if (@$entries) {
         my $min_updated =
-          Net::Google::Code::DateTime->new_from_string( $entries[-1]->updated );
+          Net::Google::Code::DateTime->new_from_string( $entries->[-1]->{updated} );
         if ( $min_updated < $after ) {
 
             # yeah! we can get all the results by parsing the feed
             my %seen;
-            for my $entry (@entries) {
+            for my $entry (@$entries) {
                 my $updated = Net::Google::Code::DateTime->new_from_string(
-                    $entry->updated );
+                    $entry->{updated} );
                 next unless $updated >= $after;
-                if ( $entry->title =~ /issue\s+(\d+)/i ) {
+                if ( $entry->{title} =~ /issue\s+(\d+)/i ) {
                     next if $seen{$1}++;
                     push @results,
                       Net::Google::Code::Issue->new(
