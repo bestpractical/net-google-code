@@ -1,9 +1,16 @@
-package Net::Google::Code::Role::Atom;
-use Any::Moose 'Role';
+package Net::Google::Code::AtomParser;
+use strict;
+use warnings;
+
 use Params::Validate ':all';
 use HTML::Entities;
 
-sub parse_atom {
+sub new {
+    my $class = shift;
+    bless \(my $a), $class;
+}
+
+sub parse {
     my $self = shift;
     my ($content) = validate_pos( @_, 1 );
 
@@ -30,23 +37,21 @@ sub parse_atom {
     return ( $feed, $entries );
 }
 
-no Any::Moose;
 1;
 
 __END__
 
 =head1 NAME
 
-Net::Google::Code::Role::Atom - Atom Role
-
+Net::Google::Code::AtomParser - AtomParser with a parsing method for gcode
 
 =head1 DESCRIPTION
 
 =head1 INTERFACE
 
-=over 4
+=head2 new
 
-=item parse_atom( $xml_content )
+=head2 parse( $xml_content )
 
 return( $feed, $entries ),
 $feed is a hashref like
@@ -80,17 +85,16 @@ $entries is an arrayref like
     },
 ]
 
-=back
-
 =head1 AUTHOR
 
 sunnavy  C<< <sunnavy@bestpractical.com> >>
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright 2009 Best Practical Solutions.
+Copyright 2008-2009 Best Practical Solutions.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
+
 
 
