@@ -32,7 +32,7 @@ sub fetch {
         my $content = $self->mech->content;
         # auto decode the content to erase HTML::Parser's utf8 warning like this:
         # Parsing of undecoded UTF-8 will give garbage when decoding entities
-        eval { $content = decode( 'utf8', $content, Encode::FB_QUIET) };
+        utf8::downgrade( $content, 1 );
         return $content;
     }
 }
