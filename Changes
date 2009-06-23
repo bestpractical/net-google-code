@@ -1,5 +1,10 @@
 Revision history for Net-Google-Code
 
+0.13 Tue Jun 23 09:46:17 CST 2009
+
+* Atom role => AtomParser class
+* decode utf8 more conservatively
+
 0.12 Thu Jun 18 12:06:52 CST 2009
 
 * refactor Issue::Search, added updated_after method for Issue::Search

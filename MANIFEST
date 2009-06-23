@@ -13,13 +13,13 @@ inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/Net/Google/Code.pm
+lib/Net/Google/Code/AtomParser.pm
 lib/Net/Google/Code/DateTime.pm
 lib/Net/Google/Code/Download.pm
 lib/Net/Google/Code/Issue.pm
 lib/Net/Google/Code/Issue/Attachment.pm
 lib/Net/Google/Code/Issue/Comment.pm
 lib/Net/Google/Code/Issue/Search.pm
-lib/Net/Google/Code/Role/Atom.pm
 lib/Net/Google/Code/Role/Authentication.pm
 lib/Net/Google/Code/Role/Fetchable.pm
 lib/Net/Google/Code/Role/HTMLTree.pm
@@ -38,6 +38,7 @@ t/02.issue.t
 t/03.comment.t
 t/04.attachment.t
 t/05.issue_search.t
+t/06.fetch.t
 t/10.downloads.t
 t/11.wiki.t
 t/20.code.t
@@ -46,6 +47,7 @@ t/sample/02.issue.html
 t/sample/02.issue_without_attachments.html
 t/sample/05.issue_search.html
 t/sample/05.issue_search.xml
+t/sample/06.fetch.html
 t/sample/10.download.html
 t/sample/11.TestPage.html
 t/sample/11.TestPage.wiki
