@@ -10,8 +10,8 @@ use Test::MockModule;
 use FindBin qw/$Bin/;
 use File::Slurp;
 
-use Encode;
-my $content = decode( 'utf8', read_file( "$Bin/sample/02.issue.html" ));
+my $content = read_file( "$Bin/sample/02.issue.html" );
+utf8::downgrade( $content, 1 );
 
 my $mock = Test::MockModule->new('Net::Google::Code::Issue');
 $mock->mock(
@@ -96,8 +96,8 @@ is( $issue->attachments->[0]->size, '11.7 KB', 'size of the 1st attachment' );
 is( $issue->updated, '2008-12-20T00:59:29', 'updated' );
 
 
-$content =
-  decode( 'utf8', read_file("$Bin/sample/02.issue_without_attachments.html") );
+$content = read_file("$Bin/sample/02.issue_without_attachments.html");
+utf8::downgrade( $content, 1 );
 $issue->load(14);
 is( $issue->updated, '2008-12-20T00:59:29', 'updated' );
 is_deeply( $issue->attachments, [], 'no attachments are extracted' );

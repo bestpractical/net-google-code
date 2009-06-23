@@ -2,7 +2,6 @@ package Net::Google::Code::Role::Fetchable;
 use Any::Moose 'Role';
 use Params::Validate ':all';
 use WWW::Mechanize;
-use Encode;
 
 our $MECH;
 

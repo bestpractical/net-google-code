@@ -7,7 +7,6 @@ with 'Net::Google::Code::Role::Fetchable';
 with 'Net::Google::Code::Role::Pageable';
 with  'Net::Google::Code::Role::HTMLTree';
 use Net::Google::Code::Issue;
-use Encode;
 
 our %CAN_MAP = (
     'all'    => 1,
@@ -97,7 +96,8 @@ sub search {
     die "Server threw an error " . $mech->response->status_line . 'when search'
       unless $mech->response->is_success;
 
-    my $content = decode( 'utf8', $mech->response->content );
+    my $content = $mech->response->content;
+    utf8::downgrade( $content, 1 );
 
     if ( $mech->title =~ /issue\s+(\d+)/i ) {
 
