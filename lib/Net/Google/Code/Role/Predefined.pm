@@ -22,28 +22,47 @@ sub load_predefined {
     my $last_name;
     $last_name = lc $1 if $class =~ /::(\w+)$/;
 
-    my $js = $self->fetch( $self->base_url . "feeds/${last_name}Options" );
-    return unless $js;
+    $self->sign_in;
+    my $base_url = $self->base_url;
+    my $content = $self->fetch($self->base_url);
+    if ( $content =~ /codesite_token\s*=\s*"(\w+)"/ ) {
+        my $token = $1;
+        my $mech = $self->mech;
+# I tried to use $mech->post( $url, token => $token )
+# but without luck :(
+        $mech->update_html(<<"EOF");
+<form action="${base_url}feeds/${last_name}OptionsJSON"
+method="POST" >
+<input type="text" name="token" value="$token" />
+<input type="submit" value="submit" />
+</form>
+EOF
+        $mech->submit_form( form_number => 1 );
+        die "failed to post to OptionsJSON page" unless $mech->success;
 
-    # we need to convert js to valid json that JSON can parse
-    $js =~ s/'/"/g;
-    $js =~ s/\b(\w+):/"$1":/g;
-    my $object = from_json $js;
-    return unless $object;
+        my $js     = $mech->content;
+        my $object = from_json $js;
+        return unless $object;
 
-    $self->predefined_status( { open => [], closed => [] } );
-    for my $type (qw/open closed/) {
-        for ( @{ $object->{$type} } ) {
-            push @{ $self->predefined_status->{$type} }, $_->{name};
+        $self->predefined_status( { open => [], closed => [] } );
+        for my $type (qw/open closed/) {
+            for ( @{ $object->{$type} } ) {
+                push @{ $self->predefined_status->{$type} }, $_->{name};
+            }
         }
+
+        $self->predefined_labels( [] );
+        for ( @{ $object->{labels} } ) {
+            push @{ $self->predefined_labels }, $_->{name};
+        }
+
+        return 1;
+    }
+    else {
+        warn "can't get user token";
+        return;
     }
 
-    $self->predefined_labels( [] );
-    for ( @{ $object->{labels} } ) {
-        push @{ $self->predefined_labels }, $_->{name};
-    }
-
-    return 1;
 }
 
 1;
