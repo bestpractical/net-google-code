@@ -22,7 +22,7 @@ sub load_predefined {
     my $last_name;
     $last_name = lc $1 if $class =~ /::(\w+)$/;
 
-    $self->sign_in;
+    return unless $self->signed_in;
     my $base_url = $self->base_url;
     my $content = $self->fetch($self->base_url);
     if ( $content =~ /codesite_token\s*=\s*"(\w+)"/ ) {
