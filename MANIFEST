@@ -18,8 +18,10 @@ lib/Net/Google/Code/DateTime.pm
 lib/Net/Google/Code/Download.pm
 lib/Net/Google/Code/Issue.pm
 lib/Net/Google/Code/Issue/Attachment.pm
+lib/Net/Google/Code/Issue/Base.pm
 lib/Net/Google/Code/Issue/Comment.pm
 lib/Net/Google/Code/Issue/Search.pm
+lib/Net/Google/Code/Issue/Util.pm
 lib/Net/Google/Code/Role/Authentication.pm
 lib/Net/Google/Code/Role/Fetchable.pm
 lib/Net/Google/Code/Role/HTMLTree.pm

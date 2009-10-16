@@ -212,31 +212,31 @@ Net::Google::Code - a simple client library for google code
 
 =head1 DESCRIPTION
 
-Net::Google::Code is a simple client library for projects hosted in Google Code.
+Net::Google::Code is a simple client library for projects hosted in
+Google Code.
 
-=head1 INTERFACE
+Since 0.15, Net::Google::Code offers google's official issues api support.
+Besides the new C<Net::Google::Code::Issue::list>,
+C<Net::Google::Code::Issue::Comment::list> and
+<Net::Googlel::Code::Issue::load_comments> methods, which use the api from
+start, you can set C<$Net::Google::Code::Issue::USE_HYBRID> to true to load,
+create and update issue with the api too. 
+
+But the official api is not function complete yet( e.g. no attachment
+support, can't merge, etc. ), Net::Google::Code will back to the scraping
+way to accomplish those stuff.
+
+=head1 ATTRIBUTES
 
 =over 4
-
-=item load
-
-load project's home page, and parse its metadata
-
-=item parse
-
-acturally do the parse job, for load();
-
-=item load_downloads
-
-load all the downloads, and store them as an arrayref in $self->downloads
-
-=item load_wikis
-
-load all the wikis, and store them as an arrayref in $self->wikis
 
 =item project
 
 the project name
+
+=item email, password
+
+user's email and password, used to authenticate
 
 =item base_url
 
@@ -260,6 +260,28 @@ the project feeds url
 
 =item members
 
+=back
+
+=head1 INTERFACE
+
+=over 4
+
+=item load
+
+load project's home page, and parse its metadata
+
+=item parse
+
+acturally do the parse job, for load();
+
+=item load_downloads
+
+load all the downloads, and store them as an arrayref in $self->downloads
+
+=item load_wikis
+
+load all the wikis, and store them as an arrayref in $self->wikis
+
 =item issue
 
 return a new L<Net::Google::Code::Issue> object, arguments will be passed to
@@ -280,6 +302,8 @@ L<Net::Google::Code::Wiki>'s new method.
 =head1 DEPENDENCIES
 
 L<Any::Moose>, L<HTML::TreeBuilder>, L<WWW::Mechanize>, L<Params::Validate>
+L<XML::FeedPP>, L<DateTime>, L<JSON>, L<URI::Escape>, L<MIME::Types>,
+L<File::MMagic>
 
 =head1 INCOMPATIBILITIES
 
