@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 34;
+use Test::More tests => 33;
 use Test::Mock::LWP;
 use DateTime;
 
@@ -28,7 +28,7 @@ for my $attr (@attrs) {
     can_ok( $issue, $attr );
 }
 
-for my $method (qw/create update updated load load_from_xml list load_comments/) {
+for my $method (qw/create update updated load list load_comments/) {
     can_ok( $issue, $method );
 }
 

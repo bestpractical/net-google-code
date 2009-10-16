@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 21;
+use Test::More tests => 20;
 
 use Test::Mock::LWP;
 $LWP::UserAgent::VERSION = '6';
@@ -25,7 +25,7 @@ for my $attr (@attrs) {
     can_ok( $comment, $attr );
 }
 
-for my $method (qw/load_from_xml list/) {
+for my $method (qw/list/) {
     can_ok( $comment, $method );
 }
 $Mock_ua->mock( get            => sub { $Mock_response } );
@@ -44,7 +44,7 @@ is( $list[0]->sequence, 1, '1st comment id' );
 is( $list[1]->sequence, 2, '2nd comment id' );
 my %hash = (
     'author'   => 'sunnavy',
-    'updates'  => { 'labels' => '-Priority-Medium' },
+    'updates'  => { 'labels' => ['-Priority-Medium'] },
     'sequence' => '1',
     'date'     => '2009-05-12T09:29:18',
 );

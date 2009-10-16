@@ -31,13 +31,13 @@ sub new_from_string {
         my $s   = $5;
         my $y   = $6;
         my $date = $class->new(
-            year   => $y,
-            month  => $MONMAP{$mon},
-            day    => $dom,
-            hour   => $h,
-            minute => $m,
-            second => $s,
-            time_zone => '-0700', # google's time zone
+            year      => $y,
+            month     => $MONMAP{$mon},
+            day       => $dom,
+            hour      => $h,
+            minute    => $m,
+            second    => $s,
+            time_zone => 'America/Los_Angeles',    # google's time zone
         );
         $date->set_time_zone( 'UTC' );
         return $date;

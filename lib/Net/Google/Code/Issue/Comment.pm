@@ -6,6 +6,7 @@ use Net::Google::Code::DateTime;
 with 'Net::Google::Code::Role::HTMLTree';
 extends 'Net::Google::Code::Issue::Base';
 with 'Net::Google::Code::Role::Authentication';
+use Params::Validate ':all';
 
 use XML::FeedPP;
 
@@ -145,8 +146,20 @@ sub _load_from_xml {
 
 sub list {
     my $self = shift;
-    my %args = @_;
-    my $url = $self->feeds_issues_url . '/' . $self->issue_id . '/comments/full';
+    validate( @_, { max_results => { optional => 1, type => SCALAR }, } );
+
+    my %args = ( max_results => 1_000_000_000, @_ );
+
+    my $url = $self->feeds_issues_url . '/' . $self->issue_id .
+        '/comments/full?';
+    require URI::Escape;
+    for my $k ( keys %args ) {
+        next unless $args{$k};
+        my $v = $args{$k};
+        $k =~ s/_/-/g;
+        $url .= "$k=" . URI::Escape::uri_escape($v) . '&';
+    }
+
     my $ua  = $self->ua;
     my $res = $ua->get($url);
     if ( $res->is_success ) {

@@ -90,8 +90,15 @@ sub load {
       unless $id;
 
     if ($USE_HYBRID) {
-        my ($issue) = $self->list( id => $id );
-        %$self = %$issue;
+        unless ( $self->{loaded_way}
+            && $self->{loaded_way} eq 'api'
+            && $id == $self->id )
+        {
+            my ($issue) = $self->list( id => $id );
+            %$self = %$issue;
+        }
+        $self->{loaded_way} = 'hybrid';
+
         $self->load_comments;
 
         # here we do scraping to get stuff not can be seen from feeds
@@ -103,6 +110,7 @@ sub load {
         my $content =
           $self->fetch( $self->base_url . "issues/detail?id=" . $id );
         $self->id( $id );
+        $self->{loaded_way} = 'scraping';
         return $self->parse($content);
     }
 }
@@ -299,12 +307,12 @@ sub parse_hybrid {
 
     # extract comments
     my @comments_tag = $tree->look_down( class => 'vt issuecomment' );
-    my @comments;
+    ( undef, my @comments ) = @{$self->comments};
     my $number = 1; # 0 is for initial comment
     for my $tag (@comments_tag) {
         next unless $tag->look_down( class => 'author' );
         my $comment = $self->comments->[$number++];
-        $comment->parse($tag);
+        $comment->parse_hybrid($tag);
     }
 
     my $initial_comment = Net::Google::Code::Issue::Comment->new(
@@ -600,8 +608,9 @@ sub list {
         my @items = $feed->get_item;
         my @list = map {
             my $t = Net::Google::Code::Issue->new(
+                loaded_way => 'api',
                 map { $_ => $self->$_ }
-                grep { $self->$_ } qw/project email password token/
+                  grep { $self->$_ } qw/project email password token/
             );
             $t->_load_from_xml($_);
         } @items;

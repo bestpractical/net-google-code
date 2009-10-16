@@ -2,6 +2,8 @@ use strict;
 use warnings;
 
 package Net::Google::Code::Issue::Util;
+use Net::Google::Code::Role::HTMLTree;
+
 use DateTime;
 use XML::TreePP;
 my $tpp = XML::TreePP->new;
@@ -50,12 +52,17 @@ sub translate_from_xml {
             }
         }
         elsif ( $k eq 'content' ) {
+            my $tree =
+              Net::Google::Code::Role::HTMLTree->html_tree(
+                html => $ref->{$k}->{'#text'} );
+            my $text = $tree->as_text;
+            $text =~ s/\s+$// if $text;
             if ( $args{type} eq 'issue' ) {
-                $ref->{description} = $ref->{$k}->{'#text'};
+                $ref->{description} = $text;
                 delete $ref->{$k};
             }
             elsif ( $args{type} eq 'comment' ) {
-                $ref->{content} = $ref->{$k}->{'#text'};
+                $ref->{content} = $text;
             }
         }
         elsif ( $k eq 'published' ) {
@@ -95,6 +102,9 @@ sub translate_from_xml {
                 $k .= 's' if $k eq 'label';
                 $k =~ s/Update$//;
                 $tmp->{$k} = $v;
+            }
+            if ( exists $tmp->{labels} && !ref $tmp->{labels} ) {
+                $tmp->{labels} = [ $tmp->{labels} ];
             }
             $ref->{$k} = $tmp;
         }
