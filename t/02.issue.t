@@ -93,11 +93,11 @@ is( $issue->comments->[2]->sequence, 4, 'sequence of comment 2 is 4' );
 is( scalar @{ $issue->attachments }, 3, 'attachments are extracted' );
 is( $issue->attachments->[0]->size, '11.7 KB', 'size of the 1st attachment' );
 
-is( $issue->updated, '2008-12-20T00:59:29', 'updated' );
+is( $issue->updated, '2008-12-20T01:59:29', 'updated' );
 
 
 $content = read_file("$Bin/sample/02.issue_without_attachments.html");
 utf8::downgrade( $content, 1 );
 $issue->load(14);
-is( $issue->updated, '2008-12-20T00:59:29', 'updated' );
+is( $issue->updated, '2008-12-20T01:59:29', 'updated' );
 is_deeply( $issue->attachments, [], 'no attachments are extracted' );
