@@ -39,7 +39,7 @@ sub parse {
     $self->date(Net::Google::Code::DateTime->new_from_string( $element->look_down( class => 'date' )->attr('title') ));
     my $content = $element->find_by_tag_name('pre')->as_text;
     $content =~ s/^\s+//;
-    $content =~ s/\s+$/\n/;
+    $content =~ s/\s+$//;
     $content =~ s/\r\n/\n/g;
     $self->content($content);
 

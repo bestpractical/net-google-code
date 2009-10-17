@@ -134,7 +134,7 @@ sub parse {
 
     my $text = $description->find_by_tag_name('pre')->as_text;
     $text =~ s/^\s+//;
-    $text =~ s/\s+$/\n/;
+    $text =~ s/\s+$//;
     $text =~ s/\r\n/\n/g;
     $self->description( $text );
 
