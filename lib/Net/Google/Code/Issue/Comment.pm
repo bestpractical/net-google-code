@@ -41,7 +41,8 @@ sub parse {
     $content =~ s/^\s+//;
     $content =~ s/\s+$//;
     $content =~ s/\r\n/\n/g;
-    $self->content($content);
+    $self->content($content)
+      unless $content eq '(No comment was entered for this change.)';
 
     my $updates = $element->look_down( class => 'updates' );
     if ($updates) {
