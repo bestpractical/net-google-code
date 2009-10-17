@@ -52,11 +52,19 @@ sub translate_from_xml {
             }
         }
         elsif ( $k eq 'content' ) {
-            my $tree =
-              Net::Google::Code::Role::HTMLTree->html_tree(
-                html => $ref->{$k}->{'#text'} );
-            my $text = $tree->as_text;
+            my $text;
+            if ( $ref->{$k}{-type} eq 'html' ) {
+                my $tree =
+                  Net::Google::Code::Role::HTMLTree->html_tree(
+                    html => '<pre>' . $ref->{$k}->{'#text'} . '</pre>' );
+                $text = $tree->as_text;
+            }
+            else {
+                $text = $ref->{$k}->{'#text'};
+            }
+
             $text =~ s/\s+$// if $text;
+
             if ( $args{type} eq 'issue' ) {
                 $ref->{description} = $text;
                 delete $ref->{$k};
