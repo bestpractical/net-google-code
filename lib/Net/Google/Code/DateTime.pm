@@ -37,7 +37,7 @@ sub new_from_string {
             hour      => $h,
             minute    => $m,
             second    => $s,
-            time_zone => 'America/Los_Angeles',    # google's time zone
+            time_zone => 'US/Pacific',    # google's time zone
         );
         $date->set_time_zone( 'UTC' );
         return $date;
