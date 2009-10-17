@@ -42,6 +42,8 @@ What happens instead?
 Installer simply fails, notifying the user to adjust their firewall settings.
 EOF
 
+$description =~ s/\s+$//;
+
 my %info = (
     id          => 14,
     summary     => 'Proxy settings for installer',

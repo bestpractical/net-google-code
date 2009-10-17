@@ -32,7 +32,7 @@ my %info = (
     sequence => 18,
     author   => 'jsykari',
     date     => '2008-09-03T11:44:39',
-    content  => "haha\n",
+    content  => "haha",
 );
 
 for my $item ( keys %info ) {
