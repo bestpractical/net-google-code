@@ -55,6 +55,11 @@ has 'merged' => (
     is  => 'rw',
 );
 
+has 'stars' => (
+    isa => 'Int',
+    is  => 'rw',
+);
+
 has 'closed' => (
     isa => 'Str',
     is  => 'rw',
@@ -146,6 +151,19 @@ sub parse {
     $self->attachments( \@attachments );
 
     my ($meta) = $tree->look_down( id => 'issuemeta' );
+    {
+
+        # let's find stars
+        my ($header) = $tree->look_down( id => 'issueheader' );
+        if (   $header
+            && $header->as_text =~ /(\d+) \w+ starred this issue/ )
+        {
+# the \w+ is person or people, I don't know if google will change that word
+# some time, so just use \w+
+            $self->stars($1);
+        }
+    }
+
     my @meta = $meta->find_by_tag_name('tr');
     my @labels;
     for my $meta (@meta) {
@@ -664,6 +682,8 @@ user's email and password
 =item reported
 
 =item merged
+
+=item stars
 
 =item closed
 

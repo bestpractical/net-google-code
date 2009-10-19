@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 33;
+use Test::More tests => 35;
 use Test::Mock::LWP;
 use DateTime;
 
@@ -22,7 +22,7 @@ isa_ok( $issue, 'Net::Google::Code::Issue::Base' );
 
 my @attrs =
   qw/ reported id reporter status owner summary description
-  labels cc comments/;
+  labels cc comments stars/;
 
 for my $attr (@attrs) {
     can_ok( $issue, $attr );
@@ -54,6 +54,7 @@ my %hash = (
     'status'      => 'Accepted',
     'summary'     => 'test attachment 8',
     'id'          => '8',
+    'stars'       => 1,
 );
 
 for my $k ( keys %hash ) {

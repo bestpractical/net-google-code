@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 22;
+use Test::More tests => 23;
 use Test::MockModule;
 
 # $content is a real page: http://code.google.com/p/chromium/issues/detail?id=14
@@ -53,6 +53,8 @@ my %info = (
     reporter    => 'seanamonroe',
     status => 'Available',
     closed => undef,
+    merged => undef,
+    stars => 34,
 );
 
 my @labels = (
@@ -60,7 +62,10 @@ my @labels = (
     'intext',   'Mstone-X', 'Foo-Bar-Baz',
 );
 
-for my $item (qw/id summary description owner cc reporter status closed merged/)
+for my $item (
+    qw/id summary description owner cc reporter status closed merged
+    stars/
+  )
 {
     if ( defined $info{$item} ) {
         is( $issue->$item, $info{$item}, "$item is extracted" );
