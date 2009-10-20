@@ -29,7 +29,9 @@ has 'results' => (
 
 sub updated_after {
     my $self  = shift;
-    my ($after) = validate_pos(@_, { isa => 'DateTime' } );
+    my ( $after, $fallback_to_search ) =
+      validate_pos( @_, { isa => 'DateTime' },
+        { optional => 1, default => 1 } );
     
     my @results;
 
@@ -61,6 +63,8 @@ sub updated_after {
             return $self->results( \@results );
         }
     }
+
+    return unless $fallback_to_search;
 
     # now we have to find issues by search
     if ( $self->search( load_after_search => 1, can => 'all', q => '' ) ) {
