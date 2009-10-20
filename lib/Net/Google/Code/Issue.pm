@@ -663,6 +663,8 @@ Net::Google::Code::Issue - Google Code Issue
 
 =head1 ATTRIBUTES
 
+=over 4
+
 =item project
 
 project name
@@ -698,9 +700,6 @@ user's email and password
 =item comments
 
 =item attachments
-
-=over 4
-
 
 =back
 

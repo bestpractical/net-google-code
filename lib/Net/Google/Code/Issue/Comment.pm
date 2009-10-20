@@ -196,6 +196,8 @@ Net::Google::Code::Issue::Comment - Issue's Comment
 
 =head1 ATTRIBUTES
 
+=over 4
+
 =item project
 
 project name
