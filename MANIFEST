@@ -45,6 +45,12 @@ t/10.downloads.t
 t/11.wiki.t
 t/20.code.t
 t/30.role_predefined.t
+t/google_api/01-issue.t
+t/google_api/02-comment.t
+t/google_api/data/comments.xml
+t/google_api/data/issue_8.html
+t/google_api/data/issue_8.xml
+t/google_api/data/issues.xml
 t/sample/02.issue.html
 t/sample/02.issue_without_attachments.html
 t/sample/05.issue_search.html
