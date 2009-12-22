@@ -1,4 +1,6 @@
 use inc::Module::Install;
+use Getopt::Long;
+
 
 name     'Net-Google-Code';
 all_from 'lib/Net/Google/Code.pm';
@@ -23,7 +25,15 @@ requires 'MIME::Types';
 requires 'File::MMagic';
 requires 'JSON';
 
-tests('t/*.t t/*/*.t');
+my $live;
+GetOptions( 'live' => \$live );
+if ($live) {
+    tests('t/*.t t/*/*.t');
+}
+else {
+    tests('t/*.t t/google_api/*.t');
+}
+
 recursive_author_tests('xt/');
 
 auto_install;
