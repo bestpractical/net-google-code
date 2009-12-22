@@ -55,9 +55,10 @@ sub translate_from_xml {
             my $text;
             if ( $ref->{$k}{-type} eq 'html' ) {
                 my $tree =
-                  Net::Google::Code::Role::HTMLTree->html_tree(
-                    html => '<pre>' . $ref->{$k}->{'#text'} . '</pre>' );
-                $text = $tree->as_text;
+                  Net::Google::Code::Role::HTMLTree->html_tree( html => '<pre>'
+                      . ( $ref->{$k}->{'#text'} || '' )
+                      . '</pre>' );
+                $text = $tree->as_text if $tree;
             }
             else {
                 $text = $ref->{$k}->{'#text'};
