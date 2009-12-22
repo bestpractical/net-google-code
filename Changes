@@ -1,5 +1,9 @@
 Revision history for Net-Google-Code
 
+0.16 Tue Dec 22 03:31:43 UTC 2009
+
+* update issue part since google changed attachments snippet
+
 0.15 Tue Oct 20 23:28:15 UTC 2009
 
 * added fallback_to_search arg to updated_after

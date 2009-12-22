@@ -51,8 +51,8 @@ t/google_api/data/comments.xml
 t/google_api/data/issue_8.html
 t/google_api/data/issue_8.xml
 t/google_api/data/issues.xml
+t/live/01.issue.t
 t/sample/02.issue.html
-t/sample/02.issue_without_attachments.html
 t/sample/05.issue_search.html
 t/sample/05.issue_search.xml
 t/sample/06.fetch.html
