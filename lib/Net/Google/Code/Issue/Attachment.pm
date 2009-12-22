@@ -94,6 +94,10 @@ sub parse_attachments {
 
 sub _load {
     my $self    = shift;
+    #XXX weird happens if the previous fetch is also an attachment,
+    # which will make the following fetch a Bad Request.
+    $self->fetch( 'http://code.google.com' );
+
     my $content = $self->fetch( $self->url );
 
     # in case MIME::Types failed to get, let File::MMagic rescue!
