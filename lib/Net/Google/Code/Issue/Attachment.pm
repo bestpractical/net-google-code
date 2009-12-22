@@ -27,20 +27,17 @@ sub parse {
     my $self = shift;
     my $html = shift;
 
-    my ( $tr1, $tr2 );
+    my $tr;
 
     if ( blessed $html ) {
-        ( $tr1, $tr2 ) = $html->find_by_tag_name( 'tr' );
-    }
-    elsif ( ref $html eq 'ARRAY' ) {
-        ( $tr1, $tr2 ) = @$html;
+        $tr = $html->find_by_tag_name( 'tr' );
     }
     else {
         my $tree = $self->html_tree( html => $html );
-        ( $tr1, $tr2 ) = $tree->find_by_tag_name( 'tr' );
+        $tr = $tree->find_by_tag_name( 'tr' );
     }
 
-    my $b    = $tr1->find_by_tag_name('b');    # name lives here
+    my $b    = $tr->find_by_tag_name('b');    # name lives here
     if ($b) {
         my $name = $b->content_array_ref->[0];
         $name =~ s/^\s+//;
@@ -55,16 +52,21 @@ sub parse {
         }
     }
 
-    my $td = $tr2->find_by_tag_name('td');
-    if ($td) {
-        my $size = $td->content_array_ref->[0];
-        $size =~ s/^\s+//;
-        $size =~ s/\s+$//;
-        $self->size($size);
-
-        $self->url( $td->find_by_tag_name('a')->attr('href') );
+    my @tds = $tr->find_by_tag_name('td');
+    if (@tds) {
+        $self->url( $tds[0]->find_by_tag_name('a')->attr('href') );
         if ( $self->url =~ /aid=([-\d]+)/ ) {
             $self->id( $1 );
+        }
+
+        if ( $tds[1] ) {
+            my $size = $tds[1]->content_array_ref->[2];
+            if ( $size && $size =~ /([\d.]+)\s*(\w+)/ ) {
+                $self->size("$1 $2");
+            }
+            else {
+                warn 'failed to parse size' unless $size;
+            }
         }
     }
 
@@ -80,11 +82,10 @@ sub parse_attachments {
 
     my @items = $element->find_by_tag_name('tr');
     while ( scalar @items ) {
-        my $tr1 = shift @items;
-        my $tr2 = shift @items;
+        my $tr = shift @items;
         my $a   = Net::Google::Code::Issue::Attachment->new;
 
-        if ( $a->parse( [ $tr1, $tr2 ] ) ) {
+        if ( $a->parse( $tr ) ) {
             push @attachments, $a;
         }
     }
