@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 8;
+use Test::More tests => 7;
 
 use Test::MockModule;
 use Net::Google::Code::Issue::Attachment;
@@ -18,26 +18,18 @@ my $content;
 my $mock = Test::MockModule->new('Net::Google::Code::Issue::Attachment');
 $mock->mock(
     'fetch',
-    sub { 'png' }
+    sub { 'ok' }
 );
 
-use HTML::TreeBuilder;
-my $tree = HTML::TreeBuilder->new;
-$tree->parse_content($content);
-$tree->elementify;
-
-my @tr = $tree->find_by_tag_name('tr');
-is( scalar @tr, 2, '@tr has 2 elements' );
 $attachment->parse( $content );
 
 my %info = (
-    url =>
-'http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&name=proxy_settings.png',
-    name => 'proxy_settings.png',
-    size => '14.3 KB',
-    id   => '-1323983749556004507',
-    content_type => 'image/png',
-    content => 'png',
+    url =>'http://net-google-code.googlecode.com/issues/attachment?aid=108689494720583752&name=%2Ftmp%2Fa',
+    name => '/tmp/a',
+    size => '3 bytes',
+    id   => '108689494720583752',
+    content_type => 'text/plain',
+    content => 'ok',
 );
 
 for my $item ( keys %info ) {
@@ -51,8 +43,21 @@ for my $item ( keys %info ) {
 
 
 __DATA__
- <tr><td rowspan="2" width="24"><a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png" target="new"><img width="16" height="16" src="/hosting/images/generic.gif" border="0" ></a></td>
- <td><b>proxy_settings.png</b></td></tr>
- <tr><td>14.3 KB
-  
- <a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png">Download</a></td></tr>
+ <tr><td width="20">
+ <a href="http://net-google-code.googlecode.com/issues/attachment?aid=108689494720583752&amp;name=%2Ftmp%2Fa" target="new">
+ <img width="15" height="15" src="/hosting/images/paperclip.gif" border="0" >
+ </a>
+ </td>
+
+ <td style="min-width:16em" valign="top">
+ 
+ <b >/tmp/a</b>
+ <br>
+ 3 bytes
+ 
+ 
+ &nbsp; <a href="http://net-google-code.googlecode.com/issues/attachment?aid=108689494720583752&amp;name=%2Ftmp%2Fa">Download</a>
+ 
+ </td>
+ 
+ </tr>

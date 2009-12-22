@@ -6,7 +6,7 @@ use Test::More tests => 9;
 use Net::Google::Code::Issue::Comment;
 use Test::MockModule;
 my $comment =
-  Net::Google::Code::Issue::Comment->new( project => 'test' );
+  Net::Google::Code::Issue::Comment->new( project => 'net-google-code' );
 isa_ok( $comment, 'Net::Google::Code::Issue::Comment', '$comment' );
 
 my $mock = Test::MockModule->new('Net::Google::Code::Issue::Attachment');
@@ -29,10 +29,10 @@ $tree->elementify;
 $comment->parse( $tree );
 
 my %info = (
-    sequence => 18,
-    author   => 'jsykari',
-    date     => '2008-09-03T11:44:39',
-    content  => "haha",
+    sequence => 1,
+    author   => 'sunnavy',
+    date     => '2009-05-12T09:29:18',
+    content  => undef,
 );
 
 for my $item ( keys %info ) {
@@ -44,57 +44,103 @@ for my $item ( keys %info ) {
     }
 }
 
-my $updates = {
-    cc     => 'thatan...@google.com',
-    status => 'Available',
-    labels => [ qw/-Pri-2 Mstone-X Pri-3/ ],
-};
+my $updates = { labels => ['-Priority-Medium'], };
 
 is_deeply( $updates, $comment->updates, 'updates are extracted' );
 
 is( scalar @{$comment->attachments}, 2, 'attachments are extracted' );
-is( $comment->attachments->[0]->name, 'proxy_settings.png', '1st attachment' );
-is( $comment->attachments->[1]->name, 'haha.png', '2nd attachment' );
+is( $comment->attachments->[0]->name, '/tmp/a', '1st attachment' );
+is( $comment->attachments->[1]->name, '/tmp/b', '2nd attachment' );
 
 __DATA__
- <td class="vt issuecomment">
+<td class="vt issuecomment">
  
  
  
- <span class="author">Comment <a name="c18"
- href="#c18">18</a>
+ <span class="author">Comment <a name="c1"
+ href="#c1">1</a>
  by
- <a href="/u/jsykari/">jsykari</a></span>,
- <span class="date" title="Wed Sep  3 04:44:39 2008">Sep 03, 2008</span>
+ <a style="white-space: nowrap" href="/u/sunnavy/">sunnavy</a></span>,
+ <span class="date" title="Tue May 12 02:29:18 2009">May 12, 2009</span>
 <pre>
-<b>haha</b>
 
+<i>(No comment was entered for this change.)</i>
 </pre>
  
  <div class="attachments">
  
- <table cellspacing="0" cellpadding="2" border="0">
- <tr><td rowspan="2" width="24"><a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png" target="new"><img width="16" height="16" src="/hosting/images/generic.gif" border="0" ></a></td>
- <td><b>proxy_settings.png</b></td></tr>
- <tr><td>14.3 KB
-  
- <a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png">Download</a></td></tr>
- <tr><td rowspan="2" width="24"><a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png" target="new"><img width="16" height="16" src="/hosting/images/generic.gif" border="0" ></a></td>
- <td><b>haha.png</b></td></tr>
- <tr><td>20
-  
- <a href="http://chromium.googlecode.com/issues/attachment?aid=-1323983749556004507&amp;name=proxy_settings.png">Download</a></td></tr>
+ 
+ 
+
+
+
+
+ <table cellspacing="3" cellpadding="2" border="0">
+ <tr><td width="20">
+ <a href="http://net-google-code.googlecode.com/issues/attachment?aid=108689494720583752&amp;name=%2Ftmp%2Fa" target="new">
+ <img width="15" height="15" src="/hosting/images/paperclip.gif" border="0" >
+ </a>
+ </td>
+
+ <td style="min-width:16em" valign="top">
+ 
+ <b >/tmp/a</b>
+ <br>
+ 3 bytes
+ 
+ 
+ &nbsp; <a href="http://net-google-code.googlecode.com/issues/attachment?aid=108689494720583752&amp;name=%2Ftmp%2Fa">Download</a>
+ 
+ </td>
+ 
+ </tr>
+ 
  </table>
+
+
+ 
+ 
+ 
+
+
+
+
+ <table cellspacing="3" cellpadding="2" border="0">
+ <tr><td width="20">
+ <a href="http://net-google-code.googlecode.com/issues/attachment?aid=7462239237569252501&amp;name=%2Ftmp%2Fb" target="new">
+ <img width="15" height="15" src="/hosting/images/paperclip.gif" border="0" >
+ </a>
+ </td>
+ <td style="min-width:16em" valign="top">
+ 
+ <b >/tmp/b</b>
+
+ <br>
+ 5 bytes
+ 
+ 
+ &nbsp; <a href="http://net-google-code.googlecode.com/issues/attachment?aid=7462239237569252501&amp;name=%2Ftmp%2Fb">Download</a>
+ 
+ </td>
+ 
+ </tr>
+ 
+ </table>
+
+
  
  </div>
 
+ 
+ 
  <div class="updates">
  <div class="round4"></div>
  <div class="round2"></div>
  <div class="round1"></div>
  <div class="box-inner">
- <b>Status:</b><br><b>Cc:</b> thatan...@google.com<br><b>Status:</b> Available<br><b>Labels:</b>-Pri-2 Mstone-X Pri-3<br>
+ <b>Labels:</b> -Priority-Medium<br>
  </div>
+
  <div class="round1"></div>
  <div class="round2"></div>
  <div class="round4"></div>
