@@ -55,8 +55,9 @@ sub parse {
     my @tds = $tr->find_by_tag_name('td');
     if (@tds) {
         $self->url( $tds[0]->find_by_tag_name('a')->attr('href') );
-        if ( $self->url =~ /aid=([-\d]+)/ ) {
-            $self->id( $1 );
+        if ( $self->url =~ /aid=(-?\d+)/ ) {
+            my $id = $1;
+            $self->id( $id );
         }
 
         if ( $tds[1] ) {

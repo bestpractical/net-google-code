@@ -1,5 +1,9 @@
 Revision history for Net-Google-Code
 
+0.17 Fri Jan 29 04:15:09 UTC 2010
+
+* work around a weird bug of Mouse or even perl itself
+
 0.16 Tue Dec 22 03:31:43 UTC 2009
 
 * update issue part since google changed attachments snippet

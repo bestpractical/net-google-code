@@ -160,7 +160,8 @@ sub parse {
         {
 # the \w+ is person or people, I don't know if google will change that word
 # some time, so just use \w+
-            $self->stars($1);
+            my $stars = $1;
+            $self->stars($stars);
         }
     }
 
