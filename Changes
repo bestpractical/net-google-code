@@ -1,6 +1,8 @@
 Revision history for Net-Google-Code
 
-0.18
+0.18 Wed Apr  7 12:38:05 GMT 2010
+
+* explicitly delete HTML::TreeBuilder object
 
 0.17 Fri Jan 29 04:15:09 UTC 2010
 
