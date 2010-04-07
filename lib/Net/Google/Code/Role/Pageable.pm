@@ -21,6 +21,7 @@ sub rows {
 
     $args{limit} ||= 999_999_999; # the impossible huge limit
     my $tree = $args{html};
+    my $need_delete = not blessed $tree;
     $tree = $self->html_tree( html => $tree ) unless blessed $tree;
 
     # assuming there's at most 20 columns
@@ -84,6 +85,7 @@ sub rows {
         }
     }
 
+    $tree->delete if $need_delete;
     if ( scalar @rows > $args{limit} ) {
         # this happens when limit is less than the 1st page's number, so in
         # some similar situations 
@@ -105,6 +107,7 @@ sub _rows {
         }
     );
     my $tree = $args{html};
+    my $need_delete = not blessed $tree;
     $tree = $self->html_tree( html => $tree ) unless blessed $tree;
     my @titles = @{$args{titles}};
     my $label_column = $args{label_column};
@@ -144,6 +147,7 @@ sub _rows {
             $k++;
         }
     }
+    $tree->delete if $need_delete;
     return @rows;
 }
 

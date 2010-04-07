@@ -112,6 +112,8 @@ sub parse {
         push @comments, $comment;
     }
     $self->comments( \@comments );
+    $tree->delete;
+    return 1;
 }
 
 no Any::Moose;

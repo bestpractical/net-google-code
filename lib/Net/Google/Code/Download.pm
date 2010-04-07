@@ -69,6 +69,7 @@ sub load {
 sub parse {
     my $self = shift;
     my $tree = shift;
+    my $need_delete = not blessed $tree;
     $tree = $self->html_tree( html => $tree ) unless blessed $tree;
 
     my $entry;
@@ -120,6 +121,7 @@ sub parse {
     if ( $checksum =~ /^SHA1 Checksum:\s+(\w+)/ ) {
         $self->checksum( $1 );
     }
+    $tree->delete if $need_delete;
 }
 
 sub BUILDARGS {

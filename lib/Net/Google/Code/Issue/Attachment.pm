@@ -25,17 +25,10 @@ has content_type => (
 
 sub parse {
     my $self = shift;
-    my $html = shift;
-
-    my $tr;
-
-    if ( blessed $html ) {
-        $tr = $html->find_by_tag_name( 'tr' );
-    }
-    else {
-        my $tree = $self->html_tree( html => $html );
-        $tr = $tree->find_by_tag_name( 'tr' );
-    }
+    my $tree    = shift;
+    my $need_delete = not blessed $tree;
+    $tree = $self->html_tree( html => $tree ) unless blessed $tree;
+    my $tr = $tree->find_by_tag_name('tr');
 
     my $b    = $tr->find_by_tag_name('b');    # name lives here
     if ($b) {
@@ -71,12 +64,14 @@ sub parse {
         }
     }
 
+    $tree->delete if $need_delete;
     return 1;
 }
 
 sub parse_attachments {
     my $self    = shift;
     my $element = shift;
+    my $need_delete = not blessed $element;
     $element = $self->html_tree( html => $element ) unless blessed $element;
 
     my @attachments;
@@ -90,6 +85,7 @@ sub parse_attachments {
             push @attachments, $a;
         }
     }
+    $element->delete if $need_delete;
     return @attachments;
 }
 

@@ -59,6 +59,7 @@ sub translate_from_xml {
                       . ( $ref->{$k}->{'#text'} || '' )
                       . '</pre>' );
                 $text = $tree->as_text if $tree;
+                $tree->delete;
             }
             else {
                 $text = $ref->{$k}->{'#text'};

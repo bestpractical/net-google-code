@@ -28,12 +28,13 @@ sub html_tree_contains {
     );
 
     my $tree;
-
+    my $need_delete;
     if ( blessed $args{html} ) {
         $tree = $args{html};
     }
     else {
         $tree = $self->html_tree( html => $args{html} );
+        $need_delete = 1;
     }
 
     my $part = $tree;
@@ -41,9 +42,12 @@ sub html_tree_contains {
         ($part) = $tree->look_down( @{ $args{look_down} } );
     }
 
-    return unless $part;
 
-    my $text = $part->as_text;
+    my $text = $part && $part->as_text;
+    $tree->delete if $need_delete;
+
+    return unless defined $text;
+
     return 1 if $text eq $args{as_text};
 
     if ( ( ref $args{as_text} eq 'Regexp' ) && ( my @captures =

@@ -94,6 +94,7 @@ sub load {
 sub parse {
     my $self    = shift;
     my $tree    = shift;
+    my $need_delete = not blessed $tree;
     $tree = $self->html_tree( html => $tree ) unless blessed $tree;
 
     my $summary =
@@ -125,6 +126,7 @@ sub parse {
         push @labels, $tag->content_array_ref->[0];
     }
     $self->labels( \@labels ) if @labels;
+    $tree->delete if $need_delete;
     return 1;
 }
 
@@ -169,6 +171,7 @@ sub load_wikis {
             push @wikis, $wiki;
         }
     }
+    $tree->delete;
     $self->wikis( \@wikis );
 }
 

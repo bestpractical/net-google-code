@@ -30,6 +30,7 @@ has 'issue_id' => (
 sub parse {
     my $self    = shift;
     my $element = shift;
+    my $need_delete = not blessed $element;
     $element = $self->html_tree( html => $element ) unless blessed $element;
 
     my $author  = $element->look_down( class => 'author' );
@@ -87,12 +88,14 @@ sub parse {
       if $att_tag;
     $self->attachments( \@attachments );
 
+    $self->delete if $need_delete;
     return 1;
 }
 
 sub parse_hybrid {
     my $self    = shift;
     my $element = shift;
+    my $need_delete = not blessed $element;
     $element = $self->html_tree( html => $element ) unless blessed $element;
     my $updates = $element->look_down( class => 'updates' );
     if ($updates) {
@@ -127,7 +130,7 @@ sub parse_hybrid {
       Net::Google::Code::Issue::Attachment->parse_attachments($att_tag)
       if $att_tag;
     $self->attachments( \@attachments );
-
+    $element->delete if $need_delete;
     return 1;
 }
 

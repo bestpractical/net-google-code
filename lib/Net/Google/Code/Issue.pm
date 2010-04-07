@@ -124,6 +124,7 @@ sub parse {
     my $self    = shift;
     my $tree    = shift;
 
+    my $need_delete = not blessed $tree;
     $tree = $self->html_tree( html => $tree ) unless blessed $tree;
 
     # extract summary
@@ -257,7 +258,8 @@ sub parse {
     unshift @comments, $initial_comment;
 
     $self->comments( \@comments );
-
+    $tree->delete if $need_delete;
+    return 1;
 }
 
 sub load_comments {
@@ -276,7 +278,7 @@ sub load_comments {
 sub parse_hybrid {
     my $self    = shift;
     my $tree    = shift;
-
+    my $need_delete = not blessed $tree;
     $tree = $self->html_tree( html => $tree ) unless blessed $tree;
 
     my $description = $tree->look_down( class => 'vt issuedescription' );
@@ -371,7 +373,8 @@ sub parse_hybrid {
         $initial_comment->updates->{$_} = $self->$_;
     }
     $self->comments->[0] = $initial_comment;
-
+    $tree->delete if $need_delete;
+    return 1;
 }
 
 sub _load_from_xml {

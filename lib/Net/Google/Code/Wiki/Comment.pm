@@ -22,7 +22,7 @@ has 'date' => (
 sub parse {
     my $self    = shift;
     my $element = shift;
-
+    my $need_update = not blessed $element;
     $element = $self->html_tree( html => $element ) unless blessed $element;
 
     my $author =
@@ -34,6 +34,7 @@ sub parse {
     $self->author( $author ) if $author;
     $self->date( $date ) if $date;
     $self->content( $content ) if $content;
+    $element->delete if $need_update;
     return 1;
 }
 
