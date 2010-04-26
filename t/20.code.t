@@ -49,7 +49,7 @@ $project->load;
 is_deeply( $project->owners, ['sunnavy'] );
 is_deeply( $project->members, [ 'jessev', 'fayland' ] );
 like $project->description, qr/Net\:\:Google\:\:Code/;
-is_deeply( $project->labels, [ 'perl', 'Google' ] );
+is_deeply( $project->labels, [ 'perl' ] );
 is $project->summary, 'a simple client library for google code';
 
 isa_ok( $project->issue,    'Net::Google::Code::Issue' );

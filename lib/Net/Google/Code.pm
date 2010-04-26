@@ -105,20 +105,37 @@ sub parse {
       $tree->look_down( id => 'wikicontent' )->content_array_ref->[0]->as_text;
     $self->description($description) if $description;
 
-    my @members;
-    my @members_tags =
-      $tree->look_down( id => 'members' )->find_by_tag_name('a');
-    for my $tag (@members_tags) {
-        push @members, $tag->content_array_ref->[0];
-    }
-    $self->members( \@members ) if @members;
+    if (
+        my $members_header = $tree->look_down(
+            _tag => 'b',
+            sub { $_[0]->as_text eq 'Committers:' }
+        )
+      )
+    {
+        my @a = $members_header->parent->find_by_tag_name('a');
+        my @members;
+        for my $member (@a) {
+            push @members, $member->as_text;
+        }
 
-    my @owners;
-    my @owners_tags = $tree->look_down( id => 'owners' )->find_by_tag_name('a');
-    for my $tag (@owners_tags) {
-        push @owners, $tag->content_array_ref->[0];
+        $self->members( \@members );
     }
-    $self->owners( \@owners ) if @owners;
+
+    if (
+        my $owners_header = $tree->look_down(
+            _tag => 'b',
+            sub { $_[0]->as_text eq 'Owners:' }
+        )
+      )
+    {
+        my @a = $owners_header->parent->find_by_tag_name('a');
+        my @owners;
+        for my $owner (@a) {
+            push @owners, $owner->as_text;
+        }
+
+        $self->owners( \@owners );
+    }
 
     my @labels;
     my @labels_tags = $tree->look_down( href => qr/q\=label\:/ );
