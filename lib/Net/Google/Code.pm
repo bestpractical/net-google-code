@@ -4,7 +4,7 @@ use Any::Moose;
 with 'Net::Google::Code::TypicalRoles';
 use Scalar::Util qw/blessed/;
 
-our $VERSION = '0.19';
+our $VERSION = '0.20';
 
 has 'project' => (
     isa      => 'Str',
