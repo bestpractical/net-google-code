@@ -169,7 +169,6 @@ sub parse {
     my @meta = $meta->find_by_tag_name('tr');
     my @labels;
     for my $meta (@meta) {
-
         my ( $key, $value );
         if ( my $k = $meta->find_by_tag_name('th') ) {
             my $v         = $meta->find_by_tag_name('td');
@@ -182,14 +181,11 @@ sub parse {
             $key = lc $key;
 
             if ($v) {
-                my $v_content = $v->content_array_ref->[0];
-                while ( ref $v_content ) {
-                    $v_content = $v_content->content_array_ref->[0];
-                }
-                $value = $v_content;
+                $value = $v->as_text;
                 $value =~ s/^\s+//;
                 $value =~ s/\s+$//;
             }
+
             if ( $self->can( $key ) ) {
                 if ( $key eq 'merged' && $value =~ /issue\s+(\d+)/ ) {
                     $value = $1;
@@ -306,11 +302,7 @@ sub parse_hybrid {
             $key = lc $key;
 
             if ($v) {
-                my $v_content = $v->content_array_ref->[0];
-                while ( ref $v_content ) {
-                    $v_content = $v_content->content_array_ref->[0];
-                }
-                $value = $v_content;
+                $value = $v->as_text;
                 $value =~ s/^\s+//;
                 $value =~ s/\s+$//;
             }
